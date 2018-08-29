@@ -3,7 +3,9 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 // @material-ui/icons
-import {Email, LockOutlined} from "@material-ui/icons"
+import {Email, LockOutlined, AccountCircle} from "@material-ui/icons";
+//import Email from "@material-ui/icons/Email";
+//import Lock from "@material-ui/icons/LockOutlined"
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
@@ -14,9 +16,9 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 import CustomInput from "components/CustomInput/CustomInput.jsx";
 
-import loginBoxStyle from "assets/jss/views/loginBoxStyle.jsx";
+import registrationBoxStyle from "assets/jss/views/registrationBoxStyle.jsx";
 
-class LoginBox extends React.Component {
+class RegistrationBox extends React.Component {
   constructor(props) {
     super(props);
     // we use this to make the card to appear after the page has been rendered
@@ -34,7 +36,6 @@ class LoginBox extends React.Component {
     );
   }
   render() {
-    //const { classes, ...rest } = this.props;
     const { classes } = this.props;
     return (
       <div>
@@ -44,9 +45,24 @@ class LoginBox extends React.Component {
                 <Card className={classes[this.state.cardAnimaton]}>
                   <form className={classes.form}>
                   <CardHeader color="primary" className={classes.cardHeader}>
-                      <h4>Login</h4>
+                      <h4>Register</h4>
                     </CardHeader>
                     <CardBody>
+                    <CustomInput
+                        labelText="Name"
+                        id="name"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <AccountCircle className={classes.inputIconsColor} />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
                       <CustomInput
                         labelText="Email"
                         id="email"
@@ -77,10 +93,25 @@ class LoginBox extends React.Component {
                           )
                         }}
                       />
+                      <CustomInput
+                        labelText="Confirm Password"
+                        id="passConfirm"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "password",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <LockOutlined className={classes.inputIconsColor} />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
                     </CardBody>
                     <CardFooter className={classes.cardFooter}>
                       <Button simple color="primary" size="lg">
-                        Login
+                        Register
                       </Button>
                     </CardFooter>
                   </form>
@@ -93,4 +124,4 @@ class LoginBox extends React.Component {
   }
 }
 
-export default withStyles(loginBoxStyle)(LoginBox);
+export default withStyles(registrationBoxStyle)(RegistrationBox);
