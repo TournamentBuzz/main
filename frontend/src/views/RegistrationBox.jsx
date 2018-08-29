@@ -4,8 +4,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 // @material-ui/icons
 import {Email, LockOutlined, AccountCircle} from "@material-ui/icons";
-//import Email from "@material-ui/icons/Email";
-//import Lock from "@material-ui/icons/LockOutlined"
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
@@ -23,17 +21,8 @@ class RegistrationBox extends React.Component {
     super(props);
     // we use this to make the card to appear after the page has been rendered
     this.state = {
-      cardAnimaton: "cardHidden"
+      cardAnimaton: ""
     };
-  }
-  componentDidMount() {
-    // we add a hidden class to the card and after 700 ms we delete it and the transition appears
-    setTimeout(
-      function() {
-        this.setState({ cardAnimaton: "" });
-      }.bind(this),
-      700
-    );
   }
   render() {
     const { classes } = this.props;
@@ -41,7 +30,7 @@ class RegistrationBox extends React.Component {
       <div>
           <div className={classes.container}>
             <GridContainer justify="center">
-              <GridItem xs={12} sm={12} md={4}>
+              <GridItem xs={12} sm={12} md={10}>
                 <Card className={classes[this.state.cardAnimaton]}>
                   <form className={classes.form}>
                   <CardHeader color="primary" className={classes.cardHeader}>

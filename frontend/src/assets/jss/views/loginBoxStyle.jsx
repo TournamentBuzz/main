@@ -5,8 +5,9 @@ const loginBoxStyle = {
     ...container,
     zIndex: "2",
     position: "relative",
-    paddingTop: "20vh",
-    color: "#FFFFFF"
+    paddingTop: "5vh",
+    color: "#FFFFFF",
+    width: "80%"
   },
   cardHidden: {
     opacity: "0",

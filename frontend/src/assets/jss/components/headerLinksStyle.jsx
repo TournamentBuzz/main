@@ -1,11 +1,12 @@
 import { defaultFont } from "assets/jss/material-kit-react.jsx";
 
 import tooltip from "assets/jss/components/tooltipsStyle.jsx";
+import modalStyle from "assets/jss/components/modalStyle.jsx";
 
 const headerLinksStyle = theme => ({
   list: {
     ...defaultFont,
-    fontSize: "14px",
+    fontSize: "12px",
     margin: 0,
     paddingLeft: "0",
     listStyle: "none",
@@ -41,7 +42,8 @@ const headerLinksStyle = theme => ({
     position: "relative",
     padding: "0.9375rem",
     fontWeight: "400",
-    fontSize: "12px",
+    fontSize: "14px",
+    minWidth: "60px",
     textTransform: "uppercase",
     borderRadius: "3px",
     lineHeight: "20px",
@@ -111,7 +113,18 @@ const headerLinksStyle = theme => ({
   ...tooltip,
   marginRight5: {
     marginRight: "5px"
-  }
+  },
+  ...modalStyle,
+  label: {
+    color: "rgba(0, 0, 0, 0.26)",
+    cursor: "pointer",
+    display: "inline-flex",
+    fontSize: "14px",
+    transition: "0.3s ease all",
+    lineHeight: "1.428571429",
+    fontWeight: "400",
+    paddingLeft: "0"
+  },
 });
 
 export default headerLinksStyle;

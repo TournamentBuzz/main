@@ -21,17 +21,8 @@ class LoginBox extends React.Component {
     super(props);
     // we use this to make the card to appear after the page has been rendered
     this.state = {
-      cardAnimaton: "cardHidden"
+      cardAnimaton: ""
     };
-  }
-  componentDidMount() {
-    // we add a hidden class to the card and after 700 ms we delete it and the transition appears
-    setTimeout(
-      function() {
-        this.setState({ cardAnimaton: "" });
-      }.bind(this),
-      700
-    );
   }
   render() {
     //const { classes, ...rest } = this.props;
@@ -40,7 +31,7 @@ class LoginBox extends React.Component {
       <div>
           <div className={classes.container}>
             <GridContainer justify="center">
-              <GridItem xs={12} sm={12} md={4}>
+              <GridItem xs={12} sm={12} md={12}>
                 <Card className={classes[this.state.cardAnimaton]}>
                   <form className={classes.form}>
                   <CardHeader color="primary" className={classes.cardHeader}>

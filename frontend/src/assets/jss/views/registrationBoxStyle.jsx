@@ -1,12 +1,13 @@
 import { container } from "assets/jss/material-kit-react.jsx";
 
-const loginBoxStyle = {
+const registrationBoxStyle = {
   container: {
     ...container,
     zIndex: "2",
     position: "relative",
-    paddingTop: "20vh",
-    color: "#FFFFFF"
+    paddingTop: "5vh",
+    color: "#FFFFFF",
+    width: "80%"
   },
   cardHidden: {
     opacity: "0",
@@ -88,4 +89,4 @@ const loginBoxStyle = {
   }
 };
 
-export default loginBoxStyle;
+export default registrationBoxStyle;
