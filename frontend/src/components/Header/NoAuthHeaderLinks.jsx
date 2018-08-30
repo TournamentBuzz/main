@@ -78,9 +78,9 @@ class NoAuthHeaderLinks extends React.Component {
           keepMounted
           onClose={() => this.handleClose("loginModal")}
         >
-        <div>
-          <LoginBox />
-        </div>
+          <div>
+            <LoginBox />
+          </div>
         </Dialog>
         <Dialog
           classes={{
@@ -92,9 +92,9 @@ class NoAuthHeaderLinks extends React.Component {
           keepMounted
           onClose={() => this.handleClose("registerModal")}
         >
-        <div>
-          <RegisterBox />
-        </div>
+          <div>
+            <RegisterBox />
+          </div>
         </Dialog>
       </div>
     );

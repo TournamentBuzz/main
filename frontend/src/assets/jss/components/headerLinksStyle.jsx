@@ -124,7 +124,7 @@ const headerLinksStyle = theme => ({
     lineHeight: "1.428571429",
     fontWeight: "400",
     paddingLeft: "0"
-  },
+  }
 });
 
 export default headerLinksStyle;

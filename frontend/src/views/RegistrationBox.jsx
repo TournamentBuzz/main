@@ -3,7 +3,7 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 // @material-ui/icons
-import {Email, LockOutlined, AccountCircle} from "@material-ui/icons";
+import { Email, LockOutlined, AccountCircle } from "@material-ui/icons";
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
@@ -28,87 +28,89 @@ class RegistrationBox extends React.Component {
     const { classes } = this.props;
     return (
       <div>
-          <div className={classes.container}>
-            <GridContainer justify="center">
-              <GridItem xs={12} sm={12} md={10}>
-                <Card className={classes[this.state.cardAnimaton]}>
-                  <form className={classes.form}>
+        <div className={classes.container}>
+          <GridContainer justify="center">
+            <GridItem xs={12} sm={12} md={10}>
+              <Card className={classes[this.state.cardAnimaton]}>
+                <form className={classes.form}>
                   <CardHeader color="primary" className={classes.cardHeader}>
-                      <h4>Register</h4>
-                    </CardHeader>
-                    <CardBody>
+                    <h4>Register</h4>
+                  </CardHeader>
+                  <CardBody>
                     <CustomInput
-                        labelText="Name"
-                        id="name"
-                        formControlProps={{
-                          fullWidth: true
-                        }}
-                        inputProps={{
-                          type: "text",
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <AccountCircle className={classes.inputIconsColor} />
-                            </InputAdornment>
-                          )
-                        }}
-                      />
-                      <CustomInput
-                        labelText="Email"
-                        id="email"
-                        formControlProps={{
-                          fullWidth: true
-                        }}
-                        inputProps={{
-                          type: "email",
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Email className={classes.inputIconsColor} />
-                            </InputAdornment>
-                          )
-                        }}
-                      />
-                      <CustomInput
-                        labelText="Password"
-                        id="pass"
-                        formControlProps={{
-                          fullWidth: true
-                        }}
-                        inputProps={{
-                          type: "password",
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <LockOutlined className={classes.inputIconsColor} />
-                            </InputAdornment>
-                          )
-                        }}
-                      />
-                      <CustomInput
-                        labelText="Confirm Password"
-                        id="passConfirm"
-                        formControlProps={{
-                          fullWidth: true
-                        }}
-                        inputProps={{
-                          type: "password",
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <LockOutlined className={classes.inputIconsColor} />
-                            </InputAdornment>
-                          )
-                        }}
-                      />
-                    </CardBody>
-                    <CardFooter className={classes.cardFooter}>
-                      <Button simple color="primary" size="lg">
-                        Register
-                      </Button>
-                    </CardFooter>
-                  </form>
-                </Card>
-              </GridItem>
-            </GridContainer>
-          </div>
+                      labelText="Name"
+                      id="name"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "text",
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <AccountCircle
+                              className={classes.inputIconsColor}
+                            />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                    <CustomInput
+                      labelText="Email"
+                      id="email"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "email",
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Email className={classes.inputIconsColor} />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                    <CustomInput
+                      labelText="Password"
+                      id="pass"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "password",
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <LockOutlined className={classes.inputIconsColor} />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                    <CustomInput
+                      labelText="Confirm Password"
+                      id="passConfirm"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "password",
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <LockOutlined className={classes.inputIconsColor} />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  </CardBody>
+                  <CardFooter className={classes.cardFooter}>
+                    <Button simple color="primary" size="lg">
+                      Register
+                    </Button>
+                  </CardFooter>
+                </form>
+              </Card>
+            </GridItem>
+          </GridContainer>
         </div>
+      </div>
     );
   }
 }

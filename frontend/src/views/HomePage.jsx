@@ -7,12 +7,11 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Header from "components/Header/Header.jsx";
 import headerLinksStyle from "assets/jss/components/headerLinksStyle.jsx";
 
-import NoAuthHeaderLinks from 'components/Header/NoAuthHeaderLinks.jsx';
+import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 
 //const dashboardRoutes = [];
 
 class HomePage extends React.Component {
-
   render() {
     const { classes, ...rest } = this.props;
     return (
@@ -21,7 +20,7 @@ class HomePage extends React.Component {
           color="primary"
           //routes={dashboardRoutes}
           brand="TournamentBuzz"
-          rightLinks={ <NoAuthHeaderLinks /> }
+          rightLinks={<NoAuthHeaderLinks />}
           fixed
           {...rest}
         />
