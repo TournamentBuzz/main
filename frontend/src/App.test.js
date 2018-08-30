@@ -1,7 +1,7 @@
 import React from "react";
 import { shallow } from "enzyme";
 import App from "./App";
-import HomePage from "./views/HomePage";
+import HomePage from "views/HomePage";
 
 it("renders <HomePage /> without crashing", () => {
   const wrapper = shallow(<App />);
