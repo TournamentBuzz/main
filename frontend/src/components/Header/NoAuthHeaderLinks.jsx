@@ -41,15 +41,14 @@ class NoAuthHeaderLinks extends React.Component {
   }
 
   render() {
-    const { classes, ...rest } = this.props;
+    const { classes } = this.props;
     return (
       <div>
         <List className={classes.list}>
           <ListItem className={classes.listItem}>
             <Button
-              color="warning"
+              color="gold"
               width="100%"
-              href="#"
               className={classes.navLink}
               onClick={() => this.handleClickOpen("registerModal")}
             >
@@ -58,9 +57,8 @@ class NoAuthHeaderLinks extends React.Component {
           </ListItem>
           <ListItem className={classes.listItem}>
             <Button
-              color="success"
+              color="gold"
               width="100%"
-              href="#"
               className={classes.navLink}
               onClick={() => this.handleClickOpen("loginModal")}
             >

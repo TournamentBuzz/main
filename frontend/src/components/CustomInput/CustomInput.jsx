@@ -8,6 +8,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import customInputStyle from "assets/jss/components/customInputStyle.jsx";
 
@@ -17,11 +18,14 @@ function CustomInput({ ...props }) {
     formControlProps,
     labelText,
     id,
+    name,
     labelProps,
     inputProps,
     error,
     white,
     inputRootCustomClasses,
+    onChange,
+    formHelperText,
     success
   } = props;
 
@@ -70,8 +74,17 @@ function CustomInput({ ...props }) {
           underline: underlineClasses
         }}
         id={id}
+        name={name}
+        onChange={onChange}
         {...inputProps}
       />
+      {formHelperText !== undefined ? (
+        <FormHelperText
+          htmlFor={id} className={labelClasses}
+        >
+          {formHelperText}
+        </FormHelperText >
+      ) : null}
     </FormControl>
   );
 }
@@ -81,9 +94,12 @@ CustomInput.propTypes = {
   labelText: PropTypes.node,
   labelProps: PropTypes.object,
   id: PropTypes.string,
+  name: PropTypes.string,
   inputProps: PropTypes.object,
   formControlProps: PropTypes.object,
   inputRootCustomClasses: PropTypes.string,
+  onChange: PropTypes.func,
+  formHelperText: PropTypes.string,
   error: PropTypes.bool,
   success: PropTypes.bool,
   white: PropTypes.bool

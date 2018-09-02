@@ -23,7 +23,26 @@ class LoginBox extends React.Component {
     this.state = {
       cardAnimaton: ""
     };
+    this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
+
+  handleChange(e) {
+    this.setState(
+      {
+        [e.target.name]: e.target.value
+      }
+    )
+  }
+
+  handleFormSubmit(e) {
+    e.preventDefault();
+    console.log("submitted");
+    if (this.state.loginEmail && this.state.loginPassword) {
+      console.log(this.state.loginEmail);
+      console.log(this.state.loginPassword);
+    }
+  }
+
   render() {
     //const { classes, ...rest } = this.props;
     const { classes } = this.props;
@@ -33,14 +52,16 @@ class LoginBox extends React.Component {
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={12}>
               <Card className={classes[this.state.cardAnimaton]}>
-                <form className={classes.form}>
+                <form className={classes.form} onSubmit={this.handleFormSubmit}>
                   <CardHeader color="primary" className={classes.cardHeader}>
-                    <h4>Login</h4>
+                    <h2>Login</h2>
                   </CardHeader>
                   <CardBody>
                     <CustomInput
                       labelText="Email"
-                      id="email"
+                      id="loginEmail"
+                      name="loginEmail"
+                      onChange={this.handleChange.bind(this)}
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -55,7 +76,9 @@ class LoginBox extends React.Component {
                     />
                     <CustomInput
                       labelText="Password"
-                      id="pass"
+                      id="loginPassword"
+                      name="loginPassword"
+                      onChange={this.handleChange.bind(this)}
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -70,7 +93,7 @@ class LoginBox extends React.Component {
                     />
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg">
+                    <Button simple color="primary" size="lg" value="submit" type="submit">
                       Login
                     </Button>
                   </CardFooter>

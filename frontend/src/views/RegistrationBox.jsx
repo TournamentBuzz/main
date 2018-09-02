@@ -23,7 +23,28 @@ class RegistrationBox extends React.Component {
     this.state = {
       cardAnimaton: ""
     };
+    this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
+
+  handleChange(e) {
+    this.setState(
+      {
+        [e.target.name]: e.target.value
+      }
+    )
+  }
+
+  handleFormSubmit(e) {
+    e.preventDefault();
+    console.log("submitted");
+    if (this.state.regName && this.state.regEmail && this.state.regPassword && this.state.regPasswordConfirm) {
+      console.log(this.state.regName);
+      console.log(this.state.regEmail);
+      console.log(this.state.regPassword);
+      console.log(this.state.regPasswordConfirm)
+    }
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -32,14 +53,16 @@ class RegistrationBox extends React.Component {
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={10}>
               <Card className={classes[this.state.cardAnimaton]}>
-                <form className={classes.form}>
+                <form className={classes.form} onSubmit={this.handleFormSubmit}>
                   <CardHeader color="primary" className={classes.cardHeader}>
-                    <h4>Register</h4>
+                    <h2>Register</h2>
                   </CardHeader>
                   <CardBody>
                     <CustomInput
                       labelText="Name"
-                      id="name"
+                      id="regName"
+                      name="regName"
+                      onChange={this.handleChange.bind(this)}
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -56,7 +79,9 @@ class RegistrationBox extends React.Component {
                     />
                     <CustomInput
                       labelText="Email"
-                      id="email"
+                      id="regEmail"
+                      name="regEmail"
+                      onChange={this.handleChange.bind(this)}
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -71,7 +96,9 @@ class RegistrationBox extends React.Component {
                     />
                     <CustomInput
                       labelText="Password"
-                      id="pass"
+                      id="regPassword"
+                      name="regPassword"
+                      onChange={this.handleChange.bind(this)}
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -86,7 +113,9 @@ class RegistrationBox extends React.Component {
                     />
                     <CustomInput
                       labelText="Confirm Password"
-                      id="passConfirm"
+                      id="regPasswordConfirm"
+                      name="regPasswordConfirm"
+                      onChange={this.handleChange.bind(this)}
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -101,7 +130,7 @@ class RegistrationBox extends React.Component {
                     />
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg">
+                    <Button simple color="primary" size="lg" value="submit" type="submit">
                       Register
                     </Button>
                   </CardFooter>
