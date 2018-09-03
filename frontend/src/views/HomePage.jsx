@@ -9,8 +9,6 @@ import headerLinksStyle from "assets/jss/components/headerLinksStyle.jsx";
 
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 
-//const dashboardRoutes = [];
-
 class HomePage extends React.Component {
   render() {
     const { classes, ...rest } = this.props;
@@ -18,7 +16,6 @@ class HomePage extends React.Component {
       <div>
         <Header
           color="primary"
-          //routes={dashboardRoutes}
           brand="TournamentBuzz"
           rightLinks={<NoAuthHeaderLinks />}
           fixed
