@@ -80,7 +80,7 @@ function CustomInput({ ...props }) {
       />
       {formHelperText !== undefined ? (
         <FormHelperText
-          htmlFor={id} className={labelClasses}
+          htmlFor={id} className={classes.labelRootError}
         >
           {formHelperText}
         </FormHelperText >

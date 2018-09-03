@@ -19,9 +19,10 @@ import registrationBoxStyle from "assets/jss/views/registrationBoxStyle.jsx";
 class RegistrationBox extends React.Component {
   constructor(props) {
     super(props);
-    // we use this to make the card to appear after the page has been rendered
+    // use this to make the card to appear after the page has been rendered
     this.state = {
-      cardAnimaton: ""
+      cardAnimaton: "",
+      submitted: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -36,6 +37,7 @@ class RegistrationBox extends React.Component {
 
   handleFormSubmit(e) {
     e.preventDefault();
+    this.setState({ submitted: true });
     console.log("submitted");
     if (this.state.regName && this.state.regEmail && this.state.regPassword && this.state.regPasswordConfirm) {
       console.log(this.state.regName);
@@ -63,6 +65,7 @@ class RegistrationBox extends React.Component {
                       id="regName"
                       name="regName"
                       onChange={this.handleChange.bind(this)}
+                      formHelperText={(this.state.submitted && !this.state.regName) ? "Name is required" : undefined }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -82,6 +85,7 @@ class RegistrationBox extends React.Component {
                       id="regEmail"
                       name="regEmail"
                       onChange={this.handleChange.bind(this)}
+                      formHelperText={(this.state.submitted && !this.state.regEmail) ? "Email is required" : undefined }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -99,6 +103,7 @@ class RegistrationBox extends React.Component {
                       id="regPassword"
                       name="regPassword"
                       onChange={this.handleChange.bind(this)}
+                      formHelperText={(this.state.submitted && !this.state.regPassword) ? "Password is required" : undefined }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -116,6 +121,7 @@ class RegistrationBox extends React.Component {
                       id="regPasswordConfirm"
                       name="regPasswordConfirm"
                       onChange={this.handleChange.bind(this)}
+                      formHelperText={(this.state.submitted && !this.state.regPasswordConfirm) ? "Confirm password is required" : undefined }
                       formControlProps={{
                         fullWidth: true
                       }}

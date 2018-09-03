@@ -19,9 +19,10 @@ import loginBoxStyle from "assets/jss/views/loginBoxStyle.jsx";
 class LoginBox extends React.Component {
   constructor(props) {
     super(props);
-    // we use this to make the card to appear after the page has been rendered
+    // use this to make the card to appear after the page has been rendered
     this.state = {
-      cardAnimaton: ""
+      cardAnimaton: "",
+      submitted: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -36,6 +37,7 @@ class LoginBox extends React.Component {
 
   handleFormSubmit(e) {
     e.preventDefault();
+    this.setState({ submitted: true });
     console.log("submitted");
     if (this.state.loginEmail && this.state.loginPassword) {
       console.log(this.state.loginEmail);
@@ -44,13 +46,12 @@ class LoginBox extends React.Component {
   }
 
   render() {
-    //const { classes, ...rest } = this.props;
     const { classes } = this.props;
     return (
       <div>
         <div className={classes.container}>
           <GridContainer justify="center">
-            <GridItem xs={12} sm={12} md={12}>
+            <GridItem xs={12} sm={12} md={10}>
               <Card className={classes[this.state.cardAnimaton]}>
                 <form className={classes.form} onSubmit={this.handleFormSubmit}>
                   <CardHeader color="primary" className={classes.cardHeader}>
@@ -62,6 +63,7 @@ class LoginBox extends React.Component {
                       id="loginEmail"
                       name="loginEmail"
                       onChange={this.handleChange.bind(this)}
+                      formHelperText={(this.state.submitted && !this.state.loginEmail) ? "Email is required" : undefined }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -79,6 +81,7 @@ class LoginBox extends React.Component {
                       id="loginPassword"
                       name="loginPassword"
                       onChange={this.handleChange.bind(this)}
+                      formHelperText={(this.state.submitted && !this.state.loginPassword) ? "Password is required" : undefined }
                       formControlProps={{
                         fullWidth: true
                       }}
