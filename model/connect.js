@@ -1,17 +1,17 @@
-var mysql = require('mysql')
-var username = prompt("Username")
-var password = prompt("Password")
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: username,
-    password: password,
-    database: "tournamentbuzz"
-})
 
-connection.connect()
+function connect(username, password) {
+    var mysql = require('mysql')
+    var connection = mysql.createConnection({
+        host: 'localhost',
+        user: username,
+        password: password,
+        database: "tournamentbuzz"
+    })
 
-connection.query('SELECT * FROM USERS', function (err, rows, fields) {
-    console.log(rows[0].solution)
-})
+    connection.connect()
+    return connection;
+}
 
-connection.end()
+function endConnection(connection) {
+    connection.end()
+}

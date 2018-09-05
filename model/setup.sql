@@ -5,7 +5,7 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE CHECK(email REGEXP '^[A-Za-z0-9][A-Za-z0-9]*@[A-Za-z0-9][A-Za-z0-9]*\\.[A-Za-z0-9]*$'),
   passw VARCHAR(255) NOT NULL CHECK(passw LIKE '%________%'),
   uname VARCHAR(60),
-  admin BOOL DEFAULT FALSE NOT NULL, 
+  sadmin BOOL DEFAULT FALSE NOT NULL, 
   PRIMARY KEY(email)
 );
 
@@ -33,21 +33,29 @@ CREATE TABLE matches (
     score VARCHAR(255) DEFAULT NULL,
     mtime DATETIME DEFAULT NULL,
     mname VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY(id)
+    tournament INT(10) NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(tournament)
+    REFERENCES tournaments(id)
 );
 
 CREATE TABLE teams (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
     tname VARCHAR(255) CHECK(NOT EXISTS(SELECT * FROM teamparticipates WHERE teamname = tname)),
     leader VARCHAR(255) NOT NULL,
+    tournament INT(10) NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(leader)
-    REFERENCES users(email)
+    REFERENCES users(email),
+    FOREIGN KEY(tournament)
+    REFERENCES tournaments(id)
 );
 
 CREATE TABLE members (
 	uemail VARCHAR(255) NOT NULL,
     teamId INT(12) NOT NULL,
+    invited BOOL NOT NULL DEFAULT FALSE,
+    approved BOOL NOT NULL DEFAULT FALSE,
 	PRIMARY KEY(uemail, teamId),
     FOREIGN KEY(uemail)
     REFERENCES users(email),
@@ -58,8 +66,8 @@ CREATE TABLE members (
 CREATE TABLE partof (
 	uemail VARCHAR(255) NOT NULL,
     tournamentId INT(12) NOT NULL,
-    role ENUM('Organizer', 'Referee', 'Participant') DEFAULT 'Participant' NOT NULL,
-    seed INT(4) DEFAULT -1,
+    urole ENUM('Organizer', 'Referee', 'Participant') DEFAULT 'Participant' NOT NULL,
+    seed INT(4) DEFAULT NULL,
     FOREIGN KEY(uemail)
     REFERENCES users(email),
     FOREIGN KEY(tournamentId)
@@ -87,11 +95,11 @@ CREATE TABLE teamparticipates (
     REFERENCES matches(id)
 );
 
-''' Data Tests
+/* Data Tests
 INSERT INTO users VALUES("dli357@gatech.edu", "xXxhaxx0rxXx", "Dennis Li", TRUE);
 SELECT * FROM users WHERE email = 'dli357@gatech.edu' AND passw = 'xXxhaxx0rxXx'
-'''
+*/
 
-''' !!!! Warning Kill Switch !!!! Use to clear tables
+/* !!!! Warning Kill Switch !!!! Use to clear tables
 drop schema tournamentbuzz
-'''
+*/
