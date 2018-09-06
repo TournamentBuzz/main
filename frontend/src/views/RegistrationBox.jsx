@@ -25,25 +25,49 @@ class RegistrationBox extends React.Component {
       submitted: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.passwordsMatch = this.passwordsMatch.bind(this);
+    this.canSubmit = this.canSubmit.bind(this);
+    this.allFieldsComplete = this.allFieldsComplete.bind(this);
   }
 
   handleChange(e) {
-    this.setState(
-      {
-        [e.target.name]: e.target.value
-      }
-    )
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  }
+
+  passwordsMatch() {
+    return this.state.regPassword === this.state.regPasswordConfirm;
+  }
+
+  allFieldsComplete() {
+    return (
+      this.state.regName &&
+      this.state.regEmail &&
+      this.state.regPassword &&
+      this.state.regPasswordConfirm
+    );
+  }
+
+  canSubmit() {
+    return this.passwordsMatch() && this.allFieldsComplete();
   }
 
   handleFormSubmit(e) {
     e.preventDefault();
     this.setState({ submitted: true });
     console.log("submitted");
-    if (this.state.regName && this.state.regEmail && this.state.regPassword && this.state.regPasswordConfirm) {
+    if (
+      this.state.regName &&
+      this.state.regEmail &&
+      this.state.regPassword &&
+      this.state.regPasswordConfirm
+    ) {
       console.log(this.state.regName);
       console.log(this.state.regEmail);
       console.log(this.state.regPassword);
-      console.log(this.state.regPasswordConfirm)
+      console.log(this.state.regPasswordConfirm);
     }
   }
 
@@ -64,8 +88,12 @@ class RegistrationBox extends React.Component {
                       labelText="Name"
                       id="regName"
                       name="regName"
-                      onChange={this.handleChange.bind(this)}
-                      formHelperText={(this.state.submitted && !this.state.regName) ? "Name is required" : undefined }
+                      onChange={this.handleChange}
+                      formHelperText={
+                        this.state.submitted && !this.state.regName
+                          ? "Name is required"
+                          : undefined
+                      }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -84,8 +112,12 @@ class RegistrationBox extends React.Component {
                       labelText="Email"
                       id="regEmail"
                       name="regEmail"
-                      onChange={this.handleChange.bind(this)}
-                      formHelperText={(this.state.submitted && !this.state.regEmail) ? "Email is required" : undefined }
+                      onChange={this.handleChange}
+                      formHelperText={
+                        this.state.submitted && !this.state.regEmail
+                          ? "Email is required"
+                          : undefined
+                      }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -102,8 +134,12 @@ class RegistrationBox extends React.Component {
                       labelText="Password"
                       id="regPassword"
                       name="regPassword"
-                      onChange={this.handleChange.bind(this)}
-                      formHelperText={(this.state.submitted && !this.state.regPassword) ? "Password is required" : undefined }
+                      onChange={this.handleChange}
+                      formHelperText={
+                        this.state.submitted && !this.state.regPassword
+                          ? "Password is required"
+                          : undefined
+                      }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -120,8 +156,12 @@ class RegistrationBox extends React.Component {
                       labelText="Confirm Password"
                       id="regPasswordConfirm"
                       name="regPasswordConfirm"
-                      onChange={this.handleChange.bind(this)}
-                      formHelperText={(this.state.submitted && !this.state.regPasswordConfirm) ? "Confirm password is required" : undefined }
+                      onChange={this.handleChange}
+                      formHelperText={
+                        this.state.submitted && !this.state.regPasswordConfirm
+                          ? "Confirm password is required"
+                          : undefined
+                      }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -136,7 +176,14 @@ class RegistrationBox extends React.Component {
                     />
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg" value="submit" type="submit">
+                    <Button
+                      simple
+                      color="primary"
+                      size="lg"
+                      value="submit"
+                      type="submit"
+                      disabled={!this.canSubmit()}
+                    >
                       Register
                     </Button>
                   </CardFooter>
