@@ -2,6 +2,7 @@ import React from "react";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import FormHelperText from "@material-ui/core/FormHelperText";
 // @material-ui/icons
 import { Email, LockOutlined, AccountCircle } from "@material-ui/icons";
 // core components
@@ -16,19 +17,23 @@ import CustomInput from "components/CustomInput/CustomInput.jsx";
 
 import registrationBoxStyle from "assets/jss/views/registrationBoxStyle.jsx";
 
+import UserAuth from "components/API/UserAuth";
+
 class RegistrationBox extends React.Component {
   constructor(props) {
     super(props);
     // use this to make the card to appear after the page has been rendered
     this.state = {
       cardAnimaton: "",
-      submitted: false
+      submitted: false,
+      formError: ""
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.passwordsMatch = this.passwordsMatch.bind(this);
     this.canSubmit = this.canSubmit.bind(this);
     this.allFieldsComplete = this.allFieldsComplete.bind(this);
+    this.userAuth = new UserAuth();
   }
 
   handleChange(e) {
@@ -54,20 +59,17 @@ class RegistrationBox extends React.Component {
     return this.passwordsMatch() && this.allFieldsComplete();
   }
 
-  handleFormSubmit(e) {
+  async handleFormSubmit(e) {
     e.preventDefault();
+    if (!this.canSubmit()) return;
     this.setState({ submitted: true });
     console.log("submitted");
-    if (
-      this.state.regName &&
-      this.state.regEmail &&
-      this.state.regPassword &&
-      this.state.regPasswordConfirm
-    ) {
-      console.log(this.state.regName);
-      console.log(this.state.regEmail);
-      console.log(this.state.regPassword);
-      console.log(this.state.regPasswordConfirm);
+    try {
+      const { regName, regEmail, regPassword } = this.state;
+      this.userAuth.register(regName, regEmail, regPassword);
+      window.location.reload();
+    } catch (error) {
+      this.setState({ formError: error.message });
     }
   }
 
@@ -84,6 +86,9 @@ class RegistrationBox extends React.Component {
                     <h2>Register</h2>
                   </CardHeader>
                   <CardBody>
+                    <FormHelperText error>
+                      {this.state.formError}
+                    </FormHelperText>
                     <CustomInput
                       labelText="Name"
                       id="regName"
