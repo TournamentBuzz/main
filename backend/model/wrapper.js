@@ -24,7 +24,7 @@ function userExists(connection, email) {
     })
 }
 
-function shouldLogin(connection, email, password) {
+function checkCredentials(connection, email, password) {
     var query = 'SELECT passw FROM users WHERE email = ' + email
     connection.query(query, function (err, rows, fields) {
         if (err) {

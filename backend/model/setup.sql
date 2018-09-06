@@ -3,9 +3,9 @@ USE tournamentbuzz;
 
 CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE CHECK(email REGEXP '^[A-Za-z0-9][A-Za-z0-9]*@[A-Za-z0-9][A-Za-z0-9]*\\.[A-Za-z0-9]*$'),
-  passw VARCHAR(255) NOT NULL CHECK(passw LIKE '%________%'),
-  uname VARCHAR(60),
-  sadmin BOOL DEFAULT FALSE NOT NULL, 
+  password VARCHAR(255) NOT NULL CHECK(passw LIKE '%________%'),
+  username VARCHAR(60),
+  admin BOOL DEFAULT FALSE NOT NULL, 
   PRIMARY KEY(email)
 );
 
@@ -16,8 +16,8 @@ CREATE TABLE tournaments (
     teamEvent BOOL NOT NULL DEFAULT FALSE,
     location VARCHAR(255) DEFAULT NULL,
     scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
-    tname VARCHAR(255) DEFAULT NULL,
-    bracketType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+    tournamentName VARCHAR(255) DEFAULT NULL,
+    tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
     entryCost INT(5) NOT NULL DEFAULT 0,
     maxParticipants INT(5) NOT NULL DEFAULT 16,
     startDate DATE DEFAULT NULL,
@@ -31,8 +31,8 @@ CREATE TABLE matches (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
     location VARCHAR(255) DEFAULT NULL,
     score VARCHAR(255) DEFAULT NULL,
-    mtime DATETIME DEFAULT NULL,
-    mname VARCHAR(255) DEFAULT NULL,
+    matchTime DATETIME DEFAULT NULL,
+    matchName VARCHAR(255) DEFAULT NULL,
     tournament INT(10) NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
@@ -41,7 +41,7 @@ CREATE TABLE matches (
 
 CREATE TABLE teams (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
-    tname VARCHAR(255) CHECK(NOT EXISTS(SELECT * FROM teamparticipates WHERE teamname = tname)),
+    teamName VARCHAR(255) CHECK(NOT EXISTS(SELECT * FROM teamparticipates WHERE teamname = tname)),
     leader VARCHAR(255) NOT NULL,
     tournament INT(10) NOT NULL,
     PRIMARY KEY(id),
@@ -51,41 +51,41 @@ CREATE TABLE teams (
     REFERENCES tournaments(id)
 );
 
-CREATE TABLE members (
-	uemail VARCHAR(255) NOT NULL,
+CREATE TABLE teamMembers (
+	userEmail VARCHAR(255) NOT NULL,
     teamId INT(12) NOT NULL,
     invited BOOL NOT NULL DEFAULT FALSE,
     approved BOOL NOT NULL DEFAULT FALSE,
-	PRIMARY KEY(uemail, teamId),
-    FOREIGN KEY(uemail)
+	PRIMARY KEY(userEmail, teamId),
+    FOREIGN KEY(userEmail)
     REFERENCES users(email),
     FOREIGN KEY(teamId)
     REFERENCES teams(id)
 );
 
-CREATE TABLE partof (
-	uemail VARCHAR(255) NOT NULL,
+CREATE TABLE participates (
+	userEmail VARCHAR(255) NOT NULL,
     tournamentId INT(12) NOT NULL,
-    urole ENUM('Organizer', 'Referee', 'Participant') DEFAULT 'Participant' NOT NULL,
+    userRole ENUM('Organizer', 'Referee', 'Participant') DEFAULT 'Participant' NOT NULL,
     seed INT(4) DEFAULT NULL,
-    FOREIGN KEY(uemail)
+    FOREIGN KEY(userEmail)
     REFERENCES users(email),
     FOREIGN KEY(tournamentId)
     REFERENCES tournaments(id),
-    PRIMARY KEY(uemail, tournamentId)
+    PRIMARY KEY(userEmail, tournamentId)
 );
 
-CREATE TABLE userparticipates (
-	uemail VARCHAR(255) NOT NULL,
+CREATE TABLE userPlays (
+	userEmail VARCHAR(255) NOT NULL,
     matchId INT(12) NOT NULL,
-	PRIMARY KEY(uemail, matchId),
-    FOREIGN KEY(uemail)
+	PRIMARY KEY(userEmail, matchId),
+    FOREIGN KEY(userEmail)
     REFERENCES users(email),
     FOREIGN KEY(matchId)
     REFERENCES matches(id)
 );
 
-CREATE TABLE teamparticipates (
+CREATE TABLE teamPlays (
 	teamId INT(12) NOT NULL,
     matchId INT(12) NOT NULL,
 	PRIMARY KEY(teamId, matchId),
@@ -94,12 +94,3 @@ CREATE TABLE teamparticipates (
     FOREIGN KEY(matchId)
     REFERENCES matches(id)
 );
-
-/* Data Tests
-INSERT INTO users VALUES("dli357@gatech.edu", "xXxhaxx0rxXx", "Dennis Li", TRUE);
-SELECT * FROM users WHERE email = 'dli357@gatech.edu' AND passw = 'xXxhaxx0rxXx'
-*/
-
-/* !!!! Warning Kill Switch !!!! Use to clear tables
-drop schema tournamentbuzz
-*/
