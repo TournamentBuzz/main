@@ -66,7 +66,7 @@ class RegistrationBox extends React.Component {
     console.log("submitted");
     try {
       const { regName, regEmail, regPassword } = this.state;
-      this.userAuth.register(regName, regEmail, regPassword);
+      await this.userAuth.register(regName, regEmail, regPassword);
       window.location.reload();
     } catch (error) {
       this.setState({ formError: error.message });
