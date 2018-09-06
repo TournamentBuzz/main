@@ -16,11 +16,16 @@ beforeEach(() => {
 
 describe("login", () => {
   it("sends credentials", async () => {
-    await userAuth.login(email, password);
-    const [uri, request] = fetch.mock.calls[0];
-    expect(uri).toMatch(/\/user\/login$/);
-    expect(request.method).toEqual("POST");
-    expect(JSON.parse(request.body)).toMatchObject({ email, password });
+    try {
+      await userAuth.login(email, password);
+    } catch (error) {
+      // pass
+    } finally {
+      const [uri, request] = fetch.mock.calls[0];
+      expect(uri).toMatch(/\/user\/login$/);
+      expect(request.method).toEqual("POST");
+      expect(JSON.parse(request.body)).toMatchObject({ email, password });
+    }
   });
 
   it("receives and sets a jwt token on validation", async () => {
@@ -32,7 +37,10 @@ describe("login", () => {
 
   it("responds to invalid credentials", async () => {
     fetch.once(JSON.stringify({ jwt }), { status: 403 });
-    await userAuth.login(email, password);
+    await expect(userAuth.login(email, password)).rejects.toHaveProperty(
+      "name",
+      "IncorrectAuthenticationError"
+    );
     expect(storage.getItem("userToken")).toBeUndefined();
     expect(userAuth.getToken()).toBeUndefined();
   });
@@ -40,11 +48,16 @@ describe("login", () => {
 
 describe("register", () => {
   it("sends registration", async () => {
-    await userAuth.register(name, email, password);
-    const [uri, request] = fetch.mock.calls[0];
-    expect(uri).toMatch(/\/user\/register$/);
-    expect(request.method).toEqual("POST");
-    expect(JSON.parse(request.body)).toMatchObject({ email, password, name });
+    try {
+      await userAuth.register(name, email, password);
+    } catch (error) {
+      // pass
+    } finally {
+      const [uri, request] = fetch.mock.calls[0];
+      expect(uri).toMatch(/\/user\/register$/);
+      expect(request.method).toEqual("POST");
+      expect(JSON.parse(request.body)).toMatchObject({ email, password, name });
+    }
   });
 
   it("receives and sets a jwt token on validation", async () => {
@@ -56,7 +69,10 @@ describe("register", () => {
 
   it("responds to invalid registration", async () => {
     fetch.once("", { status: 403 });
-    await userAuth.login(name, email, password);
+    await expect(userAuth.login(name, email, password)).rejects.toHaveProperty(
+      "name",
+      "IncorrectAuthenticationError"
+    );
     expect(storage.getItem("userToken")).toBeUndefined();
     expect(userAuth.getToken()).toBeUndefined();
   });
@@ -82,10 +98,23 @@ describe("renew", () => {
     expect(userAuth.getToken()).toEqual(newJwt);
   });
 
-  it("responds to invalid renewal request", async () => {
+  it("logs out on invalid renewal request", async () => {
     fetch.once("", { status: 403 });
     await userAuth.renew();
     expect(storage.getItem("userToken")).toBeUndefined();
     expect(userAuth.getToken()).toBeUndefined();
   });
+});
+
+it("logout", () => {
+  storage.setItem("userToken", jwt);
+  userAuth.logout();
+  expect(storage.getItem("userToken")).toBeUndefined();
+  expect(userAuth.getToken()).toBeUndefined();
+});
+
+it("loggedIn", () => {
+  expect(userAuth.loggedIn()).toBe(false);
+  storage.setItem("userToken", jwt);
+  expect(userAuth.loggedIn()).toBe(true);
 });

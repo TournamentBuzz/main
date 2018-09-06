@@ -1,6 +1,13 @@
 import decode from "jwt-decode";
 
-class UserAuth {
+export class IncorrectAuthenticationError extends Error {
+  constructor() {
+    super("Incorrect Username or Password");
+    this.name = "IncorrectAuthenticationError";
+  }
+}
+
+export default class UserAuth {
   constructor(storage = localStorage, domain = "http://localhost:8080") {
     this.storage = storage;
     this.domain = domain;
@@ -26,15 +33,14 @@ class UserAuth {
         this.setToken(json.jwt);
       } else {
         // API returned unauthorized
-        var noAuthError = new Error("Incorrect Username or Password");
-        throw noAuthError;
+        throw new IncorrectAuthenticationError();
       }
     } catch (error) {
       // cannot connect to API
-      if (typeof noAuthError === "undefined") {
-        var error = new Error("Unexpected error: Please try again");
+      if (error instanceof IncorrectAuthenticationError) {
+        throw error;
       }
-      throw error;
+      throw new Error("Unexpected error: Please try again");
     }
   }
 
@@ -105,15 +111,9 @@ class UserAuth {
   isTokenExpired(token) {
     try {
       const decoded = decode(token);
-      if (decoded.exp < Date.now() / 1000) {
-        return true;
-      } else {
-        return false;
-      }
+      return decoded.exp < Date.now() / 1000;
     } catch (err) {
       return false;
     }
   }
 }
-
-export default UserAuth;
