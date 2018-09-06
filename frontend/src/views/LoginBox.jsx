@@ -2,6 +2,7 @@ import React from "react";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import FormHelperText from "@material-ui/core/FormHelperText";
 // @material-ui/icons
 import { Email, LockOutlined } from "@material-ui/icons";
 // core components
@@ -15,6 +16,7 @@ import CardFooter from "components/Card/CardFooter.jsx";
 import CustomInput from "components/CustomInput/CustomInput.jsx";
 
 import loginBoxStyle from "assets/jss/views/loginBoxStyle.jsx";
+import UserAuth from "components/API/UserAuth.js";
 
 class LoginBox extends React.Component {
   constructor(props) {
@@ -22,17 +24,17 @@ class LoginBox extends React.Component {
     // use this to make the card to appear after the page has been rendered
     this.state = {
       cardAnimaton: "",
-      submitted: false
+      submitted: false,
+      formError: ""
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    this.UserAuth = new UserAuth();
   }
 
   handleChange(e) {
-    this.setState(
-      {
-        [e.target.name]: e.target.value
-      }
-    )
+    this.setState({
+      [e.target.name]: e.target.value
+    });
   }
 
   handleFormSubmit(e) {
@@ -42,6 +44,13 @@ class LoginBox extends React.Component {
     if (this.state.loginEmail && this.state.loginPassword) {
       console.log(this.state.loginEmail);
       console.log(this.state.loginPassword);
+      this.UserAuth.login(this.state.loginEmail, this.state.loginPassword)
+        .then(res => {
+          window.location.reload();
+        })
+        .catch(err => {
+          this.setState({ formError: err.message });
+        });
     }
   }
 
@@ -58,12 +67,19 @@ class LoginBox extends React.Component {
                     <h2>Login</h2>
                   </CardHeader>
                   <CardBody>
+                    <FormHelperText error>
+                      {this.state.formError}
+                    </FormHelperText>
                     <CustomInput
                       labelText="Email"
                       id="loginEmail"
                       name="loginEmail"
                       onChange={this.handleChange.bind(this)}
-                      formHelperText={(this.state.submitted && !this.state.loginEmail) ? "Email is required" : undefined }
+                      formHelperText={
+                        this.state.submitted && !this.state.loginEmail
+                          ? "Email is required"
+                          : undefined
+                      }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -81,7 +97,11 @@ class LoginBox extends React.Component {
                       id="loginPassword"
                       name="loginPassword"
                       onChange={this.handleChange.bind(this)}
-                      formHelperText={(this.state.submitted && !this.state.loginPassword) ? "Password is required" : undefined }
+                      formHelperText={
+                        this.state.submitted && !this.state.loginPassword
+                          ? "Password is required"
+                          : undefined
+                      }
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -96,7 +116,13 @@ class LoginBox extends React.Component {
                     />
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg" value="submit" type="submit">
+                    <Button
+                      simple
+                      color="primary"
+                      size="lg"
+                      value="submit"
+                      type="submit"
+                    >
                       Login
                     </Button>
                   </CardFooter>

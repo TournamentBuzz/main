@@ -1,5 +1,7 @@
+import decode from "jwt-decode";
+
 class UserAuth {
-  constructor(storage = localStorage, domain = "http://localhost:8000") {
+  constructor(storage = localStorage, domain = "http://localhost:8080") {
     this.storage = storage;
     this.domain = domain;
     this.login = this.login.bind(this);
@@ -23,10 +25,16 @@ class UserAuth {
         const json = await res.json();
         this.setToken(json.jwt);
       } else {
-        // something went wrong
+        // API returned unauthorized
+        var noAuthError = new Error("Incorrect Username or Password");
+        throw noAuthError;
       }
     } catch (error) {
-      // something else went wrong
+      // cannot connect to API
+      if (typeof noAuthError === "undefined") {
+        var error = new Error("Unexpected error: Please try again");
+      }
+      throw error;
     }
   }
 
@@ -86,6 +94,25 @@ class UserAuth {
 
   getToken() {
     return this.storage.getItem("userToken");
+  }
+
+  loggedIn() {
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired(token);
+  }
+
+  // returns true if token is not expired
+  isTokenExpired(token) {
+    try {
+      const decoded = decode(token);
+      if (decoded.exp < Date.now() / 1000) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
   }
 }
 

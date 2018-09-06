@@ -10,11 +10,16 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 // core components
 import headerLinksStyle from "assets/jss/components/headerLinksStyle.jsx";
+import UserAuth from "components/API/UserAuth.js";
 
 class AuthHeaderLinks extends React.Component {
-  state = {
-    anchorEl: null
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      anchorEl: null
+    };
+    this.UserAuth = new UserAuth();
+  }
 
   handleMenu = event => {
     this.setState({ anchorEl: event.currentTarget });
@@ -22,6 +27,12 @@ class AuthHeaderLinks extends React.Component {
 
   handleClose = () => {
     this.setState({ anchorEl: null });
+  };
+
+  handleLogout = () => {
+    this.setState({ anchorEl: null });
+    this.UserAuth.logout();
+    window.location.reload();
   };
 
   render() {
@@ -56,7 +67,7 @@ class AuthHeaderLinks extends React.Component {
                 onClose={this.handleClose}
               >
                 <MenuItem onClick={this.handleClose}>Settings</MenuItem>
-                <MenuItem onClick={this.handleClose}>Sign out</MenuItem>
+                <MenuItem onClick={this.handleLogout}>Sign out</MenuItem>
               </Menu>
             </div>
           </ListItem>
