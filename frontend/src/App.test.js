@@ -3,7 +3,6 @@ import { shallow } from "enzyme";
 import App from "./App";
 import HomePage from "views/HomePage";
 
-it("renders <HomePage /> without crashing", () => {
+it("renders without crashing", () => {
   const wrapper = shallow(<App />);
-  expect(wrapper.find(HomePage)).toHaveLength(1);
 });
