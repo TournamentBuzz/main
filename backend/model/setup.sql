@@ -41,7 +41,7 @@ CREATE TABLE matches (
 
 CREATE TABLE teams (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
-    teamName VARCHAR(255) CHECK(NOT EXISTS(SELECT * FROM teamparticipates WHERE teamname = tname)),
+    teamName VARCHAR(255) /*CHECK(NOT EXISTS(SELECT * FROM teamparticipates WHERE teamname = tname))*/,
     leader VARCHAR(255) NOT NULL,
     tournament INT(10) NOT NULL,
     PRIMARY KEY(id),
