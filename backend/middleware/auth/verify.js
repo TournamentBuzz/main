@@ -4,10 +4,11 @@ var config = require('../../config')
 
 function verifyToken(req, res, next) {
     try {
-        jwt.verify(retrieveToken(req), config.authConfig.authKey);
+        const payload = jwt.verify(retrieveToken(req), config.authConfig.authKey);
+        req.headers.id = payload.id;
     } catch (e) {
-        res.send(JSON.stringify({status: 401, message: e.message}));
-        return;
+        e.status = 401;
+        next(e);
     }
     next();
 }

@@ -1,12 +1,16 @@
 var express = require('express');
 var path = require('path');
 //var favicon = require('serve-favicon');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
 
 var config = require('./config');
-
 var user = require('./controllers/user');
+
+// logging
+var logger = require('morgan');
+var log4js = require('log4js').getLogger();
+if (config.serverConfig.env === 'development') {
+  log4js.level = 'debug';
+}
 
 var app = express();
 
@@ -16,8 +20,7 @@ app.set('env', config.serverConfig.env);
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json())
 
 app.use(function(req, res, next) {
@@ -50,6 +53,12 @@ app.use(function(err, req, res, next) {
     // don't leak error if not in development
     if (req.app.get('env') !== 'development' && err.status === 500) {
         err.message = 'Internal Server Error';
+    } else {
+      if (err.status < 500) {
+        log4js.warn(err.message);
+      } else {
+        log4js.error(err);
+      }
     }
     res.status(err.status);
     res.send(JSON.stringify({status: err.status, message: err.message}));

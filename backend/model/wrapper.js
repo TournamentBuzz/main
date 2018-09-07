@@ -1,44 +1,68 @@
-var bcrypt = require('bcrypt')
-const saltRounds = 10
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
 
-function createUser(connection, uname, email, password, admin) {
-    bcrypt.hash(password, saltRounds, function (err, hash) {
-        var query = 'INSERT INTO users VALUES(' + email + ', ' + hash + ', ' + uname +  ', ' + admin + ')'
-        connection.query(query, function (err, rows, fields) {
+async function createUser(connection, uname, email, password, admin) {
+    return bcrypt.hash(password, saltRounds).then(function(hash) {
+        const query = 'INSERT INTO users(email, password, userName, admin) VALUES(?, ?, ?, ?)';
+        return new Promise(function(resolve, reject) {
+            connection.query(query, [email, hash, uname, admin], function(err, rows, fields) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    });
+}
+
+async function userExists(connection, email) {
+    const query = 'SELECT userName FROM users WHERE email = ?;';
+    return new Promise(function(resolve, reject) {
+        connection.query(query, [email], function (err, rows, fields) {
             if (err) {
-                throw "Failed to execute create user SQL"
+                reject(err);
             } else {
-                return true
+                resolve(rows.length > 0);
             }
-        })
-    })
+        });
+    });
 }
 
-function userExists(connection, email) {
-    var query = 'SELECT uname FROM users WHERE email = ' + email
-    connection.query(query, function (err, rows, fields) {
-        if (err) {
-            throw "Failed to execute user exists SQL"
-        }
-        return (rows.count > 0)
-    })
-}
-
-function checkCredentials(connection, email, password) {
-    var query = 'SELECT passw FROM users WHERE email = ' + email
-    connection.query(query, function (err, rows, fields) {
-        if (err) {
-            throw "Failed to execute login check SQL"
-        }
+async function checkCredentials(connection, email, password) {
+    const query = 'SELECT password FROM users WHERE email = ?;';
+    return new Promise(function(resolve, reject) {
+        connection.query(query, [email], function(err, rows, fields) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    }).then(function(rows) {
         if (rows.length > 0) {
-            bcrypt.compare(password, rows[0], function(err, res) {
-                return res
-            })
+            return bcrypt.compare(password, rows[0].password);
+        } else {
+            return false;
         }
-        return false
-    })
+    });
+};
+
+async function executeSQL(connection, sql) {
+    return new Promise(function(resolve, reject) {
+        connection.query(sql, function(err, rows, fields) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows, fields);
+            }
+        });
+    });
 }
 
-function executeSQL(connection, sql, callBack) {
-    connection.query(sql, callBack(err, rows, fields))
-}
+module.exports = {
+    checkCredentials: checkCredentials,
+    createUser: createUser,
+    userExists: userExists,
+    executeSQL: executeSQL
+};

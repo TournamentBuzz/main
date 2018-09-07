@@ -7,8 +7,8 @@ var config = require('../../config');
 router.get('', function(req, res, next) {
     var token = jwt.sign(
         {
-            id: 'testuser@gatech.edu'
-        }, config.authConfig.authKey, { expiresIn: '15m' });
+            id: req.headers.id
+        }, config.authConfig.authKey, { expiresIn: config.authConfig.expiresIn });
     res.status(200);
     res.send(JSON.stringify({jwt: token}));
 });
