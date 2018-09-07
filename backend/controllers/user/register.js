@@ -13,7 +13,7 @@ router.post('', function(req, res, next) {
     		err.status = 409;
     		throw err;
     	} else {
-    		return sqlwrapper.createUser(c, req.body.uname, req.body.email, req.body.password, req.body.admin);
+    		return sqlwrapper.createUser(c, req.body.name, req.body.email, req.body.password, 0);
     	}
     }).then(function() {
         var token = jwt.sign(
