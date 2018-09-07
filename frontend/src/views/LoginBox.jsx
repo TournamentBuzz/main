@@ -25,7 +25,8 @@ class LoginBox extends React.Component {
     this.state = {
       cardAnimaton: "",
       submitted: false,
-      formError: ""
+      formError: "",
+      APIBusy: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.UserAuth = new UserAuth();
@@ -37,21 +38,17 @@ class LoginBox extends React.Component {
     });
   }
 
-  handleFormSubmit(e) {
+  async handleFormSubmit(e) {
     e.preventDefault();
-    this.setState({ submitted: true });
-    console.log("submitted");
-    if (this.state.loginEmail && this.state.loginPassword) {
-      console.log(this.state.loginEmail);
-      console.log(this.state.loginPassword);
-      this.UserAuth.login(this.state.loginEmail, this.state.loginPassword)
-        .then(res => {
-          window.location.reload();
-        })
-        .catch(err => {
-          this.setState({ formError: err.message });
-        });
+    this.setState({ submitted: true, APIBusy: true });
+    try {
+      const { loginEmail, loginPassword } = this.state;
+      await this.UserAuth.login(loginEmail, loginPassword);
+      window.location.reload();
+    } catch (error) {
+      this.setState({ formError: error.message });
     }
+    this.setState({ APIBusy: false });
   }
 
   render() {

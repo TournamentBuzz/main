@@ -26,7 +26,8 @@ class RegistrationBox extends React.Component {
     this.state = {
       cardAnimaton: "",
       submitted: false,
-      formError: ""
+      formError: "",
+      APIBusy: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -56,20 +57,21 @@ class RegistrationBox extends React.Component {
   }
 
   canSubmit() {
-    return this.passwordsMatch() && this.allFieldsComplete();
+    return (
+      this.passwordsMatch() && this.allFieldsComplete() && !this.state.APIBusy
+    );
   }
 
   async handleFormSubmit(e) {
     e.preventDefault();
     if (!this.canSubmit()) return;
-    this.setState({ submitted: true });
-    console.log("submitted");
+    this.setState({ submitted: true, APIBusy: true });
     try {
       const { regName, regEmail, regPassword } = this.state;
       await this.userAuth.register(regName, regEmail, regPassword);
       window.location.reload();
     } catch (error) {
-      this.setState({ formError: error.message });
+      this.setState({ formError: error.message, APIBusy: false });
     }
   }
 
