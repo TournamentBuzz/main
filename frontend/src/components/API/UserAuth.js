@@ -8,9 +8,8 @@ export class IncorrectAuthenticationError extends Error {
 }
 
 export default class UserAuth {
-  constructor(storage = localStorage, domain = "http://localhost:8080") {
+  constructor(storage = localStorage) {
     this.storage = storage;
-    this.domain = domain;
     this.login = this.login.bind(this);
     this.register = this.register.bind(this);
     this.renew = this.renew.bind(this);
@@ -19,7 +18,7 @@ export default class UserAuth {
 
   async login(email, password) {
     try {
-      const res = await fetch(`${this.domain}/user/login`, {
+      const res = await fetch("/user/login", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -46,7 +45,7 @@ export default class UserAuth {
 
   async register(name, email, password) {
     try {
-      const res = await fetch(`${this.domain}/user/register`, {
+      const res = await fetch("/user/register", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -70,7 +69,7 @@ export default class UserAuth {
     const token = this.getToken();
     if (!token) return;
     try {
-      const res = await fetch(`${this.domain}/user/renew`, {
+      const res = await fetch("/user/renew", {
         method: "GET",
         headers: {
           Authorization: token,

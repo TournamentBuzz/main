@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "proxy": "localhost:8080",
   "dependencies": {
     "@material-ui/core": "^3.0.0",
     "@material-ui/icons": "^3.0.0",
