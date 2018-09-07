@@ -22,7 +22,7 @@ describe("login", () => {
       // pass
     } finally {
       const [uri, request] = fetch.mock.calls[0];
-      expect(uri).toMatch(/\/user\/login$/);
+      expect(uri).toEqual("/user/login");
       expect(request.method).toEqual("POST");
       expect(JSON.parse(request.body)).toMatchObject({ email, password });
     }
@@ -54,7 +54,7 @@ describe("register", () => {
       // pass
     } finally {
       const [uri, request] = fetch.mock.calls[0];
-      expect(uri).toMatch(/\/user\/register$/);
+      expect(uri).toEqual("/user/register");
       expect(request.method).toEqual("POST");
       expect(JSON.parse(request.body)).toMatchObject({ email, password, name });
     }
@@ -86,7 +86,7 @@ describe("renew", () => {
   it("sends renewal", async () => {
     await userAuth.renew();
     const [uri, request] = fetch.mock.calls[0];
-    expect(uri).toMatch(/\/user\/renew$/);
+    expect(uri).toEqual("/user/renew");
     expect(request.method).toEqual("GET");
     expect(request.headers["Authorization"]).toEqual(jwt);
   });
