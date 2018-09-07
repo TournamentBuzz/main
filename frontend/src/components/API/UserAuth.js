@@ -7,6 +7,13 @@ export class IncorrectAuthenticationError extends Error {
   }
 }
 
+export class EmailRegisteredError extends Error {
+  constructor() {
+    super("Email already registered");
+    this.name = "EmailRegisteredError";
+  }
+}
+
 export default class UserAuth {
   constructor(storage = localStorage) {
     this.storage = storage;
@@ -26,7 +33,6 @@ export default class UserAuth {
         },
         body: JSON.stringify({ email, password })
       });
-
       if (res.ok) {
         const json = await res.json();
         this.setToken(json.jwt);
@@ -35,10 +41,10 @@ export default class UserAuth {
         throw new IncorrectAuthenticationError();
       }
     } catch (error) {
-      // cannot connect to API
-      if (error instanceof IncorrectAuthenticationError) {
+      if (error.name === "IncorrectAuthenticationError") {
         throw error;
       }
+      // cannot connect to API
       throw new Error("Unexpected error: Please try again");
     }
   }
@@ -58,10 +64,15 @@ export default class UserAuth {
         const json = await res.json();
         this.setToken(json.jwt);
       } else {
-        // something went wrong
+        // User already registered
+        throw new EmailRegisteredError();
       }
     } catch (error) {
-      // something else went wrong
+      if (error.name === "EmailRegisteredError") {
+        throw error;
+      }
+      // cannot connect to API
+      throw new Error("Unexpected error: Please try again");
     }
   }
 
