@@ -39,6 +39,7 @@ module.exports = {
     "no-useless-constructor": "warn",
     "no-useless-rename": "warn",
     "symbol-description": "warn",
+    "promise/no-return-in-finally": "warn",
 
     "no-template-curly-in-string": "error",
     "accessor-pairs": "error",
@@ -64,6 +65,8 @@ module.exports = {
     "prefer-const": "error",
     "prefer-numeric-literals": "error",
     "prefer-rest-params": "error",
-    "prefer-spread": "error"
+    "prefer-spread": "error",
+    "promise/valid-params": "error",
+    "import/no-extraneous-dependencies": "error"
   }
 };
