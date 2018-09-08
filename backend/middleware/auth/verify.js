@@ -1,10 +1,9 @@
-var express = require('express');
-var jwt = require('jsonwebtoken');
-var config = require('../../config')
+const express = require('express');
+const jwt = require('jsonwebtoken');
 
 function verifyToken(req, res, next) {
     try {
-        const payload = jwt.verify(retrieveToken(req), config.authConfig.authKey);
+        const payload = jwt.verify(retrieveToken(req), req.app.get('authConfig').authKey);
         req.headers.id = payload.id;
     } catch (e) {
         e.status = 401;
@@ -17,7 +16,7 @@ function retrieveToken(req) {
     if (!req.headers.authorization) {
         return null;
     }
-    var auth = req.headers.authorization.split(' ');
+    const auth = req.headers.authorization.split(' ');
     if (auth[0] === 'Bearer' && auth[1]) {
         return auth[1];
     }

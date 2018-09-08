@@ -1,21 +1,16 @@
-var mysql = require('mysql');
+const mysql = require('mysql');
 
-function connect(username, password) {
-    var connection = mysql.createConnection({
-        host: 'localhost',
+function connect(host, username, password, database) {
+    const connection = mysql.createConnection({
+        host: host,
         user: username,
         password: password,
-        database: "tournamentbuzz"
+        database: database
     });
     connection.connect();
     return connection;
 }
 
-function endConnection(connection) {
-    connection.end();
-}
-
 module.exports = {
     connect: connect,
-    endConnection: endConnection
 };

@@ -1,16 +1,14 @@
-var express = require('express');
-var jwt = require('jsonwebtoken');
-var router = express.Router();
-
-var config = require('../../config');
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const router = express.Router();
 
 router.get('', function(req, res, next) {
-    var token = jwt.sign(
+    const token = jwt.sign(
         {
             id: req.headers.id
-        }, config.authConfig.authKey, { expiresIn: config.authConfig.expiresIn });
+        }, req.app.get('authConfig').authKey, { expiresIn: req.app.get('authConfig').expiresIn });
     res.status(200);
-    res.send(JSON.stringify({jwt: token}));
+    res.json({jwt: token});
 });
 
 module.exports = router;
