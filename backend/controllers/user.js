@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var login = require('./user/login');
-var renew = require('./user/renew');
-var register = require('./user/register');
+const login = require('./user/login');
+const renew = require('./user/renew');
+const register = require('./user/register');
 
-var requireAuth = require('../middleware/auth/verify')
+const requireAuth = require('../middleware/auth/verify')
 
 router.use('/login', login);
 router.use('/renew', requireAuth, renew);

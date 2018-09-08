@@ -1,21 +1,25 @@
-var express = require('express');
-var path = require('path');
-//var favicon = require('serve-favicon');
+const express = require('express');
+const path = require('path');
+//const favicon = require('serve-favicon');
 
-var config = require('./config');
-var user = require('./controllers/user');
+const config = require('./config');
+const user = require('./controllers/user');
 
 // logging
-var logger = require('morgan');
-var log4js = require('log4js').getLogger();
+const logger = require('morgan');
+const log4js = require('log4js').getLogger();
 if (config.serverConfig.env === 'development') {
   log4js.level = 'debug';
 }
 
-var app = express();
+const app = express();
 
-// set running environment
-app.set('env', config.serverConfig.env);
+// set server config
+app.set('serverConfig', config.serverConfig);
+// set authentication config
+app.set('authConfig', config.authConfig);
+// set database config
+app.set('databaseConfig', config.databaseConfig);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -36,7 +40,7 @@ app.use('/user', user);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
@@ -45,13 +49,13 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    res.locals.error = req.app.get('serverConfig').env === 'development' ? err : {};
 
     // send back error
     err.status = err.status || 500;
 
     // don't leak error if not in development
-    if (req.app.get('env') !== 'development' && err.status === 500) {
+    if (req.app.get('serverConfig').env !== 'development' && err.status === 500) {
         err.message = 'Internal Server Error';
     } else {
       if (err.status < 500) {
@@ -61,15 +65,11 @@ app.use(function(err, req, res, next) {
       }
     }
     res.status(err.status);
-    res.send(JSON.stringify({status: err.status, message: err.message}));
+    res.json({status: err.status, message: err.message});
 });
 
 if (app.get('env') === 'development') {
     app.locals.pretty = true;
 }
-
-var port = config.serverConfig.port;
-app.listen(port);
-console.log('Server running at port ' + port);
 
 module.exports = app;

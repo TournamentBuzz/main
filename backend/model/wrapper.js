@@ -1,4 +1,4 @@
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 async function createUser(connection, uname, email, password, admin) {
@@ -48,9 +48,9 @@ async function checkCredentials(connection, email, password) {
     });
 };
 
-async function executeSQL(connection, sql) {
+async function executeSQL(connection, sql, varList) {
     return new Promise(function(resolve, reject) {
-        connection.query(sql, function(err, rows, fields) {
+        connection.query(sql, varList, function(err, rows, fields) {
             if (err) {
                 reject(err);
             } else {

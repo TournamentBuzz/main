@@ -1,20 +1,26 @@
-var express = require('express');
-var jwt = require('jsonwebtoken');
-var config = require('../../config');
-var sqlwrapper = require('../../model/wrapper');
-var connection = require('../../model/connect');
-var router = express.Router();
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const sqlwrapper = require('../../model/wrapper');
+const connection = require('../../model/connect');
+const router = express.Router();
 
 router.post('', function(req, res, next) {
-    var c = connection.connect(config.databaseConfig.username, config.databaseConfig.password);
+    if (!req.body || !req.body.email || !req.body.password) {
+        const err = new Error('Malformed Request');
+        err.status = 400;
+        next(err);
+        return;
+    }
+    const c = connection.connect(req.app.get('databaseConfig').host, 
+        req.app.get('databaseConfig').username, req.app.get('databaseConfig').password, req.app.get('databaseConfig').schema);
     sqlwrapper.checkCredentials(c, req.body.email, req.body.password).then(function(validCredentials) {
         if (validCredentials) {
-            var token = jwt.sign(
+            const token = jwt.sign(
                 {
                     id: req.body.email
-                }, config.authConfig.authKey, { expiresIn: config.authConfig.expiresIn });
+                }, req.app.get('authConfig').authKey, { expiresIn: req.app.get('authConfig').expiresIn });
             res.status(200);
-            res.send(JSON.stringify({jwt: token}));
+            res.json({jwt: token});
         } else {
             const err = new Error('Invalid Username or Password');
             err.status = 401;
