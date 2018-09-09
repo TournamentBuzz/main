@@ -60,7 +60,7 @@ module.exports = {
     "no-new-require": "error",
     "no-sync": "error",
     "camelcase": "error",
-    "no-confusing-error": "error",
+    "no-confusing-arrow": "error",
     "no-var": "error",
     "prefer-const": "error",
     "prefer-numeric-literals": "error",
