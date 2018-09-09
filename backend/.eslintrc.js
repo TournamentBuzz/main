@@ -40,11 +40,12 @@ module.exports = {
     "no-useless-rename": "warn",
     "symbol-description": "warn",
     "promise/no-return-in-finally": "warn",
+    "promise/always-return": "warn",
 
     "no-template-curly-in-string": "error",
     "accessor-pairs": "error",
     "array-callback-return": "error",
-    "eqeqeq": "error",
+    eqeqeq: "error",
     "no-eval": "error",
     "no-implied-eval": "error",
     "no-invalid-this": "error",
@@ -54,19 +55,27 @@ module.exports = {
     "no-unused-expressions": "error",
     "no-void": "error",
     "no-with": "error",
-    "radix": "error",
-    "strict": "error",
+    radix: "error",
+    strict: "error",
     "no-label-var": "error",
     "no-new-require": "error",
     "no-sync": "error",
-    "camelcase": "error",
+    camelcase: "error",
     "no-confusing-arrow": "error",
     "no-var": "error",
     "prefer-const": "error",
     "prefer-numeric-literals": "error",
     "prefer-rest-params": "error",
     "prefer-spread": "error",
+    "no-unused-vars": ["error", { args: "none" }],
     "promise/valid-params": "error",
     "import/no-extraneous-dependencies": "error"
-  }
+  },
+  overrides: [
+    {
+      files: "**/*.test.js",
+      env: { jest: true },
+      rules: { "no-console": "error" }
+    }
+  ]
 };
