@@ -36,9 +36,12 @@ export default class UserAuth {
       if (res.ok) {
         const json = await res.json();
         this.setToken(json.jwt);
-      } else {
+      } else if (res.status === 401) {
         // API returned unauthorized
         throw new IncorrectAuthenticationError();
+      } else {
+        // Other API error
+        throw new Error();
       }
     } catch (error) {
       if (error.name === "IncorrectAuthenticationError") {
@@ -63,9 +66,12 @@ export default class UserAuth {
       if (res.ok) {
         const json = await res.json();
         this.setToken(json.jwt);
-      } else {
+      } else if (res.status === 409) {
         // User already registered
         throw new EmailRegisteredError();
+      } else {
+        // Other API error
+        throw new Error();
       }
     } catch (error) {
       if (error.name === "EmailRegisteredError") {
@@ -105,7 +111,7 @@ export default class UserAuth {
   }
 
   setToken(userToken) {
-    this.storage.setItem("userToken", userToken);
+    this.storage.setItem("userToken", "Bearer " + userToken);
   }
 
   getToken() {

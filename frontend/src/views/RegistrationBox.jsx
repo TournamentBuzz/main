@@ -64,7 +64,17 @@ class RegistrationBox extends React.Component {
 
   async handleFormSubmit(e) {
     e.preventDefault();
-    if (!this.canSubmit()) return;
+    if (!this.passwordsMatch()) {
+      this.setState({
+        formError: "Your passwords don't match",
+        submitted: true
+      });
+      return;
+    }
+    if (!this.canSubmit()) {
+      this.setState({ formError: "", submitted: true });
+      return;
+    }
     this.setState({ submitted: true, APIBusy: true });
     try {
       const { regName, regEmail, regPassword } = this.state;
@@ -189,7 +199,6 @@ class RegistrationBox extends React.Component {
                       size="lg"
                       value="submit"
                       type="submit"
-                      disabled={!this.canSubmit()}
                     >
                       Register
                     </Button>
