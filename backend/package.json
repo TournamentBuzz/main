@@ -2,7 +2,7 @@
   "name": "tournament-buzz-backend",
   "version": "1.0.0",
   "description": "Backend for TournamentBuzz Junior Design Team 8107",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "dev": "node server.js",
     "test": "jest",
