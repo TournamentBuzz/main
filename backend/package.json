@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",
-    "test": "jest",
+    "lint": "prettier --write \"**/*.js\" & eslint \"**/*.js\"",
+    "eslint": "eslint \"**/*.js\"",
+    "prettier": "prettier --write \"**/*.js\"",
+    "test": "jest & eslint \"**/*.js\"",
     "precommit": "lint-staged"
   },
   "lint-staged": {

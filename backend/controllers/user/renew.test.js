@@ -19,7 +19,7 @@ describe("renew", () => {
       .set("id", expectedId)
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(function(res) {
+      .expect(res => {
         try {
           const payload = jwt.verify(
             res.body.jwt,

@@ -44,9 +44,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   });
   c.connect();
   const setupSchemaQuery = "CREATE SCHEMA " + temporarySchema + ";";
-  await sqlwrapper.executeSQL(c, setupSchemaQuery, []).catch(function(err) {
-    throw err;
-  });
+  await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
   const specC = mysql.createConnection({
     host: host,
@@ -62,11 +60,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         admin BOOL DEFAULT FALSE NOT NULL,
         PRIMARY KEY(email)
     );`;
-  await sqlwrapper
-    .executeSQL(specC, setupUsersTableQuery, [])
-    .catch(function(err) {
-      throw err;
-    });
+  await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
   specC.destroy();
 }
 
@@ -83,9 +77,7 @@ async function cleanupTemporarySchema(
   });
   c.connect();
   const setupSchemaQuery = "DROP SCHEMA " + temporarySchema + ";";
-  await sqlwrapper.executeSQL(c, setupSchemaQuery, []).catch(function(err) {
-    throw err;
-  });
+  await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
 }
 
@@ -142,7 +134,7 @@ describe("login", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(function(res) {
+      .expect(res => {
         try {
           const payload = jwt.verify(
             res.body.jwt,
@@ -179,7 +171,7 @@ describe("login", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(401)
-      .expect(function(res) {
+      .expect(res => {
         const expectedError = "Invalid Username or Password";
         if (res.body.message !== expectedError) {
           throw new Error(
@@ -205,7 +197,7 @@ describe("login", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(401)
-      .expect(function(res) {
+      .expect(res => {
         const expectedError = "Invalid Username or Password";
         if (res.body.message !== expectedError) {
           throw new Error(

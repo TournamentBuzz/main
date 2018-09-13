@@ -4,7 +4,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 
-router.get("", function(req, res, next) {
+router.get("", (req, res, next) => {
   const token = jwt.sign(
     {
       id: req.headers.id

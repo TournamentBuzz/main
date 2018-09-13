@@ -44,9 +44,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   });
   c.connect();
   const setupSchemaQuery = "CREATE SCHEMA " + temporarySchema + ";";
-  await sqlwrapper.executeSQL(c, setupSchemaQuery, []).catch(function(err) {
-    throw err;
-  });
+  await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
   const specC = mysql.createConnection({
     host: host,
@@ -62,11 +60,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         admin BOOL DEFAULT FALSE NOT NULL,
         PRIMARY KEY(email)
     );`;
-  await sqlwrapper
-    .executeSQL(specC, setupUsersTableQuery, [])
-    .catch(function(err) {
-      throw err;
-    });
+  await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
   specC.destroy();
 }
 
@@ -83,9 +77,7 @@ async function cleanupTemporarySchema(
   });
   c.connect();
   const setupSchemaQuery = "DROP SCHEMA " + temporarySchema + ";";
-  await sqlwrapper.executeSQL(c, setupSchemaQuery, []).catch(function(err) {
-    throw err;
-  });
+  await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
 }
 
@@ -158,18 +150,16 @@ describe("register", () => {
           databaseConfig.password,
           temporarySchema
         );
-        await sqlwrapper
-          .userExists(c, testUserEmail)
-          .then(function(userExists) {
-            if (!userExists) {
-              throw new Error("User was not actually created!");
-            }
-          })
-          .catch(function(err) {
-            throw new Error(
-              "Unexpected error while checking user existence: " + err.message
-            );
-          });
+        try {
+          const userExists = await sqlwrapper.userExists(c, testUserEmail);
+          if (!userExists) {
+            throw new Error("User was not actually created!");
+          }
+        } catch (err) {
+          throw new Error(
+            "Unexpected error while checking user existence: " + err.message
+          );
+        }
       });
     done();
   });
@@ -187,7 +177,7 @@ describe("register", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(409)
-      .expect(function(res) {
+      .expect(res => {
         const expectedError = "User already exists!";
         if (res.body.message !== expectedError) {
           throw new Error(
@@ -213,7 +203,7 @@ describe("register", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(400)
-      .expect(function(res) {
+      .expect(res => {
         const expectedError = "Malformed Request";
         if (res.body.message !== expectedError) {
           throw new Error(
