@@ -3,27 +3,26 @@
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-async function createUser(connection, uname, email, password, admin) {
-  return bcrypt.hash(password, saltRounds).then(function(hash) {
-    const query =
-      "INSERT INTO users(email, password, userName, admin) VALUES(?, ?, ?, ?)";
-    return new Promise(function(resolve, reject) {
-      connection.query(query, [email, hash, uname, admin], function(
-        err,
-        rows,
-        fields
-      ) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
+function createUser(connection, uname, email, password, admin) {
+  const query =
+    "INSERT INTO users(email, password, userName, admin) VALUES(?, ?, ?, ?)";
+  return new Promise(async (resolve, reject) => {
+    const hash = await bcrypt.hash(password, saltRounds);
+    connection.query(query, [email, hash, uname, admin], function(
+      err,
+      rows,
+      fields
+    ) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
     });
   });
 }
 
-async function userExists(connection, email) {
+function userExists(connection, email) {
   const query = "SELECT userName FROM users WHERE email = ?;";
   return new Promise(function(resolve, reject) {
     connection.query(query, [email], function(err, rows, fields) {
@@ -36,7 +35,7 @@ async function userExists(connection, email) {
   });
 }
 
-async function checkCredentials(connection, email, password) {
+function checkCredentials(connection, email, password) {
   const query = "SELECT password FROM users WHERE email = ?;";
   return new Promise(function(resolve, reject) {
     connection.query(query, [email], function(err, rows, fields) {
@@ -55,7 +54,7 @@ async function checkCredentials(connection, email, password) {
   });
 }
 
-async function executeSQL(connection, sql, varList) {
+function executeSQL(connection, sql, varList) {
   return new Promise(function(resolve, reject) {
     connection.query(sql, varList, function(err, rows, fields) {
       if (err) {
