@@ -24,7 +24,7 @@ function createUser(connection, uname, email, password, admin) {
 
 function userExists(connection, email) {
   const query = "SELECT userName FROM users WHERE email = ?;";
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     connection.query(query, [email], function(err, rows, fields) {
       if (err) {
         reject(err);
@@ -37,7 +37,7 @@ function userExists(connection, email) {
 
 function checkCredentials(connection, email, password) {
   const query = "SELECT password FROM users WHERE email = ?;";
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     connection.query(query, [email], function(err, rows, fields) {
       if (err) {
         reject(err);
@@ -55,7 +55,7 @@ function checkCredentials(connection, email, password) {
 }
 
 function executeSQL(connection, sql, varList) {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     connection.query(sql, varList, function(err, rows, fields) {
       if (err) {
         reject(err);
