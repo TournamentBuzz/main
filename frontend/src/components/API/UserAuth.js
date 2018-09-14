@@ -1,18 +1,18 @@
 import decode from "jwt-decode";
+import * as errors from "./errors";
 
-export class IncorrectAuthenticationError extends Error {
-  constructor() {
-    super("Incorrect Username or Password");
-    this.name = "IncorrectAuthenticationError";
-  }
-}
+export const ScoringTypes = {
+  POINTS: "points",
+  SETS: "sets",
+  ETC: "etc" // ?
+};
 
-export class EmailRegisteredError extends Error {
-  constructor() {
-    super("Email already registered");
-    this.name = "EmailRegisteredError";
-  }
-}
+export const TournamentTypes = {
+  SINGLE_ELIM: "single elim",
+  DOUBLE_ELIM: "double elim",
+  ROUND_ROBIN: "round-robin",
+  ETC: "etc" // ?
+};
 
 export default class UserAuth {
   constructor(storage = localStorage) {
@@ -24,86 +24,249 @@ export default class UserAuth {
   }
 
   async login(email, password) {
-    try {
-      const res = await fetch("/user/login", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
-      if (res.ok) {
-        const json = await res.json();
-        this.setToken(json.jwt);
-      } else if (res.status === 401) {
-        // API returned unauthorized
-        throw new IncorrectAuthenticationError();
-      } else {
-        // Other API error
-        throw new Error();
-      }
-    } catch (error) {
-      if (error.name === "IncorrectAuthenticationError") {
-        throw error;
-      }
-      // cannot connect to API
-      throw new Error("Unexpected error: Please try again");
+    const res = await fetch("/user/login", {
+      method: "POST",
+      headers: this._headers(),
+      body: JSON.stringify({ email, password })
+    });
+
+    if (res.status === 401) {
+      // API returned unauthorized
+      throw new errors.IncorrectLoginError();
     }
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    this.setToken(json.jwt);
   }
 
   async register(name, email, password) {
-    try {
-      const res = await fetch("/user/register", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password, name })
-      });
+    const res = await fetch("/user/register", {
+      method: "POST",
+      headers: this._headers(),
+      body: JSON.stringify({ email, password, name })
+    });
 
-      if (res.ok) {
-        const json = await res.json();
-        this.setToken(json.jwt);
-      } else if (res.status === 409) {
-        // User already registered
-        throw new EmailRegisteredError();
-      } else {
-        // Other API error
-        throw new Error();
-      }
-    } catch (error) {
-      if (error.name === "EmailRegisteredError") {
-        throw error;
-      }
-      // cannot connect to API
-      throw new Error("Unexpected error: Please try again");
+    if (res.status === 409) {
+      // User already registered
+      throw new errors.EmailRegisteredError();
     }
+    if (!res.ok) {
+      // Other API error
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    this.setToken(json.jwt);
   }
 
   async renew() {
-    const token = this.getToken();
-    if (!token) return;
-    try {
-      const res = await fetch("/user/renew", {
-        method: "GET",
-        headers: {
-          Authorization: token,
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        }
-      });
+    if (!this.loggedIn()) return;
+    const res = await fetch("/user/renew", {
+      method: "GET",
+      headers: this._headersWithAuth()
+    });
 
-      if (res.ok) {
-        const json = await res.json();
-        this.setToken(json.jwt);
-      } else {
-        this.logout();
-      }
-    } catch (error) {
-      // something else went wrong
+    if (res.ok) {
+      const json = await res.json();
+      this.setToken(json.jwt);
+    } else {
+      this.logout();
     }
+  }
+
+  async createTournament(
+    name,
+    teamEvent,
+    location,
+    scoringType,
+    tournamentType,
+    entryCost,
+    maxParticipants,
+    startDate
+  ) {
+    if (!this.loggedIn()) return;
+    const res = await fetch("/tournaments/create", {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({
+        name,
+        teamEvent,
+        location,
+        scoringType,
+        tournamentType,
+        entryCost,
+        maxParticipants,
+        startDate
+      })
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      return json.tournamentId;
+    } else {
+      throw new errors.UnexpectedError();
+    }
+  }
+
+  async editTournament(
+    tournamentId,
+    name,
+    teamEvent,
+    location,
+    scoringType,
+    tournamentType,
+    entryCost,
+    maxParticipants,
+    startDate
+  ) {
+    if (!this.loggedIn()) return;
+    const res = await fetch("/tournaments/edit", {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({
+        tournamentId,
+        name,
+        teamEvent,
+        location,
+        scoringType,
+        tournamentType,
+        entryCost,
+        maxParticipants,
+        startDate
+      })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.tournamentId;
+  }
+
+  async deleteTournament(tournamentId) {
+    if (!this.loggedIn()) return;
+    const res = await fetch("/tournaments/delete", {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({ tournamentId })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.deleteStatus;
+  }
+
+  async tournaments() {
+    if (!this.loggedIn()) return;
+    const res = await fetch("/tournaments", {
+      method: "GET",
+      headers: this._headersWithAuth()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.tournamentId;
+  }
+
+  async searchTournaments(search, filter = {}) {
+    if (!this.loggedIn()) return;
+    const res = await fetch("/tournaments/search", {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({ search, filter })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.tournamentId;
+  }
+
+  async createMatch(tournamentId, location, details, time, partyA, partyB) {
+    if (!this.loggedIn()) return;
+    const res = await fetch(`/tournaments/${tournamentId}/matches/create`, {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({
+        tournamentId,
+        location,
+        details,
+        time,
+        partyA,
+        partyB
+      })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    return res.json();
+  }
+
+  async editMatch(
+    tournamentId,
+    matchId,
+    location,
+    details,
+    time,
+    partyA,
+    partyB
+  ) {
+    if (!this.loggedIn()) return;
+    const res = await fetch(`/tournaments/${tournamentId}/matches/edit`, {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({
+        tournamentId,
+        matchId,
+        location,
+        details,
+        time,
+        partyA,
+        partyB
+      })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    return res.json();
+  }
+
+  async deleteMatch(tournamentId, matchId) {
+    if (!this.loggedIn()) return;
+    const res = await fetch(`/tournaments/${tournamentId}/matches/delete`, {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({ tournamentId, matchId })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.deleteStatus;
+  }
+
+  async publishMatch(tournamentId, matchId, publish) {
+    if (!this.loggedIn()) return;
+    const res = await fetch(`/tournaments/${tournamentId}/matches/publish`, {
+      method: "POST",
+      headers: this._headersWithAuth(),
+      body: JSON.stringify({ tournamentId, matchId, publish })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.publishStatus;
   }
 
   logout() {
@@ -111,7 +274,7 @@ export default class UserAuth {
   }
 
   setToken(userToken) {
-    this.storage.setItem("userToken", "Bearer " + userToken);
+    this.storage.setItem("userToken", userToken);
   }
 
   getToken() {
@@ -119,17 +282,31 @@ export default class UserAuth {
   }
 
   loggedIn() {
-    const token = this.getToken();
-    return !!token && !this.isTokenExpired(token);
+    return Boolean(this.getToken()) && !this.isTokenExpired();
   }
 
   // returns true if token is not expired
-  isTokenExpired(token) {
+  isTokenExpired() {
+    const token = this.getToken();
     try {
       const decoded = decode(token);
       return decoded.exp < Date.now() / 1000;
     } catch (err) {
       return false;
     }
+  }
+
+  _headers() {
+    return {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    };
+  }
+
+  _headersWithAuth() {
+    return {
+      Authorization: `Bearer ${this.getToken()}`,
+      ...this._headers()
+    };
   }
 }
