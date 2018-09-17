@@ -54,9 +54,9 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   });
   specC.connect();
   const setupUsersTableQuery = `CREATE TABLE users (
-        email VARCHAR(255) NOT NULL UNIQUE CHECK(email REGEXP '^[A-Za-z0-9][A-Za-z0-9]*@[A-Za-z0-9][A-Za-z0-9]*\\.[A-Za-z0-9]*$'),
-        password VARCHAR(255) NOT NULL CHECK(passw LIKE '%________%'),
-        username VARCHAR(60),
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        userName VARCHAR(60),
         admin BOOL DEFAULT FALSE NOT NULL,
         PRIMARY KEY(email)
     );`;
