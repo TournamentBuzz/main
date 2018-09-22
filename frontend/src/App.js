@@ -19,6 +19,14 @@ class App extends Component {
         <Router>
           <Switch>
             <Route path="/" exact component={HomePage} />
+            <Route
+              path="/login"
+              render={props => <HomePage {...props} login={true} />}
+            />
+            <Route
+              path="/register"
+              render={props => <HomePage {...props} register={true} />}
+            />
             <Route path="/tournament" exact component={HomePage} />
             <Route path="/tournament/:id" component={TournamentDetails} />
             <Route component={NotFound} />

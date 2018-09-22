@@ -25,8 +25,8 @@ class NoAuthHeaderLinks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginModal: false,
-      registerModal: false
+      loginModal: props.loginPage ? props.loginPage : false,
+      registerModal: props.registerPage ? props.registerPage : false
     };
   }
   handleClickOpen(modal) {

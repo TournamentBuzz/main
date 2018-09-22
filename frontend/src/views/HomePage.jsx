@@ -19,7 +19,7 @@ class HomePage extends React.Component {
   }
 
   render() {
-    const { classes, ...rest } = this.props;
+    const { classes, login, register, ...rest } = this.props;
     return (
       <div>
         <div>
@@ -30,7 +30,7 @@ class HomePage extends React.Component {
               this.UserAuth.loggedIn() ? (
                 <AuthHeaderLinks />
               ) : (
-                <NoAuthHeaderLinks />
+                <NoAuthHeaderLinks loginPage={login} registerPage={register} />
               )
             }
             {...rest}
