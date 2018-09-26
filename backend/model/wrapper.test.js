@@ -39,6 +39,36 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         PRIMARY KEY(email)
     );`;
   await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
+  const setupTournamentsTableQuery = `CREATE TABLE tournaments (
+        id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
+        creator VARCHAR(255) NOT NULL,
+        description VARCHAR(255) DEFAULT NULL,
+        teamEvent BOOL NOT NULL DEFAULT FALSE,
+        location VARCHAR(255) DEFAULT NULL,
+        scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
+        tournamentName VARCHAR(255) DEFAULT NULL,
+        tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+        entryCost INT(5) NOT NULL DEFAULT 0,
+        maxParticipants INT(5) NOT NULL DEFAULT 16,
+        startDate DATE DEFAULT NULL,
+        endDate DATE DEFAULT NULL,
+        PRIMARY KEY(id),
+        FOREIGN KEY(creator)
+        REFERENCES users(email)
+    );`;
+  await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
+  const setupMatchesTableQuery = `CREATE TABLE matches (
+        id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+        location VARCHAR(255) DEFAULT NULL,
+        score VARCHAR(255) DEFAULT NULL,
+        matchTime DATETIME DEFAULT NULL,
+        matchName VARCHAR(255) DEFAULT NULL,
+        tournament INT(10) NOT NULL,
+        PRIMARY KEY(id),
+        FOREIGN KEY(tournament)
+        REFERENCES tournaments(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
   specC.destroy();
 }
 
@@ -247,6 +277,52 @@ describe("sql wrapper", () => {
       throw new Error(
         "Expected invalid credentials, instead got valid credentials."
       );
+    }
+    done();
+  });
+
+  test("Search/Get Tournament", async done => {
+    // This test requires the create user to test to pass as tournaments needs it as a foreign key
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testUserEmail = "testUserExists@gatech.edu";
+    const testTournamentName = "test tournament";
+    const getTestTournament =
+      "SELECT * FROM tournaments WHERE tournamentName = ?;";
+    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName);
+    const result = await sqlwrapper.executeSQL(c, getTestTournament, [
+      testTournamentName
+    ]);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    done();
+  });
+
+  test("Search/Get Tournament", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    const name = result[0].tournamentName;
+    const exists = await sqlwrapper.getTournament(c, testId);
+    if (exists.length < 1) {
+      throw new Error("Expected for tournament to be returned.");
+    }
+    if (name !== testTournamentName) {
+      throw new Error("Name field does not match.");
     }
     done();
   });

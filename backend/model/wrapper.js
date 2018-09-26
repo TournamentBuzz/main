@@ -85,13 +85,12 @@ function executeSQL(connection, sql, varList) {
 
 function createTournament(
   connection,
-  id,
   creator,
+  tournamentName = null,
   description = null,
   teamEvent = false,
   location = null,
   scoringType = "Points",
-  tournamentName = null,
   tournamentType = "Single Elim",
   entryCost = 0,
   maxParticipants = 16,
@@ -309,19 +308,11 @@ function deleteMatch(connection, id) {
   });
 }
 
-function searchTournament(
-  connection,
-  searchQuery,
-  searchField = "tournamentName"
-) {
+function searchTournament(connection, searchQuery) {
   const searchTerm = "%" + searchQuery + "%";
-  const query = "SELECT * FROM tournaments WHERE ? like ?;";
+  const query = "SELECT * FROM tournaments WHERE tournamentName like ?;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [searchField, searchTerm], function(
-      err,
-      rows,
-      fields
-    ) {
+    connection.query(query, [searchTerm], function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
