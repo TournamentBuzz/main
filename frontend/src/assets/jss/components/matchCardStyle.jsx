@@ -1,4 +1,4 @@
-const tournamentCardStyle = {
+const matchCardStyle = {
   card: {
     border: "0",
     marginBottom: "15px",
@@ -22,4 +22,4 @@ const tournamentCardStyle = {
   }
 };
 
-export default tournamentCardStyle;
+export default matchCardStyle;
