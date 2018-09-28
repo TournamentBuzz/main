@@ -5,6 +5,12 @@ const router = express.Router();
 const sqlwrapper = require("../model/wrapper");
 const connection = require("../model/connect");
 
+const create = require("./tournaments/create");
+const edit = require("./tournaments/edit");
+const deletejs = require("./tournaments/delete");
+
+const requireAuth = require("../middleware/auth/verify");
+
 router.get("/", async function(req, res, next) {
   try {
     const c = connection.connect(
@@ -20,5 +26,9 @@ router.get("/", async function(req, res, next) {
     next(err);
   }
 });
+
+router.use("/create", requireAuth, create);
+router.use("/edit", requireAuth, edit);
+router.use("/delete", requireAuth, deletejs);
 
 module.exports = router;
