@@ -140,7 +140,7 @@ function getTournament(connection, id) {
 }
 
 function getTournaments(connection) {
-  const query = "SELECT * FROM tournaments ORDER by startDate DESC;";
+  const query = "SELECT * FROM tournaments ORDER BY startDate DESC;";
   return new Promise((resolve, reject) => {
     connection.query(query, function(err, rows, fields) {
       if (err) {
