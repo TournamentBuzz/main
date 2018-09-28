@@ -9,6 +9,7 @@ import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import UserAuth from "components/API/UserAuth.js";
+import Authentication from "components/API/Authentication.js";
 import Grid from "@material-ui/core/Grid";
 
 const matchDetailsStyle = {
@@ -32,7 +33,7 @@ class matchDetails extends React.Component {
             color="primary"
             brand="TournamentBuzz"
             rightLinks={
-              this.UserAuth.loggedIn() ? (
+              Authentication.loggedIn() ? (
                 <AuthHeaderLinks />
               ) : (
                 <NoAuthHeaderLinks />

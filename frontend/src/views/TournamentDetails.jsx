@@ -9,6 +9,8 @@ import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import UserAuth from "components/API/UserAuth.js";
+import Authentication from "components/API/Authentication.js";
+import TournamentAPI from "components/API/TournamentAPI.js";
 import MatchList from "components/Match/MatchList.jsx";
 
 import tournamentDetailsStyle from "assets/jss/views/tournamentDetailsStyle.jsx";
@@ -17,6 +19,24 @@ class TournamentDetails extends React.Component {
   constructor(props) {
     super(props);
     this.UserAuth = new UserAuth();
+    this.state = {
+      tournamentName: null,
+      tournamentID: this.props.match.params.tournamentID,
+      creator: null,
+      description: null,
+      teamEvent: null,
+      location: null,
+      scoringType: null,
+      tournamentType: null,
+      entryCost: null,
+      maxParticipants: null,
+      startDate: null,
+      endDate: null
+    };
+  }
+
+  async componentDidMount() {
+    // get tournament and match data
   }
 
   render() {
@@ -28,7 +48,7 @@ class TournamentDetails extends React.Component {
             color="primary"
             brand="TournamentBuzz"
             rightLinks={
-              this.UserAuth.loggedIn() ? (
+              Authentication.loggedIn() ? (
                 <AuthHeaderLinks />
               ) : (
                 <NoAuthHeaderLinks />
@@ -39,37 +59,43 @@ class TournamentDetails extends React.Component {
         </div>
         <div className={classes.detailsDiv}>
           <Typography variant="headline" className={classes.detailsText}>
-            <b>TournamentName</b>
+            <b>{this.state.tournamentName}</b>
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Tournament ID:</b> {this.props.match.params.tournamentID}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Creator:</b> Sample
+            <b>Creator:</b> {this.state.creator}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Description:</b> Sample
+            <b>Description:</b> {this.state.description}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Location:</b> Sample
+            <b>Location:</b> {this.state.location}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Scoring Type:</b> Sample
+            <b>Scoring Type:</b> {this.state.scoringType}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Entry Cost:</b> Sample
+            <b>Tournament Type:</b> {this.state.tournamentType}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Start Date:</b> Sample
+            <b>Entry Cost:</b> {this.state.entryCost}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>End Date:</b> Sample
+            <b>Max Participants:</b> {this.state.maxParticipants}
+          </Typography>
+          <Typography variant="body1" className={classes.detailsText}>
+            <b>Start Date:</b> {this.state.startDate}
+          </Typography>
+          <Typography variant="body1" className={classes.detailsText}>
+            <b>End Date:</b> {this.state.endDate}
           </Typography>
         </div>
         <hr />
         <div>
           <Typography variant="headline" className={classes.detailsText}>
-            <b>Upcoming Tournaments</b>
+            <b>Upcoming Matches</b>
           </Typography>
           <MatchList tournamentID={this.props.match.params.tournamentID} />
         </div>

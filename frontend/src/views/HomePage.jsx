@@ -11,6 +11,7 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import TournamentList from "components/Tournament/TournamentList.jsx";
 
 import UserAuth from "components/API/UserAuth.js";
+import Authentication from "components/API/Authentication.js";
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class HomePage extends React.Component {
             color="primary"
             brand="TournamentBuzz"
             rightLinks={
-              this.UserAuth.loggedIn() ? (
+              Authentication.loggedIn() ? (
                 <AuthHeaderLinks />
               ) : (
                 <NoAuthHeaderLinks loginPage={login} registerPage={register} />
