@@ -17,7 +17,7 @@ router.get('/', async function(req, res, next) {
 		  req.app.get("databaseConfig").password,
 		  req.app.get("databaseConfig").schema
 		);
-		const results = await sqlwrapper.executeSQL(c, "SELECT * from tournaments");
+		const results = await sqlwrapper.getTournaments(c);
 		res.status(200);
 		res.json({tournaments: results});
 	} catch (err) {
