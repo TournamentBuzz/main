@@ -139,6 +139,19 @@ function getTournament(connection, id) {
   });
 }
 
+function getTournaments(connection) {
+  const query = "SELECT * FROM tournaments;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 function updateTournament(
   connection,
   id,
@@ -330,6 +343,7 @@ module.exports = {
   executeSQL: executeSQL,
   createTournament: createTournament,
   getTournament: getTournament,
+  getTournaments: getTournaments, 
   updateTournament: updateTournament,
   updateTournamentField: updateTournamentField,
   deleteTournament: deleteTournament,
