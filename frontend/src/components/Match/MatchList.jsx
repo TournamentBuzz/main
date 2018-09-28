@@ -14,8 +14,7 @@ class MatchList extends React.Component {
               id="1"
               team1="Ballin Bowlers"
               team2="Nothing but Strikes"
-              date="3/25/19"
-              time="7:00pm"
+              time="3/30/19 7:00pm"
             />
           </Grid>
           <Grid item xs={4}>
@@ -23,8 +22,7 @@ class MatchList extends React.Component {
               id="2"
               team1="Ballin Bowlers"
               team2="Nothing but Strikes"
-              date="3/26/19"
-              time="7:00pm"
+              time="3/30/19 7:00pm"
             />
           </Grid>
           <Grid item xs={4}>
@@ -32,8 +30,7 @@ class MatchList extends React.Component {
               id="3"
               team1="Ballin Bowlers"
               team2="Nothing but Strikes"
-              date="3/27/19"
-              time="7:00pm"
+              time="3/30/19 7:00pm"
             />
           </Grid>
           <Grid item xs={4}>
@@ -41,8 +38,7 @@ class MatchList extends React.Component {
               id="4"
               team1="Ballin Bowlers"
               team2="Nothing but Strikes"
-              date="3/28/19"
-              time="7:00pm"
+              time="3/30/19 7:00pm"
             />
           </Grid>
           <Grid item xs={4}>
@@ -50,8 +46,7 @@ class MatchList extends React.Component {
               id="5"
               team1="Ballin Bowlers"
               team2="Nothing but Strikes"
-              date="3/29/19"
-              time="7:00pm"
+              time="3/30/19 7:00pm"
             />
           </Grid>
           <Grid item xs={4}>
@@ -59,8 +54,7 @@ class MatchList extends React.Component {
               id="6"
               team1="Ballin Bowlers"
               team2="Nothing but Strikes"
-              date="3/30/19"
-              time="7:00pm"
+              time="3/30/19 7:00pm"
             />
           </Grid>
         </Grid>

@@ -11,7 +11,7 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import UserAuth from "components/API/UserAuth.js";
 import MatchList from "components/Match/MatchList.jsx";
 
-import tournamentDetailsStyle from "assets/jss/components/tournamentDetailsStyle.jsx";
+import tournamentDetailsStyle from "assets/jss/views/tournamentDetailsStyle.jsx";
 
 class TournamentDetails extends React.Component {
   constructor(props) {
@@ -42,7 +42,7 @@ class TournamentDetails extends React.Component {
             <b>TournamentName</b>
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Tournament ID:</b> {this.props.match.params.id}
+            <b>Tournament ID:</b> {this.props.match.params.tournamentID}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Creator:</b> Sample
@@ -71,7 +71,7 @@ class TournamentDetails extends React.Component {
           <Typography variant="headline" className={classes.detailsText}>
             <b>Upcoming Tournaments</b>
           </Typography>
-          <MatchList tournamentID={this.props.match.params.id} />
+          <MatchList tournamentID={this.props.match.params.tournamentID} />
         </div>
       </div>
     );

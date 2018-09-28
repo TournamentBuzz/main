@@ -10,6 +10,7 @@ import "./App.css";
 // Pages
 import HomePage from "views/HomePage";
 import TournamentDetails from "views/TournamentDetails";
+import MatchDetails from "views/MatchDetails";
 import NotFound from "views/NotFound";
 
 class App extends Component {
@@ -28,7 +29,15 @@ class App extends Component {
               render={props => <HomePage {...props} register={true} />}
             />
             <Route path="/tournament" exact component={HomePage} />
-            <Route path="/tournament/:id" component={TournamentDetails} />
+            <Route
+              path="/tournament/:tournamentID"
+              exact
+              component={TournamentDetails}
+            />
+            <Route
+              path="/tournament/:tournamentID/match/:matchID"
+              component={MatchDetails}
+            />
             <Route component={NotFound} />
           </Switch>
         </Router>

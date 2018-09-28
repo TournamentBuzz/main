@@ -10,11 +10,13 @@ import matchCardStyle from "assets/jss/components/matchCardStyle.jsx";
 
 class MatchCard extends React.Component {
   handleClick(id) {
-    this.props.history.push(`/match/${id}`);
+    this.props.history.push(
+      `/tournament/${this.props.match.params.tournamentID}/match/${id}`
+    );
   }
 
   render() {
-    const { classes, id, team1, team2, date, time } = this.props;
+    const { classes, id, team1, team2, time } = this.props;
     return (
       <Card className={classes.card}>
         <CardActionArea onClick={() => this.handleClick(id)}>
@@ -22,7 +24,7 @@ class MatchCard extends React.Component {
             <Typography className={classes.title} component="h1">
               {team1 + " vs " + team2}
             </Typography>
-            <Typography color="textSecondary">{date + " · " + time}</Typography>
+            <Typography color="textSecondary">{time}</Typography>
           </CardContent>
         </CardActionArea>
       </Card>
