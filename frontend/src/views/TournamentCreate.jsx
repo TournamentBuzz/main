@@ -41,7 +41,8 @@ class TournamentCreate extends React.Component {
     return true;
   }
 
-  async handleFormSubmit() {
+  async handleFormSubmit(event) {
+    event.preventDefault();
     await TournamentAPI.createTournament(
       this.state.name,
       this.state.description,
