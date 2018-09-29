@@ -15,9 +15,18 @@ class TournamentList extends React.Component {
     try {
       tournaments = await TournamentAPI.getTournaments();
     } catch (error) {
+      let message = <h2>Error loading tournament</h2>;
+      this.setState({ tournamentList: message });
       return;
     }
     if (tournaments === undefined) {
+      let message = <h2>Please login to view tournaments</h2>;
+      this.setState({ tournamentList: message });
+      return;
+    }
+    if (tournaments.length < 1) {
+      let message = <h2>No upcoming tournaments</h2>;
+      this.setState({ tournamentList: message });
       return;
     }
     let list = [];
@@ -44,7 +53,7 @@ class TournamentList extends React.Component {
     return (
       <div>
         {this.state.tournamentList === null ? (
-          <div>Loading Tournaments</div>
+          <h2>Loading Tournaments</h2>
         ) : (
           <div>{this.state.tournamentList}</div>
         )}

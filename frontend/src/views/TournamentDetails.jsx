@@ -35,8 +35,43 @@ class TournamentDetails extends React.Component {
     };
   }
 
+  async getTournamentDetails(id) {
+    let details = undefined;
+    try {
+      details = await TournamentAPI.getTournament(id);
+    } catch (error) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (details === undefined) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (details.length < 1) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    details = details[0];
+    details.teamEvent = details.teamEvent === 0 ? "No" : "Yes";
+    details.startDate = new Date(Date.parse(details.startDate)).toDateString();
+    details.endDate = new Date(Date.parse(details.endDate)).toDateString();
+    this.setState({
+      tournamentName: details.tournamentName,
+      creator: details.creator,
+      description: details.description,
+      teamEvent: details.teamEvent,
+      location: details.location,
+      scoringType: details.scoringType,
+      tournamentType: details.tournamentType,
+      entryCost: details.entryCost,
+      maxParticipants: details.maxParticipants,
+      startDate: details.startDate,
+      endDate: details.endDate
+    });
+  }
+
   async componentDidMount() {
-    // get tournament and match data
+    await this.getTournamentDetails(this.props.match.params.tournamentID);
   }
 
   render() {
@@ -78,6 +113,9 @@ class TournamentDetails extends React.Component {
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Tournament Type:</b> {this.state.tournamentType}
+          </Typography>
+          <Typography variant="body1" className={classes.detailsText}>
+            <b>Team Event:</b> {this.state.teamEvent}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Entry Cost:</b> {this.state.entryCost}

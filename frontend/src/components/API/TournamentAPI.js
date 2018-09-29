@@ -119,6 +119,20 @@ export default class TournamentAPI {
     return json.tournaments;
   }
 
+  static async getTournament(id) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch(`/tournaments/id/${id}`, {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.tournament;
+  }
+
   static async searchTournaments(search, filter = {}) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch("/tournaments/search", {
