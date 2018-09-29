@@ -248,4 +248,4 @@ class TournamentEdit extends React.Component {
   }
 }
 
-export default withRouter(TournamentCreate);
+export default withRouter(TournamentEdit);

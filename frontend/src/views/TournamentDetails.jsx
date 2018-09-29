@@ -42,7 +42,7 @@ class TournamentDetails extends React.Component {
   }
 
   handleClickEdit() {
-    // handle click
+    this.props.history.push(`/tournament/${this.state.tournamentID}/edit`);
   }
 
   async handleClickDelete() {
