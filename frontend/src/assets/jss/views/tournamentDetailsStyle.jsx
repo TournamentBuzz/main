@@ -3,6 +3,9 @@ const tournamentDetailsStyle = {
     textAlign: "left",
     marginLeft: "15px"
   },
+  detailsIcons: {
+    float: "right"
+  },
   detailsText: {
     marginBottom: "10px"
   }

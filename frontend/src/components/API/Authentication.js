@@ -35,8 +35,16 @@ export default class Authentication {
   }
 
   static loggedIn() {
-    return (
-      Boolean(Authentication.getToken()) && !Authentication.isTokenExpired()
-    );
+    return Boolean(this.getToken()) && !this.isTokenExpired();
+  }
+
+  static getUID() {
+    const token = this.getToken();
+    try {
+      const decoded = decode(token);
+      return decoded.id;
+    } catch (err) {
+      return null;
+    }
   }
 }

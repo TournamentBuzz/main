@@ -3,6 +3,9 @@ import React from "react";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import PencilIcon from "@material-ui/icons/Create";
 
 // core components
 import Header from "components/Header/Header.jsx";
@@ -31,8 +34,30 @@ class TournamentDetails extends React.Component {
       entryCost: null,
       maxParticipants: null,
       startDate: null,
-      endDate: null
+      endDate: null,
+      currentUser: Authentication.getUID()
     };
+    this.handleClickEdit = this.handleClickEdit.bind(this);
+    this.handleClickDelete = this.handleClickDelete.bind(this);
+  }
+
+  handleClickEdit() {
+    // handle click
+  }
+
+  async handleClickDelete() {
+    let confirm = window.confirm(
+      "Are you sure you want to delete this tournament?"
+    );
+    if (confirm) {
+      try {
+        await TournamentAPI.deleteTournament(this.state.tournamentID);
+      } catch (error) {
+        // show message
+        return;
+      }
+      this.props.history.push("/");
+    }
   }
 
   async getTournamentDetails(id) {
@@ -93,6 +118,25 @@ class TournamentDetails extends React.Component {
           />
         </div>
         <div className={classes.detailsDiv}>
+          {this.state.currentUser != null &&
+          this.state.currentUser === this.state.creator ? (
+            <div className={classes.detailsIcons}>
+              <IconButton
+                className={classes.button}
+                aria-label="Delete"
+                onClick={this.handleClickEdit}
+              >
+                <PencilIcon />
+              </IconButton>
+              <IconButton
+                className={classes.button}
+                aria-label="Delete"
+                onClick={this.handleClickDelete}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </div>
+          ) : null}
           <Typography variant="headline" className={classes.detailsText}>
             <b>{this.state.tournamentName}</b>
           </Typography>
