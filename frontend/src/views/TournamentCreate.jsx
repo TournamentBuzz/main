@@ -51,8 +51,8 @@ class TournamentCreate extends React.Component {
       this.state.tournamentType,
       Number(this.state.entryCost),
       Number(this.state.maxParticipants),
-      new Date(this.state.startDate).toISOString(),
-      new Date(this.state.endDate).toISOString()
+      new Date(this.state.startDate).toISOString().split("T")[0],
+      new Date(this.state.endDate).toISOString().split("T")[0]
     );
     this.props.history.push("/");
   }
