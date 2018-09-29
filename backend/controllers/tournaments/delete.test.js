@@ -115,6 +115,7 @@ describe("delete", () => {
   const testUserPassword = "testpassword";
   const testUserName = "Test User";
   const testTournamentName1 = "Test Tournament";
+  const testTournamentName2 = "Test Tournament 2";
   beforeAll(async done => {
     await setupTemporarySchema(
       databaseConfig.host,
@@ -136,6 +137,7 @@ describe("delete", () => {
         throw new Error("Unable to create user: " + err.message);
       });
     await sqlwrapper.createTournament(c, testUserEmail, testTournamentName1);
+    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName2);
     c.destroy();
     done();
   });
@@ -175,9 +177,9 @@ describe("delete", () => {
       });
     done();
   });
-  test("Tournament Deletion Failure", async done => {
+  test("Tournament Deletion Failure - Does Not Exist", async done => {
     const tournamentObject = {
-      tournamentId: 2
+      tournamentId: 3
     };
     await request(app)
       .post("/tournaments/delete")
@@ -187,6 +189,31 @@ describe("delete", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(404)
+      .expect(res => {
+        try {
+          if (res.body.deleteStatus === "success") {
+            throw new Error("Deletion succeeded but should not have!");
+          }
+        } catch (e) {
+          e.message = "Something went big boom " + e.message;
+          throw e;
+        }
+      });
+    done();
+  });
+  test("Tournament Delete Fail - Wrong User", async done => {
+    const incorrectUserEmail = "thisiswrong@gatech.edu";
+    const tournamentObject = {
+      tournamentId: 2
+    };
+    await request(app)
+      .post("/tournaments/delete")
+      .send(tournamentObject)
+      .set("id", incorrectUserEmail)
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(401)
       .expect(res => {
         try {
           if (res.body.deleteStatus === "success") {

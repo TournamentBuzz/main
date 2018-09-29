@@ -12,15 +12,24 @@ router.post("", async (req, res, next) => {
     next(err);
     return;
   }
-
-  if (req.headers.id !== null) {
-    try {
-      const c = connection.connect(
-        req.app.get("databaseConfig").host,
-        req.app.get("databaseConfig").username,
-        req.app.get("databaseConfig").password,
-        req.app.get("databaseConfig").schema
-      );
+  try {
+    const c = connection.connect(
+      req.app.get("databaseConfig").host,
+      req.app.get("databaseConfig").username,
+      req.app.get("databaseConfig").password,
+      req.app.get("databaseConfig").schema
+    );
+    const tournamentObject = await sqlwrapper.getTournament(
+      c,
+      req.body.tournamentId
+    );
+    if (!tournamentObject[0]) {
+      const err = new Error("Tournament does not exist!");
+      err.status = 404;
+      next(err);
+      return;
+    }
+    if (req.headers.id === tournamentObject[0].creator) {
       const results = await sqlwrapper.deleteTournament(
         c,
         req.body.tournamentId
@@ -29,16 +38,17 @@ router.post("", async (req, res, next) => {
         res.status(200);
         res.json({ deleteStatus: "success" });
       } else {
-        const err = new Error("Tournament does not exist!");
-        err.status = 404;
+        const err = new Error(
+          "Something went wrong, tournament exists but cannot be deleted!"
+        );
         next(err);
       }
-    } catch (err) {
+    } else {
+      const err = new Error("You cannot delete this match!");
+      err.status = 401;
       next(err);
     }
-  } else {
-    const err = new Error("Invalid Credentials");
-    err.status = 401;
+  } catch (err) {
     next(err);
   }
 });
