@@ -1,6 +1,6 @@
 import React from "react";
+import { withRouter } from "react-router-dom";
 
-import { withStyles } from "@material-ui/core/styles";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Input from "@material-ui/core/Input";
 import Select from "@material-ui/core/Select";
@@ -14,6 +14,8 @@ import CardHeader from "components/Card/CardHeader";
 import CardFooter from "components/Card/CardFooter";
 import Button from "components/CustomButtons/Button";
 
+import TournamentAPI from "components/API/TournamentAPI";
+
 class TournamentCreate extends React.Component {
   constructor(props) {
     super(props);
@@ -21,6 +23,7 @@ class TournamentCreate extends React.Component {
       submitted: false,
       formError: "",
       name: "",
+      description: "",
       teamEvent: false,
       location: "",
       scoringType: "Points",
@@ -38,21 +41,21 @@ class TournamentCreate extends React.Component {
     return true;
   }
 
-  stateToAPIObject() {
-    return {
-      tournamentName: this.state.name,
-      teamEvent: this.state.teamEvent,
-      location: this.state.location,
-      scoringType: this.state.scoringType,
-      tournamentType: this.state.tournamentType,
-      entryCost: Number(this.state.entryCost),
-      maxParticipants: Number(this.state.maxParticipants),
-      startDate: Date.parse(this.state.startDate).toISOString(),
-      endDate: Date.parse(this.state.endDate).toISOString()
-    };
+  async handleFormSubmit() {
+    await TournamentAPI.createTournament(
+      this.state.name,
+      this.state.description,
+      this.state.teamEvent,
+      this.state.location,
+      this.state.scoringType,
+      this.state.tournamentType,
+      Number(this.state.entryCost),
+      Number(this.state.maxParticipants),
+      new Date(startDate).toISOString(),
+      new Date(endDate).toISOString()
+    );
+    this.props.history.push("/");
   }
-
-  async handleFormSubmit() {}
 
   render() {
     return (
@@ -76,6 +79,23 @@ class TournamentCreate extends React.Component {
                 <FormHelperText>
                   {this.state.submitted && !this.state.name
                     ? "Tournament Name is required"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div>
+              <FormControl>
+                <InputLabel>Description</InputLabel>
+                <Input
+                  value={this.state.description}
+                  onChange={e => this.setState({ description: e.target.value })}
+                  id="description"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.description
+                    ? "Description is required"
                     : ""}
                 </FormHelperText>
               </FormControl>
@@ -220,4 +240,4 @@ class TournamentCreate extends React.Component {
   }
 }
 
-export default withStyles(() => ({}))(TournamentCreate);
+export default withRouter(TournamentCreate);
