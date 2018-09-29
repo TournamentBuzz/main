@@ -15,7 +15,6 @@ router.get("/:id", async function(req, res, next) {
       req.app.get("databaseConfig").schema
     );
     const tournamentObject = await sqlwrapper.getTournament(c, req.param("id"));
-    console.log(tournamentObject);
     res.status(200);
     res.json({ tournament: tournamentObject });
   } catch (err) {
