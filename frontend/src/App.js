@@ -1,9 +1,15 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  withRouter
+} from "react-router-dom";
 import "./App.css";
 
 // Pages
 import HomePage from "views/HomePage";
+import TournamentCreate from "views/TournamentCreate";
 import NotFound from "views/NotFound";
 
 class App extends Component {
@@ -13,6 +19,11 @@ class App extends Component {
         <Router>
           <Switch>
             <Route path="/" exact component={HomePage} />
+            <Route
+              path="/tournament/create"
+              exact
+              component={TournamentCreate}
+            />
             <Route component={NotFound} />
           </Switch>
         </Router>
@@ -21,4 +32,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);
