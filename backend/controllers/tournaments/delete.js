@@ -3,19 +3,17 @@
 const express = require("express");
 const sqlwrapper = require("../../model/wrapper");
 const connection = require("../../model/connect");
-const requireAuth = require("../../middleware/auth/verify");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
-  if (!req.body || !req.body.id) {
+  if (!req.body || !req.body.tournamentId) {
     const err = new Error("Malformed Request");
     err.status = 400;
     next(err);
     return;
   }
 
-  const validCredentials = await requireAuth.verifyToken(req, res, next);
-  if (validCredentials) {
+  if (req.headers.id !== null) {
     try {
       const c = connection.connect(
         req.app.get("databaseConfig").host,
@@ -23,9 +21,18 @@ router.post("", async (req, res, next) => {
         req.app.get("databaseConfig").password,
         req.app.get("databaseConfig").schema
       );
-      await sqlwrapper.deleteTournament(c, req.body.id);
-      res.status(200);
-      res.json({ deleteStatus: "success" });
+      const results = await sqlwrapper.deleteTournament(
+        c,
+        req.body.tournamentId
+      );
+      if (results.affectedRows > 0) {
+        res.status(200);
+        res.json({ deleteStatus: "success" });
+      } else {
+        const err = new Error("Tournament does not exist!");
+        err.status = 404;
+        next(err);
+      }
     } catch (err) {
       next(err);
     }

@@ -23,7 +23,7 @@ app.set("serverConfig", config.serverConfig);
 app.set("databaseConfig", databaseConfig);
 
 function mockErrorHandler(err, req, res, next) {
-  if (err) {
+  if (err && err.status) {
     res.status(err.status);
     res.json({ status: err.status, message: err.message });
   } else {

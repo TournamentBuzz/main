@@ -18,7 +18,7 @@ mockSuccessRouter.get("", function(req, res, next) {
 });
 
 function mockErrorHandler(err, req, res, next) {
-  if (err) {
+  if (err && err.status) {
     res.status(err.status);
     res.json({ status: err.status, message: err.message });
   } else {

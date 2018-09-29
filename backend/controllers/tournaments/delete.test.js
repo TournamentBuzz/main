@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const config = require("../../config");
 const sqlwrapper = require("../../model/wrapper");
 const connection = require("../../model/connect");
-const create = require("./create");
+const deletejs = require("./delete");
 
 const app = express();
 app.use(express.json());
@@ -15,7 +15,7 @@ const databaseConfig = {
   host: config.databaseConfig.host,
   username: config.databaseConfig.username,
   password: config.databaseConfig.password,
-  schema: "temptourncreateschema"
+  schema: "temptourndeleteschema"
 };
 const authConfig = { authKey: "loginTestSecret", expiresIn: "1s" };
 app.set("authConfig", authConfig);
@@ -32,7 +32,7 @@ function mockErrorHandler(err, req, res, next) {
   }
 }
 
-app.use("/tournaments/create", create);
+app.use("/tournaments/delete", deletejs);
 app.use(mockErrorHandler);
 
 async function setupTemporarySchema(host, username, password, temporarySchema) {
@@ -110,10 +110,11 @@ async function cleanupTemporarySchema(
   c.destroy();
 }
 
-describe("create", () => {
+describe("delete", () => {
   const testUserEmail = "test@gatech.edu";
   const testUserPassword = "testpassword";
   const testUserName = "Test User";
+  const testTournamentName1 = "Test Tournament";
   beforeAll(async done => {
     await setupTemporarySchema(
       databaseConfig.host,
@@ -134,6 +135,7 @@ describe("create", () => {
       .catch(function(err) {
         throw new Error("Unable to create user: " + err.message);
       });
+    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName1);
     c.destroy();
     done();
   });
@@ -149,21 +151,12 @@ describe("create", () => {
     });
     done();
   });
-  test("Tournament Creation", async done => {
+  test("Tournament Deletion", async done => {
     const tournamentObject = {
-      tournamentName: "testTournament",
-      description: "test",
-      teamEvent: true,
-      location: "ULC",
-      scoringType: "Points",
-      tournamentType: "Single Elim",
-      entryCost: 1,
-      maxParticipants: 16,
-      startDate: "2019-01-01",
-      endDate: "2019-01-02"
+      tournamentId: 1
     };
     await request(app)
-      .post("/tournaments/create")
+      .post("/tournaments/delete")
       .send(tournamentObject)
       .set("id", testUserEmail)
       .set("Content-Type", "application/json")
@@ -172,9 +165,32 @@ describe("create", () => {
       .expect(200)
       .expect(res => {
         try {
-          const id = res.body.tournamentId;
-          if (id < 0) {
-            throw new Error("Id not valid");
+          if (res.body.deleteStatus !== "success") {
+            throw new Error("Deletion failed");
+          }
+        } catch (e) {
+          e.message = "Something went big boom " + e.message;
+          throw e;
+        }
+      });
+    done();
+  });
+  test("Tournament Deletion Failure", async done => {
+    const tournamentObject = {
+      tournamentId: 2
+    };
+    await request(app)
+      .post("/tournaments/delete")
+      .send(tournamentObject)
+      .set("id", testUserEmail)
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(404)
+      .expect(res => {
+        try {
+          if (res.body.deleteStatus === "success") {
+            throw new Error("Deletion succeeded but should not have!");
           }
         } catch (e) {
           e.message = "Something went big boom " + e.message;

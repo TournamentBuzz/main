@@ -208,7 +208,7 @@ function updateTournamentField(connection, id, fieldName, fieldValue) {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve(rows);
       }
     });
   });
@@ -221,7 +221,7 @@ function deleteTournament(connection, id) {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve(rows);
       }
     });
   });
