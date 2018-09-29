@@ -12,7 +12,7 @@ router.post("", async (req, res, next) => {
     !req.body.scoringType ||
     !req.body.tournamentType ||
     req.body.entryCost < 0 ||
-    !req.body.maxParticipants < 0
+    req.body.maxParticipants < 0
   ) {
     const err = new Error("Malformed Request");
     err.status = 400;
