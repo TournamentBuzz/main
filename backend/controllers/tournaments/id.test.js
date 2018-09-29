@@ -17,7 +17,7 @@ const databaseConfig = {
   password: config.databaseConfig.password,
   schema: "temptourngetschema"
 };
-const authConfig = { authKey: "loginTestSecret", expiresIn: "1s" };
+const authConfig = { authKey: "getTestSecret", expiresIn: "1s" };
 app.set("authConfig", authConfig);
 app.set("serverConfig", config.serverConfig);
 app.set("databaseConfig", databaseConfig);
@@ -157,14 +157,12 @@ describe("id", () => {
     await request(app)
       .get("/tournaments/id/1")
       .set("id", testUserEmail)
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(res => {
         if (
-          res[0].tournamentName !== testTournamentName1 ||
-          res[0].creator !== testUserEmail
+          res.body.tournament[0].tournamentName !== testTournamentName1 ||
+          res.body.tournament[0].creator !== testUserEmail
         ) {
           const e = new Error("Not retrieving the right information!");
           throw e;
