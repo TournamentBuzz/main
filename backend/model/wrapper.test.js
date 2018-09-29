@@ -281,7 +281,7 @@ describe("sql wrapper", () => {
     done();
   });
 
-  test("Search/Get Tournament", async done => {
+  test("Create Tournament", async done => {
     // This test requires the create user to test to pass as tournaments needs it as a foreign key
     const c = connection.connect(
       databaseConfig.host,

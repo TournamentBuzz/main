@@ -119,7 +119,7 @@ function createTournament(
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve(rows);
         }
       }
     );
@@ -133,7 +133,7 @@ function getTournament(connection, id) {
       if (err) {
         reject(err);
       } else {
-        resolve(rows, fields);
+        resolve(rows);
       }
     });
   });
@@ -190,7 +190,7 @@ function updateTournament(
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve(rows);
         }
       }
     );
@@ -245,7 +245,7 @@ function createMatch(
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve(rows);
         }
       }
     );
@@ -259,7 +259,7 @@ function getMatch(connection, id) {
       if (err) {
         reject(err);
       } else {
-        resolve(rows, fields);
+        resolve(rows);
       }
     });
   });
@@ -284,7 +284,7 @@ function updateMatch(
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve(rows);
         }
       }
     );
@@ -302,7 +302,7 @@ function updateMatchField(connection, id, fieldName, fieldValue) {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve(rows);
       }
     });
   });
@@ -315,7 +315,7 @@ function deleteMatch(connection, id) {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve(rows);
       }
     });
   });
@@ -329,7 +329,7 @@ function searchTournament(connection, searchQuery) {
       if (err) {
         reject(err);
       } else {
-        resolve(rows, fields);
+        resolve(rows);
       }
     });
   });
