@@ -14,18 +14,9 @@ import CardHeader from "components/Card/CardHeader";
 import CardFooter from "components/Card/CardFooter";
 import Button from "components/CustomButtons/Button";
 
-const dateOptions = {
-  hour12: true,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit"
-};
-
 class TournamentCreate extends React.Component {
   constructor(props) {
     super(props);
-    const startDate = new Date(Date.now());
-    const endDate = new Date(Date.now());
     this.state = {
       submitted: false,
       formError: "",
@@ -36,27 +27,32 @@ class TournamentCreate extends React.Component {
       tournamentType: "Single Elim",
       entryCost: "",
       maxParticipants: "",
-      startDate: startDate.toLocaleString("en-US", dateOptions),
-      endDate: endDate.toLocaleString("en-US", dateOptions)
+      startDate: "2019-01-01",
+      endDate: "2019-01-01"
     };
     this.canSubmit = this.canSubmit.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
   canSubmit() {
     return true;
   }
 
-  async handleFormSubmit() {
-    return true;
+  stateToAPIObject() {
+    return {
+      tournamentName: this.state.name,
+      teamEvent: this.state.teamEvent,
+      location: this.state.location,
+      scoringType: this.state.scoringType,
+      tournamentType: this.state.tournamentType,
+      entryCost: Number(this.state.entryCost),
+      maxParticipants: Number(this.state.maxParticipants),
+      startDate: Date.parse(this.state.startDate).toISOString(),
+      endDate: Date.parse(this.state.endDate).toISOString()
+    };
   }
 
-  handleChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
+  async handleFormSubmit() {}
 
   render() {
     return (
@@ -73,8 +69,7 @@ class TournamentCreate extends React.Component {
                 <InputLabel>Tournament Name</InputLabel>
                 <Input
                   value={this.state.name}
-                  onChange={this.handleChange}
-                  name="name"
+                  onChange={e => this.setState({ name: e.target.value })}
                   id="name"
                   fullWidth={true}
                 />
@@ -91,14 +86,25 @@ class TournamentCreate extends React.Component {
                 <InputLabel>Team Event</InputLabel>
                 <Select
                   value={this.state.teamEvent}
-                  inputProps={{
-                    name: "teamEvent",
-                    id: "teamEvent"
-                  }}
-                  onChange={this.handleChange}
+                  inputProps={{ id: "teamEvent" }}
+                  onChange={e => this.setState({ teamEvent: e.target.value })}
                 >
                   <MenuItem value={false}>Individual</MenuItem>
                   <MenuItem value={true}>Team</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <InputLabel>Tournament Type</InputLabel>
+                <Select
+                  value={this.state.tournamentType}
+                  inputProps={{ id: "tournamentType" }}
+                  onChange={e =>
+                    this.setState({ tournamentType: e.target.value })
+                  }
+                >
+                  <MenuItem value="Single Elim">Single Elimination</MenuItem>
+                  <MenuItem value="Double Elim">Double Elimination</MenuItem>
+                  <MenuItem value="Round-robin">Round Robin</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -108,8 +114,7 @@ class TournamentCreate extends React.Component {
                 <InputLabel>Location</InputLabel>
                 <Input
                   value={this.state.location}
-                  onChange={this.handleChange}
-                  name="location"
+                  onChange={e => this.setState({ location: e.target.value })}
                   id="location"
                   fullWidth={true}
                 />
@@ -123,29 +128,10 @@ class TournamentCreate extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Tournament Type</InputLabel>
-                <Select
-                  value={this.state.tournamentType}
-                  inputProps={{
-                    name: "tournamentType",
-                    id: "tournamentType"
-                  }}
-                  onChange={this.handleChange}
-                >
-                  <MenuItem value="Single Elim">Single Elimination</MenuItem>
-                  <MenuItem value="Double Elim">Double Elimination</MenuItem>
-                  <MenuItem value="Round-robin">Round Robin</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-
-            <div>
-              <FormControl>
                 <InputLabel>Entry Cost</InputLabel>
                 <Input
                   value={this.state.entryCost}
-                  onChange={this.handleChange}
-                  name="entryCost"
+                  onChange={e => this.setState({ entryCost: e.target.value })}
                   id="entryCost"
                   fullWidth={true}
                 />
@@ -165,8 +151,9 @@ class TournamentCreate extends React.Component {
                 <InputLabel>Max Participants</InputLabel>
                 <Input
                   value={this.state.maxParticipants}
-                  onChange={this.handleChange}
-                  name="maxParticipants"
+                  onChange={e =>
+                    this.setState({ maxParticipants: e.target.value })
+                  }
                   id="maxParticipants"
                   fullWidth={true}
                 />
@@ -185,13 +172,12 @@ class TournamentCreate extends React.Component {
               <FormControl>
                 <InputLabel>Start Date</InputLabel>
                 <Input
-                  value={this.state.startDate}
                   type="date"
-                  onChange={this.handleChange}
-                  name="startDate"
+                  onChange={e => this.setState({ startDate: e.target.value })}
                   id="startDate"
                   fullWidth={true}
                   required={true}
+                  placeholder=""
                 />
                 <FormHelperText>
                   {this.state.submitted && !this.state.startDate
@@ -199,19 +185,15 @@ class TournamentCreate extends React.Component {
                     : ""}
                 </FormHelperText>
               </FormControl>
-            </div>
-
-            <div>
               <FormControl>
                 <InputLabel>End Date</InputLabel>
                 <Input
-                  value={this.state.endDate}
                   type="date"
-                  onChange={this.handleChange}
-                  name="endDate"
+                  onChange={e => this.setState({ endDate: e.target.value })}
                   id="endDate"
                   fullWidth={true}
                   required={true}
+                  placeholder=""
                 />
                 <FormHelperText>
                   {this.state.submitted && !this.state.endDate
