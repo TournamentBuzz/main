@@ -1,4 +1,9 @@
 import React from "react";
+import { withRouter } from "react-router-dom";
+
+import AddIcon from "@material-ui/icons/Add";
+import Button from "@material-ui/core/Button";
+
 import TournamentCard from "components/Tournament/TournamentCard.jsx";
 import TournamentAPI from "components/API/TournamentAPI.js";
 
@@ -8,6 +13,11 @@ class TournamentList extends React.Component {
     this.state = {
       tournamentList: null
     };
+    this.handleAddClick = this.handleAddClick.bind(this);
+  }
+
+  handleAddClick() {
+    this.props.history.push("/tournament/create");
   }
 
   async createTournamentList() {
@@ -57,22 +67,17 @@ class TournamentList extends React.Component {
         ) : (
           <div>{this.state.tournamentList}</div>
         )}
+        <Button
+          variant="fab"
+          color="primary"
+          aria-label="Add"
+          onClick={this.handleAddClick}
+        >
+          <AddIcon />
+        </Button>
       </div>
     );
   }
 }
 
-export default TournamentList;
-
-/* <TournamentCard
-          id="1"
-          name="Tech Rec's Bowling Tournament"
-          sponsor="Tech Rec"
-          date="2/21/2019"
-        />
-        <TournamentCard
-          id="2"
-          name="Tech Rec's Billiards Tournament"
-          sponsor="Tech Rec"
-          date="3/14/2019"
-        /> */
+export default withRouter(TournamentList);
