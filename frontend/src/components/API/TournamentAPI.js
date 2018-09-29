@@ -54,6 +54,7 @@ export default class TournamentAPI {
   }
 
   static async editTournament(
+    tournamentId,
     tournamentName,
     description,
     teamEvent,
@@ -70,6 +71,7 @@ export default class TournamentAPI {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
+        tournamentId,
         tournamentName,
         description,
         teamEvent,

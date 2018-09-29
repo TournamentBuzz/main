@@ -12,6 +12,7 @@ import HomePage from "views/HomePage";
 import TournamentDetails from "views/TournamentDetails";
 import MatchDetails from "views/MatchDetails";
 import TournamentCreate from "views/TournamentCreate";
+import TournamentEdit from "views/TournamentEdit";
 import NotFound from "views/NotFound";
 
 class App extends Component {
@@ -30,13 +31,20 @@ class App extends Component {
               render={props => <HomePage {...props} register={true} />}
             />
             <Route path="/tournament" exact component={HomePage} />
-            <Route path="/tournament/create"
+            <Route
+              path="/tournament/create"
               exact
-              component={TournamentCreate} />
+              component={TournamentCreate}
+            />
             <Route
               path="/tournament/:tournamentID"
               exact
               component={TournamentDetails}
+            />
+            <Route
+              path="/tournament/:tournamentID/edit"
+              exact
+              component={TournamentEdit}
             />
             <Route
               path="/tournament/:tournamentID/match/:matchID"

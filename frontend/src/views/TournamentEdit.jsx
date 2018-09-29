@@ -1,0 +1,251 @@
+import React from "react";
+import { withRouter } from "react-router-dom";
+
+import FormHelperText from "@material-ui/core/FormHelperText";
+import Input from "@material-ui/core/Input";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+
+import Card from "components/Card/Card";
+import CardBody from "components/Card/CardBody";
+import CardHeader from "components/Card/CardHeader";
+import CardFooter from "components/Card/CardFooter";
+import Button from "components/CustomButtons/Button";
+
+import TournamentAPI from "components/API/TournamentAPI";
+
+class TournamentEdit extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      submitted: false,
+      formError: "",
+      id: "",
+      name: "",
+      description: "",
+      teamEvent: false,
+      location: "",
+      scoringType: "Points",
+      tournamentType: "Single Elim",
+      entryCost: "",
+      maxParticipants: "",
+      startDate: "2019-01-01",
+      endDate: "2019-01-01"
+    };
+    this.canSubmit = this.canSubmit.bind(this);
+    this.handleFormSubmit = this.handleFormSubmit.bind(this);
+  }
+
+  canSubmit() {
+    return true;
+  }
+
+  async componentDidMount() {
+    const info = await TournamentAPI.getTournament(this.props.tournamentID);
+    this.setState(info);
+  }
+
+  async handleFormSubmit(event) {
+    event.preventDefault();
+    await TournamentAPI.editTournament(
+      this.props.tournamentID,
+      this.state.name,
+      this.state.description,
+      this.state.teamEvent,
+      this.state.location,
+      this.state.scoringType,
+      this.state.tournamentType,
+      Number(this.state.entryCost),
+      Number(this.state.maxParticipants),
+      new Date(this.state.startDate).toISOString().split("T")[0],
+      new Date(this.state.endDate).toISOString().split("T")[0]
+    );
+    this.props.history.push("/");
+  }
+
+  render() {
+    return (
+      <Card>
+        <form onSubmit={this.handleFormSubmit}>
+          <CardHeader color="primary">
+            <h2>Create Tournament</h2>
+          </CardHeader>
+          <CardBody>
+            <FormHelperText error>{this.state.formError}</FormHelperText>
+
+            <div>
+              <FormControl>
+                <InputLabel>Tournament Name</InputLabel>
+                <Input
+                  value={this.state.name}
+                  onChange={e => this.setState({ name: e.target.value })}
+                  id="name"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.name
+                    ? "Tournament Name is required"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div>
+              <FormControl>
+                <InputLabel>Description</InputLabel>
+                <Input
+                  value={this.state.description}
+                  onChange={e => this.setState({ description: e.target.value })}
+                  id="description"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.description
+                    ? "Description is required"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div>
+              <FormControl>
+                <InputLabel>Team Event</InputLabel>
+                <Select
+                  value={this.state.teamEvent}
+                  inputProps={{ id: "teamEvent" }}
+                  onChange={e => this.setState({ teamEvent: e.target.value })}
+                >
+                  <MenuItem value={false}>Individual</MenuItem>
+                  <MenuItem value={true}>Team</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <InputLabel>Tournament Type</InputLabel>
+                <Select
+                  value={this.state.tournamentType}
+                  inputProps={{ id: "tournamentType" }}
+                  onChange={e =>
+                    this.setState({ tournamentType: e.target.value })
+                  }
+                >
+                  <MenuItem value="Single Elim">Single Elimination</MenuItem>
+                  <MenuItem value="Double Elim">Double Elimination</MenuItem>
+                  <MenuItem value="Round-robin">Round Robin</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+
+            <div>
+              <FormControl>
+                <InputLabel>Location</InputLabel>
+                <Input
+                  value={this.state.location}
+                  onChange={e => this.setState({ location: e.target.value })}
+                  id="location"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.location
+                    ? "Location is required"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div>
+              <FormControl>
+                <InputLabel>Entry Cost</InputLabel>
+                <Input
+                  value={this.state.entryCost}
+                  onChange={e => this.setState({ entryCost: e.target.value })}
+                  id="entryCost"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.entryCost
+                    ? "Entry Cost is required"
+                    : ""}
+                  {!Number.isInteger(Number(this.state.entryCost))
+                    ? "Entry Cost must be a whole dollar amount"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div>
+              <FormControl>
+                <InputLabel>Max Participants</InputLabel>
+                <Input
+                  value={this.state.maxParticipants}
+                  onChange={e =>
+                    this.setState({ maxParticipants: e.target.value })
+                  }
+                  id="maxParticipants"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.maxParticipants
+                    ? "Max Participants is required"
+                    : ""}
+                  {!Number.isInteger(Number(this.state.maxParticipants))
+                    ? "Max Participants must be a number"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div>
+              <FormControl>
+                <InputLabel>Start Date</InputLabel>
+                <Input
+                  type="date"
+                  onChange={e => this.setState({ startDate: e.target.value })}
+                  id="startDate"
+                  fullWidth={true}
+                  required={true}
+                  placeholder=""
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.startDate
+                    ? "Start Date is required"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+              <FormControl>
+                <InputLabel>End Date</InputLabel>
+                <Input
+                  type="date"
+                  onChange={e => this.setState({ endDate: e.target.value })}
+                  id="endDate"
+                  fullWidth={true}
+                  required={true}
+                  placeholder=""
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.endDate
+                    ? "End Date is required"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </CardBody>
+          <CardFooter>
+            <Button
+              simple
+              color="primary"
+              size="lg"
+              value="submit"
+              type="submit"
+            >
+              Edit
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    );
+  }
+}
+
+export default withRouter(TournamentCreate);
