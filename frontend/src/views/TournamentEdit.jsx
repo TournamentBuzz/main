@@ -20,6 +20,7 @@ class TournamentEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      tournamentID: this.props.match.params.tournamentID,
       submitted: false,
       formError: "",
       id: "",
@@ -43,7 +44,7 @@ class TournamentEdit extends React.Component {
   }
 
   async componentDidMount() {
-    const info = await TournamentAPI.getTournament(this.props.tournamentID);
+    const info = await TournamentAPI.getTournament(this.state.tournamentID);
     this.setState(info);
   }
 
@@ -70,7 +71,7 @@ class TournamentEdit extends React.Component {
       <Card>
         <form onSubmit={this.handleFormSubmit}>
           <CardHeader color="primary">
-            <h2>Create Tournament</h2>
+            <h2>Edit Tournament</h2>
           </CardHeader>
           <CardBody>
             <FormHelperText error>{this.state.formError}</FormHelperText>
@@ -239,7 +240,7 @@ class TournamentEdit extends React.Component {
               value="submit"
               type="submit"
             >
-              Edit
+              Save
             </Button>
           </CardFooter>
         </form>
