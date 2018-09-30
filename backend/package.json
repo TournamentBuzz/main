@@ -1,0 +1,33 @@
+{
+  "name": "tournament-buzz-backend",
+  "version": "1.0.0",
+  "description": "Backend for TournamentBuzz Junior Design Team 8107",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node server.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/TournamentBuzz/main.git"
+  },
+  "author": "JIB 8107",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TournamentBuzz/main/issues"
+  },
+  "homepage": "https://github.com/TournamentBuzz/main#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "log4js": "^3.0.5",
+    "morgan": "^1.9.0",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "jest": "^23.5.0",
+    "supertest": "^3.3.0"
+  }
+}
