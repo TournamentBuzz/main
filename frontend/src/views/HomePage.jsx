@@ -8,8 +8,10 @@ import Header from "components/Header/Header.jsx";
 import headerLinksStyle from "assets/jss/components/headerLinksStyle.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
+import TournamentList from "components/Tournament/TournamentList.jsx";
 
 import UserAuth from "components/API/UserAuth.js";
+import Authentication from "components/API/Authentication.js";
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -18,22 +20,24 @@ class HomePage extends React.Component {
   }
 
   render() {
-    const { classes, ...rest } = this.props;
+    const { classes, login, register, ...rest } = this.props;
     return (
       <div>
-        <Header
-          color="primary"
-          brand="TournamentBuzz"
-          rightLinks={
-            this.UserAuth.loggedIn() ? (
-              <AuthHeaderLinks />
-            ) : (
-              <NoAuthHeaderLinks />
-            )
-          }
-          fixed
-          {...rest}
-        />
+        <div>
+          <Header
+            color="primary"
+            brand="TournamentBuzz"
+            rightLinks={
+              Authentication.loggedIn() ? (
+                <AuthHeaderLinks />
+              ) : (
+                <NoAuthHeaderLinks loginPage={login} registerPage={register} />
+              )
+            }
+            {...rest}
+          />
+        </div>
+        <TournamentList />
       </div>
     );
   }
