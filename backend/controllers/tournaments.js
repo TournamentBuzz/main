@@ -30,7 +30,7 @@ router.get("/", async function(req, res, next) {
 
 router.use("/create", requireAuth, create);
 router.use("/edit", requireAuth, edit);
-router.use("/delete", deletejs);
+router.use("/delete", requireAuth, deletejs);
 router.use("/id", id);
 
 module.exports = router;

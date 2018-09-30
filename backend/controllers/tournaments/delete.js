@@ -44,7 +44,7 @@ router.post("", async (req, res, next) => {
         next(err);
       }
     } else {
-      const err = new Error("You cannot delete this match!");
+      const err = new Error("You cannot delete this tournament!");
       err.status = 401;
       next(err);
     }
