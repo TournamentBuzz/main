@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("", async (req, res, next) => {
   if (
     !req.body ||
-    req.body.id < 0 ||
+    req.body.tournamentId < 0 ||
     (req.body.teamEvent !== true && req.body.teamEvent !== false) ||
     !req.body.scoringType ||
     !req.body.tournamentType ||
@@ -38,7 +38,7 @@ router.post("", async (req, res, next) => {
       return;
     }
     if (req.headers.id === tournamentObject[0].creator) {
-      const rows = await sqlwrapper.updateTournament(
+      await sqlwrapper.updateTournament(
         c,
         req.body.tournamentId,
         req.headers.id,
@@ -54,7 +54,7 @@ router.post("", async (req, res, next) => {
         req.body.endDate
       );
       res.status(200);
-      res.json({ tournamentId: rows.insertId });
+      res.json({ tournamentId: req.body.tournamentId });
     } else {
       const err = new Error("You cannot edit this tournament!");
       err.status = 401;
