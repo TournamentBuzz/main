@@ -3,12 +3,11 @@
 const request = require("supertest");
 const express = require("express");
 const mysql = require("mysql");
-const jwt = require("jsonwebtoken");
 
 const config = require("../../config");
 const sqlwrapper = require("../../model/wrapper");
 const connection = require("../../model/connect");
-const login = require("./login");
+const get = require("./id");
 
 const app = express();
 app.use(express.json());
@@ -16,15 +15,15 @@ const databaseConfig = {
   host: config.databaseConfig.host,
   username: config.databaseConfig.username,
   password: config.databaseConfig.password,
-  schema: "temploginjestschema"
+  schema: "temptourngetschema"
 };
-const authConfig = { authKey: "loginTestSecret", expiresIn: "1s" };
+const authConfig = { authKey: "getTestSecret", expiresIn: "1s" };
 app.set("authConfig", authConfig);
 app.set("serverConfig", config.serverConfig);
 app.set("databaseConfig", databaseConfig);
 
 function mockErrorHandler(err, req, res, next) {
-  if (err) {
+  if (err && err.status) {
     res.status(err.status);
     res.json({ status: err.status, message: err.message });
   } else {
@@ -33,7 +32,7 @@ function mockErrorHandler(err, req, res, next) {
   }
 }
 
-app.use("/user/login", login);
+app.use("/tournaments/id/", get);
 app.use(mockErrorHandler);
 
 async function setupTemporarySchema(host, username, password, temporarySchema) {
@@ -61,6 +60,36 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         PRIMARY KEY(email)
     );`;
   await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
+  const setupTournamentsTableQuery = `CREATE TABLE tournaments (
+        id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
+        creator VARCHAR(255) NOT NULL,
+        description VARCHAR(255) DEFAULT NULL,
+        teamEvent BOOL NOT NULL DEFAULT FALSE,
+        location VARCHAR(255) DEFAULT NULL,
+        scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
+        tournamentName VARCHAR(255) DEFAULT NULL,
+        tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+        entryCost INT(5) NOT NULL DEFAULT 0,
+        maxParticipants INT(5) NOT NULL DEFAULT 16,
+        startDate DATE DEFAULT NULL,
+        endDate DATE DEFAULT NULL,
+        PRIMARY KEY(id),
+        FOREIGN KEY(creator)
+        REFERENCES users(email)
+    );`;
+  await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
+  const setupMatchesTableQuery = `CREATE TABLE matches (
+        id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+        location VARCHAR(255) DEFAULT NULL,
+        score VARCHAR(255) DEFAULT NULL,
+        matchTime DATETIME DEFAULT NULL,
+        matchName VARCHAR(255) DEFAULT NULL,
+        tournament INT(10) NOT NULL,
+        PRIMARY KEY(id),
+        FOREIGN KEY(tournament)
+        REFERENCES tournaments(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
   specC.destroy();
 }
 
@@ -81,17 +110,18 @@ async function cleanupTemporarySchema(
   c.destroy();
 }
 
-describe("login", () => {
+describe("id", () => {
   const testUserEmail = "test@gatech.edu";
   const testUserPassword = "testpassword";
   const testUserName = "Test User";
-  const temporarySchema = "temploginjestschema";
+  const testTournamentName1 = "Test Tournament";
+  const testTournamentName2 = "Test Tournament 2";
   beforeAll(async done => {
     await setupTemporarySchema(
       databaseConfig.host,
       databaseConfig.username,
       databaseConfig.password,
-      temporarySchema
+      databaseConfig.schema
     ).catch(function(err) {
       throw new Error("Unable to create temporary schema: " + err.message);
     });
@@ -99,13 +129,15 @@ describe("login", () => {
       databaseConfig.host,
       databaseConfig.username,
       databaseConfig.password,
-      temporarySchema
+      databaseConfig.schema
     );
     await sqlwrapper
       .createUser(c, testUserName, testUserEmail, testUserPassword, 0)
       .catch(function(err) {
         throw new Error("Unable to create user: " + err.message);
       });
+    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName1);
+    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName2);
     c.destroy();
     done();
   });
@@ -115,97 +147,25 @@ describe("login", () => {
       databaseConfig.host,
       databaseConfig.username,
       databaseConfig.password,
-      temporarySchema
+      databaseConfig.schema
     ).catch(function(err) {
       throw new Error("Unable to cleanup temporary schema: " + err.message);
     });
     done();
   });
-
-  test("Login Success", async done => {
-    const loginObject = {
-      email: testUserEmail,
-      password: testUserPassword
-    };
+  test("Get Tournament", async done => {
     await request(app)
-      .post("/user/login")
-      .send(loginObject)
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .get("/tournaments/id/1")
+      .set("id", testUserEmail)
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(res => {
-        try {
-          const payload = jwt.verify(
-            res.body.jwt,
-            app.get("authConfig").authKey
-          );
-          if (payload.id !== testUserEmail) {
-            throw new Error(
-              "Unexpected ID, expected " +
-                testUserEmail +
-                ", got " +
-                payload.id +
-                " instead"
-            );
-          }
-        } catch (e) {
-          e.message =
-            "Returned JWT is not valid for some reason or another: " +
-            e.message;
+        if (
+          res.body.tournament[0].tournamentName !== testTournamentName1 ||
+          res.body.tournament[0].creator !== testUserEmail
+        ) {
+          const e = new Error("Not retrieving the right information!");
           throw e;
-        }
-      });
-    done();
-  });
-
-  test("Login Fail Incorrect Password", async done => {
-    const loginObject = {
-      email: testUserEmail,
-      password: "incorrect_password"
-    };
-    await request(app)
-      .post("/user/login")
-      .send(loginObject)
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect("Content-Type", /json/)
-      .expect(401)
-      .expect(res => {
-        const expectedError = "Invalid Username or Password";
-        if (res.body.message !== expectedError) {
-          throw new Error(
-            "Expected error: " +
-              expectedError +
-              ", received: " +
-              res.body.message
-          );
-        }
-      });
-    done();
-  });
-
-  test("Login Fail Incorrect Username", async done => {
-    const loginObject = {
-      email: "thisUsernameDoesNotExist",
-      password: testUserPassword
-    };
-    await request(app)
-      .post("/user/login")
-      .send(loginObject)
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect("Content-Type", /json/)
-      .expect(401)
-      .expect(res => {
-        const expectedError = "Invalid Username or Password";
-        if (res.body.message !== expectedError) {
-          throw new Error(
-            "Expected error: " +
-              expectedError +
-              ", received: " +
-              res.body.message
-          );
         }
       });
     done();
