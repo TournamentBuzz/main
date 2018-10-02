@@ -3,7 +3,6 @@
 const express = require("express");
 const sqlwrapper = require("../../model/wrapper");
 const connection = require("../../model/connect");
-const requireAuth = require("../../middleware/auth/verify");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
@@ -21,18 +20,27 @@ router.post("", async (req, res, next) => {
     next(err);
     return;
   }
-  const validCredentials = await requireAuth.verifyToken(req, res, next);
-  if (validCredentials) {
-    try {
-      const c = connection.connect(
-        req.app.get("databaseConfig").host,
-        req.app.get("databaseConfig").username,
-        req.app.get("databaseConfig").password,
-        req.app.get("databaseConfig").schema
-      );
+  try {
+    const c = connection.connect(
+      req.app.get("databaseConfig").host,
+      req.app.get("databaseConfig").username,
+      req.app.get("databaseConfig").password,
+      req.app.get("databaseConfig").schema
+    );
+    const tournamentObject = await sqlwrapper.getTournament(
+      c,
+      req.body.tournamentId
+    );
+    if (!tournamentObject[0]) {
+      const err = new Error("Tournament does not exist!");
+      err.status = 404;
+      next(err);
+      return;
+    }
+    if (req.headers.id === tournamentObject[0].creator) {
       const rows = await sqlwrapper.updateTournament(
         c,
-        req.body.id,
+        req.body.tournamentId,
         req.headers.id,
         req.body.description,
         req.body.teamEvent,
@@ -46,14 +54,13 @@ router.post("", async (req, res, next) => {
         req.body.endDate
       );
       res.status(200);
-      console.log(rows);
       res.json({ tournamentId: rows.insertId });
-    } catch (err) {
+    } else {
+      const err = new Error("You cannot edit this tournament!");
+      err.status = 401;
       next(err);
     }
-  } else {
-    const err = new Error("Invalid Credentials");
-    err.status = 401;
+  } catch (err) {
     next(err);
   }
 });
