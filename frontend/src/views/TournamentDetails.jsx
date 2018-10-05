@@ -11,7 +11,6 @@ import PencilIcon from "@material-ui/icons/Create";
 import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
-import UserAuth from "components/API/UserAuth.js";
 import Authentication from "components/API/Authentication.js";
 import TournamentAPI from "components/API/TournamentAPI.js";
 import MatchList from "components/Match/MatchList.jsx";
@@ -21,7 +20,6 @@ import tournamentDetailsStyle from "assets/jss/views/tournamentDetailsStyle.jsx"
 class TournamentDetails extends React.Component {
   constructor(props) {
     super(props);
-    this.UserAuth = new UserAuth();
     this.state = {
       tournamentName: null,
       tournamentID: this.props.match.params.tournamentID,

@@ -29,7 +29,6 @@ class LoginBox extends React.Component {
       APIBusy: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    this.UserAuth = new UserAuth();
   }
 
   handleChange(e) {
@@ -43,7 +42,7 @@ class LoginBox extends React.Component {
     this.setState({ submitted: true, APIBusy: true });
     try {
       const { loginEmail, loginPassword } = this.state;
-      await this.UserAuth.login(loginEmail, loginPassword);
+      await UserAuth.login(loginEmail, loginPassword);
       window.location.reload();
     } catch (error) {
       this.setState({ formError: error.message });

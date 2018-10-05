@@ -18,7 +18,6 @@ class AuthHeaderLinks extends React.Component {
     this.state = {
       anchorEl: null
     };
-    this.UserAuth = new UserAuth();
   }
 
   handleMenu = event => {
@@ -31,7 +30,7 @@ class AuthHeaderLinks extends React.Component {
 
   handleLogout = () => {
     this.setState({ anchorEl: null });
-    this.UserAuth.logout();
+    UserAuth.logout();
     window.location.reload();
   };
 

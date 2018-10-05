@@ -8,7 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
-import UserAuth from "components/API/UserAuth.js";
 import Authentication from "components/API/Authentication.js";
 import Grid from "@material-ui/core/Grid";
 
@@ -18,12 +17,7 @@ const matchDetailsStyle = {
   }
 };
 
-class matchDetails extends React.Component {
-  constructor(props) {
-    super(props);
-    this.UserAuth = new UserAuth();
-  }
-
+class MatchDetails extends React.Component {
   render() {
     const { classes, ...rest } = this.props;
     return (
@@ -72,4 +66,4 @@ class matchDetails extends React.Component {
   }
 }
 
-export default withStyles(matchDetailsStyle)(matchDetails);
+export default withStyles(matchDetailsStyle)(MatchDetails);
