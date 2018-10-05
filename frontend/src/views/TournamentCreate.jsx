@@ -7,6 +7,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
+import TextField from "@material-ui/core/TextField";
 
 import Card from "components/Card/Card";
 import CardBody from "components/Card/CardBody";
@@ -191,7 +192,7 @@ class TournamentCreate extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Start Date</InputLabel>
+                <InputLabel shrink={true}>Start Date</InputLabel>
                 <Input
                   type="date"
                   onChange={e => this.setState({ startDate: e.target.value })}
@@ -207,7 +208,7 @@ class TournamentCreate extends React.Component {
                 </FormHelperText>
               </FormControl>
               <FormControl>
-                <InputLabel>End Date</InputLabel>
+                <InputLabel shrink={true}>End Date</InputLabel>
                 <Input
                   type="date"
                   onChange={e => this.setState({ endDate: e.target.value })}

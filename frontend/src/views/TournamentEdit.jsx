@@ -199,7 +199,7 @@ class TournamentEdit extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Start Date</InputLabel>
+                <InputLabel shrink={true}>Start Date</InputLabel>
                 <Input
                   type="date"
                   onChange={e => this.setState({ startDate: e.target.value })}
@@ -215,7 +215,7 @@ class TournamentEdit extends React.Component {
                 </FormHelperText>
               </FormControl>
               <FormControl>
-                <InputLabel>End Date</InputLabel>
+                <InputLabel shrink={true}>End Date</InputLabel>
                 <Input
                   type="date"
                   onChange={e => this.setState({ endDate: e.target.value })}
