@@ -24,7 +24,7 @@ class TournamentEdit extends React.Component {
       submitted: false,
       formError: "",
       id: "",
-      name: "",
+      tournamentName: "",
       description: "",
       teamEvent: false,
       location: "",
@@ -44,15 +44,33 @@ class TournamentEdit extends React.Component {
   }
 
   async componentDidMount() {
-    const info = await TournamentAPI.getTournament(this.state.tournamentID);
+    let info = undefined;
+    try {
+      info = await TournamentAPI.getTournament(this.state.tournamentID);
+    } catch (error) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (info === undefined) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (info.length < 1) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    info = info[0];
+    info.teamEvent = info.teamEvent === 0 ? false : true;
+    info.startDate = info.startDate.split("T")[0];
+    info.endDate = info.endDate.split("T")[0];
     this.setState(info);
   }
 
   async handleFormSubmit(event) {
     event.preventDefault();
     await TournamentAPI.editTournament(
-      this.props.tournamentID,
-      this.state.name,
+      this.state.tournamentID,
+      this.state.tournamentName,
       this.state.description,
       this.state.teamEvent,
       this.state.location,
@@ -80,13 +98,15 @@ class TournamentEdit extends React.Component {
               <FormControl>
                 <InputLabel>Tournament Name</InputLabel>
                 <Input
-                  value={this.state.name}
-                  onChange={e => this.setState({ name: e.target.value })}
-                  id="name"
+                  value={this.state.tournamentName}
+                  onChange={e =>
+                    this.setState({ tournamentName: e.target.value })
+                  }
+                  id="tournamentName"
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.name
+                  {this.state.submitted && !this.state.tournamentName
                     ? "Tournament Name is required"
                     : ""}
                 </FormHelperText>
@@ -206,7 +226,7 @@ class TournamentEdit extends React.Component {
                   id="startDate"
                   fullWidth={true}
                   required={true}
-                  placeholder=""
+                  value={this.state.startDate}
                 />
                 <FormHelperText>
                   {this.state.submitted && !this.state.startDate
@@ -222,7 +242,7 @@ class TournamentEdit extends React.Component {
                   id="endDate"
                   fullWidth={true}
                   required={true}
-                  placeholder=""
+                  value={this.state.endDate}
                 />
                 <FormHelperText>
                   {this.state.submitted && !this.state.endDate

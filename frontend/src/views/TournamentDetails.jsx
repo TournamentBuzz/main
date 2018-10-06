@@ -76,21 +76,9 @@ class TournamentDetails extends React.Component {
     }
     details = details[0];
     details.teamEvent = details.teamEvent === 0 ? "No" : "Yes";
-    details.startDate = new Date(Date.parse(details.startDate)).toDateString();
-    details.endDate = new Date(Date.parse(details.endDate)).toDateString();
-    this.setState({
-      tournamentName: details.tournamentName,
-      creator: details.creator,
-      description: details.description,
-      teamEvent: details.teamEvent,
-      location: details.location,
-      scoringType: details.scoringType,
-      tournamentType: details.tournamentType,
-      entryCost: details.entryCost,
-      maxParticipants: details.maxParticipants,
-      startDate: details.startDate,
-      endDate: details.endDate
-    });
+    details.startDate = new Date(details.startDate).toDateString();
+    details.endDate = new Date(details.endDate).toDateString();
+    this.setState(details);
   }
 
   async componentDidMount() {
