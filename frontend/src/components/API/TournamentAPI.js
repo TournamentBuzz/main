@@ -108,10 +108,9 @@ export default class TournamentAPI {
   }
 
   static async getTournaments() {
-    if (!Authentication.loggedIn()) return;
     const res = await fetch("/tournaments", {
       method: "GET",
-      headers: Authentication.withJWT()
+      headers: Authentication.withoutJWT()
     });
 
     if (!res.ok) {
@@ -122,10 +121,9 @@ export default class TournamentAPI {
   }
 
   static async getTournament(id) {
-    if (!Authentication.loggedIn()) return;
     const res = await fetch(`/tournaments/id/${id}`, {
       method: "GET",
-      headers: Authentication.withJWT()
+      headers: Authentication.withoutJWT()
     });
 
     if (!res.ok) {

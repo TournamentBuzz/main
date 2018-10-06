@@ -39,6 +39,9 @@ export default class Authentication {
   }
 
   static getUID() {
+    if (!this.loggedIn()) {
+      return null;
+    }
     const token = this.getToken();
     try {
       const decoded = decode(token);
