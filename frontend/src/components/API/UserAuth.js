@@ -40,7 +40,7 @@ export default class UserAuth {
   }
 
   static async renew() {
-    if (!this.loggedIn()) return;
+    if (!Authentication.loggedIn()) return;
     const res = await fetch("/user/renew", {
       method: "GET",
       headers: Authentication.withJWT()
@@ -56,5 +56,11 @@ export default class UserAuth {
 
   static logout() {
     localStorage.removeItem("userToken");
+  }
+
+  static startAutoRenewal() {
+    const delay = 10 * 60 * 1000; // 10 minutes
+    UserAuth.renew();
+    setInterval(() => UserAuth.renew(), delay);
   }
 }
