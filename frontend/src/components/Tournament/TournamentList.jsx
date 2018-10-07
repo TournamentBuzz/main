@@ -4,6 +4,9 @@ import { withRouter } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Search from "@material-ui/icons/Search";
 
 import TournamentCard from "components/Tournament/TournamentCard.jsx";
 import TournamentAPI from "components/API/TournamentAPI.js";
@@ -12,7 +15,8 @@ class TournamentList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tournamentList: null
+      tournamentListAll: null,
+      tournamentListView: null
     };
     this.handleAddClick = this.handleAddClick.bind(this);
   }
@@ -21,23 +25,35 @@ class TournamentList extends React.Component {
     this.props.history.push("/tournament/create");
   }
 
+  handleSearchChange(e) {
+    if (this.state.tournamentListAll === null) return;
+    const searchTerm = e.target.value;
+    this.setState({
+      tournamentListView: this.state.tournamentListAll.filter(function(
+        tournamentCard
+      ) {
+        return tournamentCard.props.name.includes(searchTerm);
+      })
+    });
+  }
+
   async createTournamentList() {
     let tournaments = undefined;
     try {
       tournaments = await TournamentAPI.getTournaments();
     } catch (error) {
       let message = <h2>Error loading tournaments</h2>;
-      this.setState({ tournamentList: message });
+      this.setState({ tournamentListView: message });
       return;
     }
     if (tournaments === undefined) {
       let message = <h2>Error loading tournaments</h2>;
-      this.setState({ tournamentList: message });
+      this.setState({ tournamentListView: message });
       return;
     }
     if (tournaments.length < 1) {
       let message = <h2>No upcoming tournaments</h2>;
-      this.setState({ tournamentList: message });
+      this.setState({ tournamentListView: message });
       return;
     }
     let list = [];
@@ -53,7 +69,10 @@ class TournamentList extends React.Component {
       );
       list.push(card);
     }
-    this.setState({ tournamentList: list });
+    this.setState({
+      tournamentListAll: list,
+      tournamentListView: list
+    });
   }
 
   async componentDidMount() {
@@ -63,12 +82,24 @@ class TournamentList extends React.Component {
   render() {
     return (
       <div>
-        {this.state.tournamentList === null ? (
+        <TextField
+          style={{ width: "95%", marginBottom: "20px" }}
+          placeholder="Search"
+          onChange={this.handleSearchChange.bind(this)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Search />
+              </InputAdornment>
+            )
+          }}
+        />
+        {this.state.tournamentListView === null ? (
           <div>
             <CircularProgress />
           </div>
         ) : (
-          <div>{this.state.tournamentList}</div>
+          <div>{this.state.tournamentListView}</div>
         )}
         <Button
           variant="fab"
