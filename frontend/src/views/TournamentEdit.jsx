@@ -15,6 +15,7 @@ import CardFooter from "components/Card/CardFooter";
 import Button from "components/CustomButtons/Button";
 
 import TournamentAPI from "components/API/TournamentAPI";
+import Authentication from "components/API/Authentication.js";
 
 class TournamentEdit extends React.Component {
   constructor(props) {
@@ -44,6 +45,9 @@ class TournamentEdit extends React.Component {
   }
 
   async componentDidMount() {
+    if (!Authentication.loggedIn()) {
+      this.props.history.push("/NotFound");
+    }
     let info = undefined;
     try {
       info = await TournamentAPI.getTournament(this.state.tournamentID);
@@ -60,6 +64,9 @@ class TournamentEdit extends React.Component {
       return;
     }
     info = info[0];
+    if (Authentication.getUID() !== info.creator) {
+      this.props.history.push("/NotFound");
+    }
     info.teamEvent = info.teamEvent === 0 ? false : true;
     info.startDate = info.startDate.split("T")[0];
     info.endDate = info.endDate.split("T")[0];

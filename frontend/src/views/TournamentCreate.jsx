@@ -15,6 +15,7 @@ import CardFooter from "components/Card/CardFooter";
 import Button from "components/CustomButtons/Button";
 
 import TournamentAPI from "components/API/TournamentAPI";
+import Authentication from "components/API/Authentication";
 
 class TournamentCreate extends React.Component {
   constructor(props) {
@@ -35,6 +36,12 @@ class TournamentCreate extends React.Component {
     };
     this.canSubmit = this.canSubmit.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    if (!Authentication.loggedIn()) {
+      this.props.history.push("/login");
+    }
   }
 
   canSubmit() {

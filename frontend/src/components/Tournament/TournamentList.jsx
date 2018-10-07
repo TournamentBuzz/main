@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import TournamentCard from "components/Tournament/TournamentCard.jsx";
 import TournamentAPI from "components/API/TournamentAPI.js";
@@ -63,7 +64,9 @@ class TournamentList extends React.Component {
     return (
       <div>
         {this.state.tournamentList === null ? (
-          <h2>Loading Tournaments</h2>
+          <div>
+            <CircularProgress />
+          </div>
         ) : (
           <div>{this.state.tournamentList}</div>
         )}
