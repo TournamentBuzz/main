@@ -231,7 +231,7 @@ class TournamentCreate extends React.Component {
               </FormControl>
             </div>
           </CardBody>
-          <CardFooter>
+          <CardFooter style={{ display: "block" }}>
             <Button
               simple
               color="primary"

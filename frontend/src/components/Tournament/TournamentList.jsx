@@ -105,9 +105,14 @@ class TournamentList extends React.Component {
           variant="fab"
           color="primary"
           aria-label="Add"
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px"
+          }}
           onClick={this.handleAddClick}
         >
-          <AddIcon />
+          <AddIcon style={{ color: "#ffffff" }} />
         </Button>
       </div>
     );
