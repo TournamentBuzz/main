@@ -9,6 +9,7 @@ const create = require("./tournaments/create");
 const edit = require("./tournaments/edit");
 const deletejs = require("./tournaments/delete");
 const id = require("./tournaments/id");
+const search = require("./tournaments/search");
 
 const requireAuth = require("../middleware/auth/verify");
 
@@ -32,5 +33,6 @@ router.use("/create", requireAuth, create);
 router.use("/edit", requireAuth, edit);
 router.use("/delete", requireAuth, deletejs);
 router.use("/id", id);
+router.use("/search", search);
 
 module.exports = router;
