@@ -64,13 +64,13 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
         creator VARCHAR(255) NOT NULL,
         description VARCHAR(255) DEFAULT NULL,
-        teamEvent BOOL NOT NULL DEFAULT FALSE,
+        maxTeamSize INT(5) NOT NULL DEFAULT 1,
         location VARCHAR(255) DEFAULT NULL,
         scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
         tournamentName VARCHAR(255) DEFAULT NULL,
         tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
         entryCost INT(5) NOT NULL DEFAULT 0,
-        maxParticipants INT(5) NOT NULL DEFAULT 16,
+        maxTeams INT(5) NOT NULL DEFAULT 16,
         startDate DATE DEFAULT NULL,
         endDate DATE DEFAULT NULL,
         PRIMARY KEY(id),
@@ -157,12 +157,12 @@ describe("edit", () => {
     const tournamentObject = {
       tournamentId: 1,
       description: "test",
-      teamEvent: true,
+      maxTeamSize: 5,
       location: "ULC",
       scoringType: "Points",
       tournamentType: "Single Elim",
       entryCost: 1,
-      maxParticipants: 16,
+      maxTeams: 16,
       startDate: "2019-01-01",
       endDate: "2019-01-02"
     };
@@ -190,12 +190,12 @@ describe("edit", () => {
           const tourn = row[0];
           if (
             tourn.description !== "test" ||
-            tourn.teamEvent !== 1 ||
+            tourn.maxTeamSize !== 5 ||
             tourn.location !== "ULC" ||
             tourn.scoringType !== "Points" ||
             tourn.tournamentType !== "Single Elim" ||
             tourn.entryCost !== 1 ||
-            tourn.maxParticipants !== 16 ||
+            tourn.maxTeams !== 16 ||
             new Date(Date.parse(String(tourn.startDate))).toISOString() !==
               tt1Date ||
             new Date(Date.parse(String(tourn.endDate))).toISOString() !==
@@ -214,12 +214,12 @@ describe("edit", () => {
     const tournamentObject = {
       tournamentId: 3,
       description: "failure",
-      teamEvent: true,
+      maxTeamSize: 4,
       location: "NO",
       scoringType: "Points",
       tournamentType: "Single Elim",
       entryCost: 10,
-      maxParticipants: 1,
+      maxTeams: 1,
       startDate: "2015-01-01",
       endDate: "2015-01-02"
     };
@@ -238,12 +238,12 @@ describe("edit", () => {
     const tournamentObject = {
       tournamentId: 2,
       description: "fail",
-      teamEvent: true,
+      maxTeamSize: 1,
       location: "No",
       scoringType: "Points",
       tournamentType: "Double Elim",
       entryCost: 5,
-      maxParticipants: 4,
+      maxTeams: 4,
       startDate: "2010-01-01",
       endDate: "2010-01-02"
     };
@@ -267,12 +267,12 @@ describe("edit", () => {
           const tourn = row[0];
           if (
             tourn.description !== null ||
-            tourn.teamEvent !== 0 ||
+            tourn.maxTeamSize !== 1 ||
             tourn.location !== null ||
             tourn.scoringType !== "Points" ||
             tourn.tournamentType !== "Single Elim" ||
             tourn.entryCost !== 0 ||
-            tourn.maxParticipants !== 16 ||
+            tourn.maxTeams !== 16 ||
             tourn.startDate !== null ||
             tourn.endDate !== null
           ) {

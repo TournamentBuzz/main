@@ -88,30 +88,30 @@ function createTournament(
   creator,
   tournamentName = null,
   description = null,
-  teamEvent = false,
+  maxTeamSize = 1,
   location = null,
   scoringType = "Points",
   tournamentType = "Single Elim",
   entryCost = 0,
-  maxParticipants = 16,
+  maxTeams = 16,
   startDate = null,
   endDate = null
 ) {
   const query =
-    "INSERT INTO tournaments(creator, description, teamEvent, location, scoringType, tournamentName, tournamentType, entryCost, maxParticipants, startDate, endDate) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO tournaments(creator, description, maxTeamSize, location, scoringType, tournamentName, tournamentType, entryCost, maxTeams, startDate, endDate) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
       [
         creator,
         description,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentName,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate,
         endDate
       ],
@@ -157,31 +157,31 @@ function updateTournament(
   id,
   creator,
   description,
-  teamEvent,
+  maxTeamSize,
   location,
   scoringType,
   tournamentName,
   tournamentType,
   entryCost,
-  maxParticipants,
+  maxTeams,
   startDate,
   endDate
 ) {
   const query =
-    "UPDATE tournaments SET creator = ?, description = ?, teamEvent = ?, location = ?, scoringType = ?, tournamentName = ?, tournamentType = ?, entryCost = ?, maxParticipants = ?, startDate = ?, endDate = ? WHERE id = ?;";
+    "UPDATE tournaments SET creator = ?, description = ?, maxTeamSize = ?, location = ?, scoringType = ?, tournamentName = ?, tournamentType = ?, entryCost = ?, maxTeams = ?, startDate = ?, endDate = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
       [
         creator,
         description,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentName,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate,
         endDate,
         id
@@ -233,14 +233,16 @@ function createMatch(
   score = null,
   matchTime = null,
   matchName = null,
-  tournament
+  tournament,
+  teamA = -1,
+  teamB = -1
 ) {
   const query =
-    "INSERT INTO matches(location, score, matchTime, matchName, tournament) VALUES(?, ?, ?, ?, ?)";
+    "INSERT INTO matches(location, score, matchTime, matchName, tournament, teamA, teamB) VALUES(?, ?, ?, ?, ?, ?, ?)";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
-      [location, score, matchTime, matchName, tournament],
+      [location, score, matchTime, matchName, tournament, teamA, teamB],
       function(err, rows, fields) {
         if (err) {
           reject(err);
@@ -272,14 +274,16 @@ function updateMatch(
   score,
   matchTime,
   matchName,
-  tournament
+  tournament,
+  teamA = -1,
+  teamB = -1
 ) {
   const query =
-    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, tournament = ? WHERE id = ?;";
+    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, tournament = ?, teamA = ?, teamB = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
-      [location, score, matchTime, matchName, tournament, id],
+      [location, score, matchTime, matchName, tournament, id, teamA, teamB],
       function(err, rows, fields) {
         if (err) {
           reject(err);
