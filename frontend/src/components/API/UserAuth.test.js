@@ -130,21 +130,21 @@ describe("tournaments", () => {
 
   const tournamentId = 1;
   const name = "My Tournament";
-  const teamEvent = false;
+  const maxTeamSize = 10;
   const location = "Georgia Tech";
   const scoringType = "points";
   const tournamentType = "round-robin";
   const entryCost = 10;
-  const maxParticipants = 32;
+  const maxTeams = 32;
   const startDate = "2018-09-13T22:07:14.260Z";
   const tournament = {
     name,
-    teamEvent,
+    maxTeamSize,
     location,
     scoringType,
     tournamentType,
     entryCost,
-    maxParticipants,
+    maxTeams,
     startDate
   };
 
@@ -153,12 +153,12 @@ describe("tournaments", () => {
       try {
         await userAuth.createTournament(
           name,
-          teamEvent,
+          maxTeamSize,
           location,
           scoringType,
           tournamentType,
           entryCost,
-          maxParticipants,
+          maxTeams,
           startDate
         );
       } catch (error) {
@@ -176,12 +176,12 @@ describe("tournaments", () => {
       fetch.once(JSON.stringify({ tournamentId }));
       const id = await userAuth.createTournament(
         name,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate
       );
       expect(id).toEqual(tournamentId);
@@ -196,12 +196,12 @@ describe("tournaments", () => {
         await userAuth.editTournament(
           tournamentId,
           name,
-          teamEvent,
+          maxTeamSize,
           location,
           scoringType,
           tournamentType,
           entryCost,
-          maxParticipants,
+          maxTeams,
           startDate
         );
       } catch (error) {
@@ -223,12 +223,12 @@ describe("tournaments", () => {
       const id = await userAuth.editTournament(
         tournamentId,
         name,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate
       );
       expect(id).toEqual(tournamentId);

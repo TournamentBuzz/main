@@ -18,12 +18,12 @@ export default class TournamentAPI {
   static async createTournament(
     tournamentName,
     description,
-    teamEvent,
+    maxTeamSize,
     location,
     scoringType,
     tournamentType,
     entryCost,
-    maxParticipants,
+    maxTeams,
     startDate,
     endDate
   ) {
@@ -34,12 +34,12 @@ export default class TournamentAPI {
       body: JSON.stringify({
         tournamentName,
         description,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate,
         endDate
       })
@@ -57,12 +57,12 @@ export default class TournamentAPI {
     tournamentId,
     tournamentName,
     description,
-    teamEvent,
+    maxTeamSize,
     location,
     scoringType,
     tournamentType,
     entryCost,
-    maxParticipants,
+    maxTeams,
     startDate,
     endDate
   ) {
@@ -74,12 +74,12 @@ export default class TournamentAPI {
         tournamentId,
         tournamentName,
         description,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate,
         endDate
       })

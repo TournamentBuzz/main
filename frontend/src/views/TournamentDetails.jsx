@@ -25,12 +25,12 @@ class TournamentDetails extends React.Component {
       tournamentID: this.props.match.params.tournamentID,
       creator: null,
       description: null,
-      teamEvent: null,
+      maxTeamSize: null,
       location: null,
       scoringType: null,
       tournamentType: null,
       entryCost: null,
-      maxParticipants: null,
+      maxTeams: null,
       startDate: null,
       endDate: null,
       currentUser: Authentication.getUID()
@@ -75,7 +75,6 @@ class TournamentDetails extends React.Component {
       return;
     }
     details = details[0];
-    details.teamEvent = details.teamEvent === 0 ? "No" : "Yes";
     details.startDate = new Date(details.startDate).toDateString();
     details.endDate = new Date(details.endDate).toDateString();
     this.setState(details);
@@ -145,13 +144,13 @@ class TournamentDetails extends React.Component {
             <b>Tournament Type:</b> {this.state.tournamentType}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Team Event:</b> {this.state.teamEvent}
+            <b>Max Team Size:</b> {this.state.maxTeamSize}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Entry Cost:</b> {this.state.entryCost}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Max Participants:</b> {this.state.maxParticipants}
+            <b>Max Teams:</b> {this.state.maxTeams}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Start Date:</b> {this.state.startDate}

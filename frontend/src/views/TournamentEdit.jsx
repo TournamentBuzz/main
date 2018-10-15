@@ -27,12 +27,12 @@ class TournamentEdit extends React.Component {
       id: "",
       tournamentName: "",
       description: "",
-      teamEvent: false,
+      maxTeamSize: "",
       location: "",
       scoringType: "Points",
       tournamentType: "Single Elim",
       entryCost: "",
-      maxParticipants: "",
+      maxTeams: "",
       startDate: "2019-01-01",
       endDate: "2019-01-01"
     };
@@ -67,7 +67,7 @@ class TournamentEdit extends React.Component {
     if (Authentication.getUID() !== info.creator) {
       this.props.history.push("/NotFound");
     }
-    info.teamEvent = info.teamEvent === 0 ? false : true;
+    info.maxTeamSize = info.maxTeamSize === 0 ? false : true;
     info.startDate = info.startDate.split("T")[0];
     info.endDate = info.endDate.split("T")[0];
     this.setState(info);
@@ -79,12 +79,12 @@ class TournamentEdit extends React.Component {
       this.state.tournamentID,
       this.state.tournamentName,
       this.state.description,
-      this.state.teamEvent,
+      this.state.maxTeamSize,
       this.state.location,
       this.state.scoringType,
       this.state.tournamentType,
       Number(this.state.entryCost),
-      Number(this.state.maxParticipants),
+      Number(this.state.maxTeams),
       new Date(this.state.startDate).toISOString().split("T")[0],
       new Date(this.state.endDate).toISOString().split("T")[0]
     );
@@ -139,16 +139,24 @@ class TournamentEdit extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Team Event</InputLabel>
-                <Select
-                  value={this.state.teamEvent}
-                  inputProps={{ id: "teamEvent" }}
-                  onChange={e => this.setState({ teamEvent: e.target.value })}
-                >
-                  <MenuItem value={false}>Individual</MenuItem>
-                  <MenuItem value={true}>Team</MenuItem>
-                </Select>
+                <InputLabel>Max Team Size</InputLabel>
+                <Input
+                  value={this.state.maxTeamSize}
+                  onChange={e => this.setState({ maxTeamSize: e.target.value })}
+                  id="maxTeamSize"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.maxTeamSize
+                    ? "Max Team Size is required"
+                    : ""}
+                  {!Number.isInteger(Number(this.state.maxTeamSize))
+                    ? "Max Team Size must be a number"
+                    : ""}
+                </FormHelperText>
               </FormControl>
+            </div>
+            <div>
               <FormControl>
                 <InputLabel>Tournament Type</InputLabel>
                 <Select
@@ -204,21 +212,19 @@ class TournamentEdit extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Max Participants</InputLabel>
+                <InputLabel>Max Teams</InputLabel>
                 <Input
-                  value={this.state.maxParticipants}
-                  onChange={e =>
-                    this.setState({ maxParticipants: e.target.value })
-                  }
-                  id="maxParticipants"
+                  value={this.state.maxTeams}
+                  onChange={e => this.setState({ maxTeams: e.target.value })}
+                  id="maxTeams"
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.maxParticipants
-                    ? "Max Participants is required"
+                  {this.state.submitted && !this.state.maxTeams
+                    ? "Max Teams is required"
                     : ""}
-                  {!Number.isInteger(Number(this.state.maxParticipants))
-                    ? "Max Participants must be a number"
+                  {!Number.isInteger(Number(this.state.maxTeams))
+                    ? "Max Teams must be a number"
                     : ""}
                 </FormHelperText>
               </FormControl>

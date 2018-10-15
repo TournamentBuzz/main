@@ -32,7 +32,9 @@ class TournamentList extends React.Component {
       tournamentListView: this.state.tournamentListAll.filter(function(
         tournamentCard
       ) {
-        return tournamentCard.props.name.includes(searchTerm);
+        return tournamentCard.props.name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     });
   }
