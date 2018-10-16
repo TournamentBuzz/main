@@ -67,7 +67,6 @@ class TournamentEdit extends React.Component {
     if (Authentication.getUID() !== info.creator) {
       this.props.history.push("/NotFound");
     }
-    info.maxTeamSize = info.maxTeamSize === 0 ? false : true;
     info.startDate = info.startDate.split("T")[0];
     info.endDate = info.endDate.split("T")[0];
     this.setState(info);
