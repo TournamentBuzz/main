@@ -3,16 +3,11 @@
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-function createUser(connection, uname, email, password, admin) {
-  const query =
-    "INSERT INTO users(email, password, userName, admin) VALUES(?, ?, ?, ?)";
+function createUser(connection, uname, email, password) {
+  const query = "INSERT INTO users(email, password, userName) VALUES(?, ?, ?)";
   return new Promise(async (resolve, reject) => {
     const hash = await bcrypt.hash(password, saltRounds);
-    connection.query(query, [email, hash, uname, admin], function(
-      err,
-      rows,
-      fields
-    ) {
+    connection.query(query, [email, hash, uname], function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {

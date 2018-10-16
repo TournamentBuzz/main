@@ -5,7 +5,6 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   userName VARCHAR(60),
-  admin BOOL DEFAULT FALSE NOT NULL, 
   PRIMARY KEY(email)
 );
 
@@ -13,7 +12,7 @@ CREATE TABLE tournaments (
 	id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
     creator VARCHAR(255) NOT NULL,
     description VARCHAR(255) DEFAULT NULL,
-    maxTeamSize INT(5) NOT NULL DEFAULT FALSE,
+    maxTeamSize INT(5) NOT NULL DEFAULT 1,
     location VARCHAR(255) DEFAULT NULL,
     scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
     tournamentName VARCHAR(255) DEFAULT NULL,
@@ -55,9 +54,9 @@ CREATE TABLE teams (
 CREATE TABLE teamMembers (
 	userEmail VARCHAR(255) NOT NULL,
     teamId INT(12) NOT NULL,
-    invited BOOL NOT NULL DEFAULT FALSE,
-    requested BOOL NOT NULL DEFAULT FALSE,
-    approved BOOL NOT NULL DEFAULT FALSE,
+    invited BOOL DEFAULT FALSE NOT NULL,
+    requested BOOL DEFAULT FALSE NOT NULL,
+    approved BOOL DEFAULT FALSE NOT NULL,
 	PRIMARY KEY(userEmail, teamId),
     FOREIGN KEY(userEmail)
     REFERENCES users(email),
@@ -74,4 +73,3 @@ CREATE TABLE referees (
     REFERENCES tournaments(id),
     PRIMARY KEY(userEmail, tournamentId)
 );
-

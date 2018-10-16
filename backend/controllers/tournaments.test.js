@@ -56,26 +56,25 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         userName VARCHAR(60),
-        admin BOOL DEFAULT FALSE NOT NULL,
         PRIMARY KEY(email)
     );`;
   const setupTournamentsTableQuery = `CREATE TABLE tournaments (
-        id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
-        creator VARCHAR(255) NOT NULL,
-        description VARCHAR(255) DEFAULT NULL,
-        teamEvent BOOL NOT NULL DEFAULT FALSE,
-        location VARCHAR(255) DEFAULT NULL,
-        scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
-        tournamentName VARCHAR(255) DEFAULT NULL,
-        tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
-        entryCost INT(5) NOT NULL DEFAULT 0,
-        maxParticipants INT(5) NOT NULL DEFAULT 16,
-        startDate DATE DEFAULT NULL,
-        endDate DATE DEFAULT NULL,
-        PRIMARY KEY(id),
-        FOREIGN KEY(creator)
-        REFERENCES users(email)
-    );`;
+    id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
+      creator VARCHAR(255) NOT NULL,
+      description VARCHAR(255) DEFAULT NULL,
+      maxTeamSize INT(5) NOT NULL DEFAULT 1,
+      location VARCHAR(255) DEFAULT NULL,
+      scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
+      tournamentName VARCHAR(255) DEFAULT NULL,
+      tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+      entryCost INT(5) NOT NULL DEFAULT 0,
+      maxTeams INT(5) NOT NULL DEFAULT 16,
+      startDate DATE DEFAULT NULL,
+      endDate DATE DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(creator)
+      REFERENCES users(email)
+  );`;
   await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
   await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
   specC.destroy();

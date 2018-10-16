@@ -57,7 +57,6 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         userName VARCHAR(60),
-        admin BOOL DEFAULT FALSE NOT NULL,
         PRIMARY KEY(email)
     );`;
   await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
