@@ -37,6 +37,19 @@ function getTeam(connection, id) {
   });
 }
 
+function getTeams(connection, tournamentId) {
+  const query = "SELECT * FROM teams where tournament = ?;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [tournamentId], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 function updateTeam(connection, id, teamName, leader, tournament, seed) {
   const query =
     "UPDATE teams SET teamName = ?, leader = ?, tournament = ?, seed = ? WHERE id = ?;";
@@ -164,6 +177,7 @@ function getTeamMembers(connection, teamId) {
 module.exports = {
   createTeam: createTeam,
   getTeam: getTeam,
+  getTeams: getTeams,
   updateTeam: updateTeam,
   updateTeamField: updateTeamField,
   deleteTeam: deleteTeam,

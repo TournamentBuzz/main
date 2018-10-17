@@ -146,6 +146,10 @@ function getMatch(connection, id) {
   return matchWrapper.getMatch(connection, id);
 }
 
+function getMatches(connection, tournamentId) {
+  return matchWrapper.getMatches(connection, tournamentId);
+}
+
 function updateMatch(
   connection,
   id,
@@ -184,6 +188,10 @@ function createTeam(connection, teamName, leader, tournament, seed) {
 
 function getTeam(connection, id) {
   return teamWrapper.getTeam(connection, id);
+}
+
+function getTeams(connection, tournamentId) {
+  return teamWrapper.getTeams(connection, tournamentId);
 }
 
 function updateTeam(connection, id, teamName, leader, tournament, seed) {
@@ -263,12 +271,14 @@ module.exports = {
   deleteTournament: deleteTournament,
   createMatch: createMatch,
   getMatch: getMatch,
+  getMatches: getMatches,
   updateMatch: updateMatch,
   updateMatchField: updateMatchField,
   deleteMatch: deleteMatch,
   searchTournament: searchTournament,
   createTeam: createTeam,
   getTeam: getTeam,
+  getTeams: getTeams,
   updateTeam: updateTeam,
   updateTeamField: updateTeamField,
   deleteTeam: deleteTeam,

@@ -345,4 +345,129 @@ describe("sql wrapper", () => {
     }
     done();
   });
+
+  test("Create Team", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testTournamentName = "test tournament";
+    const testUserEmail = "testUserExists@gatech.edu";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    const teamName = "test team";
+    await sqlwrapper.createTeam(c, teamName, testUserEmail, testId, null);
+    const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    done();
+  });
+
+  test("Get Team/Create Match", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    const result1 = await sqlwrapper.getTeams(c, testId);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    const teamId = result[0].id;
+    await sqlwrapper.createMatch(
+      c,
+      null,
+      null,
+      null,
+      null,
+      testId,
+      teamId,
+      teamId
+    );
+    const getTestMatch = "SELECT * FROM matches WHERE tournament = ?;";
+    const result2 = await sqlwrapper.executeSQL(c, getTestMatch, [testId]);
+    if (result2.length < 1) {
+      throw new Error("Did not find match in table upon searching.");
+    }
+    done();
+  });
+
+  test("Delete Match", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    await sqlwrapper.deleteMatch(c, 1);
+    const getTestMatch = "SELECT * FROM matches WHERE tournament = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestMatch, [testId]);
+    if (result1.length > 1) {
+      throw new Error("Match deletion failed?");
+    }
+    done();
+  });
+
+  test("Delete Team", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    await sqlwrapper.deleteTeam(c, 1);
+    const getTestTeam = "SELECT * FROM teams WHERE tournament = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [testId]);
+    if (result1.length > 1) {
+      throw new Error("Team deletion failed?");
+    }
+    done();
+  });
+
+  test("Delete Tournament", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    await sqlwrapper.deleteTournament(c, testId);
+    const exists = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (exists.length > 1) {
+      throw new Error("Tournament deletion failed?");
+    }
+    done();
+  });
 });
