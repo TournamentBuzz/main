@@ -48,7 +48,6 @@ export default class MatchAPI {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
-        tournamentId,
         matchId,
         location,
         details,
@@ -73,7 +72,6 @@ export default class MatchAPI {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
-        tournamentId,
         matchId
       })
     });
@@ -92,7 +90,6 @@ export default class MatchAPI {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
-        tournamentId,
         matchId,
         publish
       })
