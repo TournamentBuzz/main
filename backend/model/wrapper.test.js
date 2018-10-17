@@ -88,6 +88,29 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       REFERENCES teams(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
+  const setupTeamMembersTableQuery = `CREATE TABLE teamMembers (
+    userEmail VARCHAR(255) NOT NULL,
+      teamId INT(12) NOT NULL,
+      invited BOOL DEFAULT FALSE NOT NULL,
+      requested BOOL DEFAULT FALSE NOT NULL,
+      approved BOOL DEFAULT FALSE NOT NULL,
+    PRIMARY KEY(userEmail, teamId),
+      FOREIGN KEY(userEmail)
+      REFERENCES users(email),
+      FOREIGN KEY(teamId)
+      REFERENCES teams(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupTeamMembersTableQuery, []);
+  const setupRefereeTableQuery = `CREATE TABLE referees (
+    userEmail VARCHAR(255) NOT NULL,
+      tournamentId INT(12) NOT NULL,
+      FOREIGN KEY(userEmail)
+      REFERENCES users(email),
+      FOREIGN KEY(tournamentId)
+      REFERENCES tournaments(id),
+      PRIMARY KEY(userEmail, tournamentId)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupRefereeTableQuery, []);
   specC.destroy();
 }
 
@@ -370,6 +393,39 @@ describe("sql wrapper", () => {
     done();
   });
 
+  test("Add Member", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testUserEmail = "testUserExists@gatech.edu";
+    const teamName = "test team";
+    const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    const teamId = result1[0].id;
+    await sqlwrapper.createTeamMember(
+      c,
+      testUserEmail,
+      teamId,
+      true,
+      true,
+      true
+    );
+    const getTestTeamMembers = "SELECT * FROM teamMembers WHERE teamId = ?;";
+    const result2 = await sqlwrapper.executeSQL(c, getTestTeamMembers, [
+      teamId
+    ]);
+    if (result2.length < 1) {
+      throw new Error("Did not find team member in table upon searching.");
+    }
+    done();
+  });
+
   test("Get Team/Create Match", async done => {
     const c = connection.connect(
       databaseConfig.host,
@@ -424,6 +480,32 @@ describe("sql wrapper", () => {
     const result1 = await sqlwrapper.executeSQL(c, getTestMatch, [testId]);
     if (result1.length > 1) {
       throw new Error("Match deletion failed?");
+    }
+    done();
+  });
+
+  test("Delete Team Member", async done => {
+    const c = connection.connect(
+      databaseConfig.host,
+      databaseConfig.username,
+      databaseConfig.password,
+      databaseConfig.schema
+    );
+    const testUserEmail = "testUserExists@gatech.edu";
+    const teamName = "test team";
+    const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    const teamId = result1[0].id;
+    await sqlwrapper.deleteTeamMember(c, testUserEmail, teamId);
+    const getTestTeamMembers = "SELECT * FROM teamMembers WHERE userEmail = ?;";
+    const result2 = await sqlwrapper.executeSQL(c, getTestTeamMembers, [
+      testUserEmail
+    ]);
+    if (result2.length > 1) {
+      throw new Error("Team member deletion failed?");
     }
     done();
   });
