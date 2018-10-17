@@ -57,16 +57,35 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       REFERENCES users(email)
   );`;
   await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
+  const setupTeamsTableQuery = `CREATE TABLE teams (
+    id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+      teamName VARCHAR(255),
+      leader VARCHAR(255) NOT NULL,
+      tournament INT(10) NOT NULL,
+      seed INT(4) DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(leader)
+      REFERENCES users(email),
+      FOREIGN KEY(tournament)
+      REFERENCES tournaments(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupTeamsTableQuery, []);
   const setupMatchesTableQuery = `CREATE TABLE matches (
-        id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
-        location VARCHAR(255) DEFAULT NULL,
-        score VARCHAR(255) DEFAULT NULL,
-        matchTime DATETIME DEFAULT NULL,
-        matchName VARCHAR(255) DEFAULT NULL,
-        tournament INT(10) NOT NULL,
-        PRIMARY KEY(id),
-        FOREIGN KEY(tournament)
-        REFERENCES tournaments(id)
+    id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+      location VARCHAR(255) DEFAULT NULL,
+      score VARCHAR(255) DEFAULT NULL,
+      matchTime DATETIME DEFAULT NULL,
+      matchName VARCHAR(255) DEFAULT NULL,
+      tournament INT(10) NOT NULL,
+      teamA INT(12) NOT NULL,
+      teamB INT(12) NOT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(tournament)
+      REFERENCES tournaments(id),
+      FOREIGN KEY(teamA)
+      REFERENCES teams(id),
+      FOREIGN KEY(teamB)
+      REFERENCES teams(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
   specC.destroy();
