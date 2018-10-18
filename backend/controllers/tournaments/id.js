@@ -6,6 +6,8 @@ const router = express.Router();
 const sqlwrapper = require("../../model/wrapper");
 const connection = require("../../model/connect");
 
+const matches = require("./id/matches");
+
 router.get("/:id", async function(req, res, next) {
   try {
     const c = connection.connect(
@@ -21,5 +23,12 @@ router.get("/:id", async function(req, res, next) {
     next(err);
   }
 });
+
+router.use("/:id", function(req, res, next) {
+  req.routeParams = req.params;
+  next();
+});
+
+router.use("/:id/matches", matches);
 
 module.exports = router;

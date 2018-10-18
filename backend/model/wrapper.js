@@ -127,8 +127,8 @@ function createMatch(
   matchTime = null,
   matchName = null,
   tournament,
-  teamA,
-  teamB
+  teamA = null,
+  teamB = null
 ) {
   return matchWrapper.createMatch(
     connection,
@@ -150,6 +150,10 @@ function getMatches(connection, tournamentId) {
   return matchWrapper.getMatches(connection, tournamentId);
 }
 
+function getPublishedMatches(connection, tournamentId) {
+  return matchWrapper.getPublishedMatches(connection, tournamentId);
+}
+
 function updateMatch(
   connection,
   id,
@@ -159,7 +163,8 @@ function updateMatch(
   matchName,
   tournament,
   teamA,
-  teamB
+  teamB,
+  isPublished
 ) {
   return matchWrapper.updateMatch(
     connection,
@@ -170,7 +175,8 @@ function updateMatch(
     matchName,
     tournament,
     teamA,
-    teamB
+    teamB,
+    isPublished
   );
 }
 
@@ -272,6 +278,7 @@ module.exports = {
   createMatch: createMatch,
   getMatch: getMatch,
   getMatches: getMatches,
+  getPublishedMatches: getPublishedMatches,
   updateMatch: updateMatch,
   updateMatchField: updateMatchField,
   deleteMatch: deleteMatch,

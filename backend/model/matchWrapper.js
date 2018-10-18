@@ -7,11 +7,11 @@ function createMatch(
   matchTime = null,
   matchName = null,
   tournament,
-  teamA,
-  teamB
+  teamA = null,
+  teamB = null
 ) {
   const query =
-    "INSERT INTO matches(location, score, matchTime, matchName, tournament, teamA, teamB) VALUES(?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO matches(location, score, matchTime, matchName, tournament, teamA, teamB) VALUES(?, ?, ?, ?, ?, ?, ?);";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
@@ -49,14 +49,25 @@ function updateMatch(
   matchName,
   tournament,
   teamA,
-  teamB
+  teamB,
+  isPublished
 ) {
   const query =
-    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, tournament = ?, teamA = ?, teamB = ? WHERE id = ?;";
+    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, tournament = ?, teamA = ?, teamB = ?, isPublished = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
-      [location, score, matchTime, matchName, tournament, id, teamA, teamB],
+      [
+        location,
+        score,
+        matchTime,
+        matchName,
+        tournament,
+        id,
+        teamA,
+        teamB,
+        isPublished
+      ],
       function(err, rows, fields) {
         if (err) {
           reject(err);
@@ -111,11 +122,26 @@ function getMatches(connection, tournamentId) {
   });
 }
 
+function getPublishedMatches(connection, tournamentId) {
+  const query =
+    "SELECT * FROM matches WHERE tournament = ? AND isPublished = 1;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [tournamentId], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 module.exports = {
   createMatch: createMatch,
   getMatch: getMatch,
   updateMatch: updateMatch,
   updateMatchField: updateMatchField,
   deleteMatch: deleteMatch,
-  getMatches: getMatches
+  getMatches: getMatches,
+  getPublishedMatches: getPublishedMatches
 };
