@@ -1,69 +1,24 @@
 "use strict";
 
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const matchWrapper = require("./matchWrapper");
+const userWrapper = require("./userWrapper");
+const tournamentWrapper = require("./tournamentWrapper");
+const teamWrapper = require("./teamWrapper");
 
 function createUser(connection, uname, email, password) {
-  const query = "INSERT INTO users(email, password, userName) VALUES(?, ?, ?)";
-  return new Promise(async (resolve, reject) => {
-    const hash = await bcrypt.hash(password, saltRounds);
-    connection.query(query, [email, hash, uname], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
+  return userWrapper.createUser(connection, uname, email, password);
 }
 
 function userExists(connection, email) {
-  const query = "SELECT userName FROM users WHERE email = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [email], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows.length > 0);
-      }
-    });
-  });
+  return userWrapper.userExists(connection, email);
 }
 
 function updateUser(connection, email, fieldName, fieldValue) {
-  const query = "UPDATE matches SET ? = ? WHERE email = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [fieldName, fieldValue, email], function(
-      err,
-      rows,
-      fields
-    ) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
+  return userWrapper.updateUser(connection, email, fieldName, fieldValue);
 }
 
 function checkCredentials(connection, email, password) {
-  const query = "SELECT password FROM users WHERE email = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [email], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  }).then(function(rows) {
-    if (rows.length > 0) {
-      return bcrypt.compare(password, rows[0].password);
-    } else {
-      return false;
-    }
-  });
+  return userWrapper.checkCredentials(connection, email, password);
 }
 
 function executeSQL(connection, sql, varList) {
@@ -92,59 +47,28 @@ function createTournament(
   startDate = null,
   endDate = null
 ) {
-  const query =
-    "INSERT INTO tournaments(creator, description, maxTeamSize, location, scoringType, tournamentName, tournamentType, entryCost, maxTeams, startDate, endDate) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  return new Promise((resolve, reject) => {
-    connection.query(
-      query,
-      [
-        creator,
-        description,
-        maxTeamSize,
-        location,
-        scoringType,
-        tournamentName,
-        tournamentType,
-        entryCost,
-        maxTeams,
-        startDate,
-        endDate
-      ],
-      function(err, rows, fields) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      }
-    );
-  });
+  return tournamentWrapper.createTournament(
+    connection,
+    creator,
+    tournamentName,
+    description,
+    maxTeamSize,
+    location,
+    scoringType,
+    tournamentType,
+    entryCost,
+    maxTeams,
+    startDate,
+    endDate
+  );
 }
 
 function getTournament(connection, id) {
-  const query = "SELECT * FROM tournaments WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [id], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  return tournamentWrapper.getTournament(connection, id);
 }
 
 function getTournaments(connection) {
-  const query = "SELECT * FROM tournaments ORDER BY startDate DESC;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  return tournamentWrapper.getTournaments(connection);
 }
 
 function updateTournament(
@@ -162,64 +86,38 @@ function updateTournament(
   startDate,
   endDate
 ) {
-  const query =
-    "UPDATE tournaments SET creator = ?, description = ?, maxTeamSize = ?, location = ?, scoringType = ?, tournamentName = ?, tournamentType = ?, entryCost = ?, maxTeams = ?, startDate = ?, endDate = ? WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(
-      query,
-      [
-        creator,
-        description,
-        maxTeamSize,
-        location,
-        scoringType,
-        tournamentName,
-        tournamentType,
-        entryCost,
-        maxTeams,
-        startDate,
-        endDate,
-        id
-      ],
-      function(err, rows, fields) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      }
-    );
-  });
+  return tournamentWrapper.updateTournament(
+    connection,
+    id,
+    creator,
+    description,
+    maxTeamSize,
+    location,
+    scoringType,
+    tournamentName,
+    tournamentType,
+    entryCost,
+    maxTeams,
+    startDate,
+    endDate
+  );
 }
 
 function updateTournamentField(connection, id, fieldName, fieldValue) {
-  const query = "UPDATE tournaments SET ? = ? WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [fieldName, fieldValue, id], function(
-      err,
-      rows,
-      fields
-    ) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  return tournamentWrapper.updateTournamentField(
+    connection,
+    id,
+    fieldName,
+    fieldValue
+  );
 }
 
 function deleteTournament(connection, id) {
-  const query = "DELETE FROM tournaments WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [id], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  return tournamentWrapper.deleteTournament(connection, id);
+}
+
+function searchTournament(connection, searchQuery) {
+  return tournamentWrapper.searchTournament(connection, searchQuery);
 }
 
 function createMatch(
@@ -229,37 +127,27 @@ function createMatch(
   matchTime = null,
   matchName = null,
   tournament,
-  teamA = -1,
-  teamB = -1
+  teamA,
+  teamB
 ) {
-  const query =
-    "INSERT INTO matches(location, score, matchTime, matchName, tournament, teamA, teamB) VALUES(?, ?, ?, ?, ?, ?, ?)";
-  return new Promise((resolve, reject) => {
-    connection.query(
-      query,
-      [location, score, matchTime, matchName, tournament, teamA, teamB],
-      function(err, rows, fields) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      }
-    );
-  });
+  return matchWrapper.createMatch(
+    connection,
+    location,
+    score,
+    matchTime,
+    matchName,
+    tournament,
+    teamA,
+    teamB
+  );
 }
 
 function getMatch(connection, id) {
-  const query = "SELECT * FROM matches WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [id], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  return matchWrapper.getMatch(connection, id);
+}
+
+function getMatches(connection, tournamentId) {
+  return matchWrapper.getMatches(connection, tournamentId);
 }
 
 function updateMatch(
@@ -270,68 +158,103 @@ function updateMatch(
   matchTime,
   matchName,
   tournament,
-  teamA = -1,
-  teamB = -1
+  teamA,
+  teamB
 ) {
-  const query =
-    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, tournament = ?, teamA = ?, teamB = ? WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(
-      query,
-      [location, score, matchTime, matchName, tournament, id, teamA, teamB],
-      function(err, rows, fields) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      }
-    );
-  });
+  return matchWrapper.updateMatch(
+    connection,
+    id,
+    location,
+    score,
+    matchTime,
+    matchName,
+    tournament,
+    teamA,
+    teamB
+  );
 }
 
 function updateMatchField(connection, id, fieldName, fieldValue) {
-  const query = "UPDATE matches SET ? = ? WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [fieldName, fieldValue, id], function(
-      err,
-      rows,
-      fields
-    ) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  return matchWrapper.updateMatchField(connection, id, fieldName, fieldValue);
 }
 
 function deleteMatch(connection, id) {
-  const query = "DELETE FROM matches WHERE id = ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [id], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  return matchWrapper.deleteMatch(connection, id);
 }
 
-function searchTournament(connection, searchQuery) {
-  const searchTerm = "%" + searchQuery + "%";
-  const query = "SELECT * FROM tournaments WHERE tournamentName like ?;";
-  return new Promise((resolve, reject) => {
-    connection.query(query, [searchTerm], function(err, rows, fields) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+function createTeam(connection, teamName, leader, tournament, seed) {
+  return teamWrapper.createTeam(connection, teamName, leader, tournament, seed);
+}
+
+function getTeam(connection, id) {
+  return teamWrapper.getTeam(connection, id);
+}
+
+function getTeams(connection, tournamentId) {
+  return teamWrapper.getTeams(connection, tournamentId);
+}
+
+function updateTeam(connection, id, teamName, leader, tournament, seed) {
+  return teamWrapper.updateTeam(
+    connection,
+    id,
+    teamName,
+    leader,
+    tournament,
+    seed
+  );
+}
+
+function updateTeamField(connection, id, fieldName, fieldValue) {
+  return teamWrapper.updateTeamField(connection, id, fieldName, fieldValue);
+}
+
+function deleteTeam(connection, id) {
+  return teamWrapper.deleteTeam(connection, id);
+}
+
+function createTeamMember(
+  connection,
+  userEmail,
+  teamId,
+  invited = false,
+  requested = false,
+  approved = false
+) {
+  return teamWrapper.createTeamMember(
+    connection,
+    userEmail,
+    teamId,
+    invited,
+    requested,
+    approved
+  );
+}
+
+function updateTeamMember(
+  connection,
+  userEmail,
+  teamId,
+  invited,
+  requested,
+  approved
+) {
+  return teamWrapper.updateTeamMember(
+    connection,
+    userEmail,
+    teamId,
+    invited,
+    requested,
+    approved
+  );
+}
+
+function deleteTeamMember(connection, userEmail, teamId) {
+  return teamWrapper.deleteTeamMember(connection, userEmail, teamId);
+}
+
+function getTeamMembers(connection, teamId) {
+  return teamWrapper.getTeamMembers(connection, teamId);
 }
 
 module.exports = {
@@ -348,8 +271,19 @@ module.exports = {
   deleteTournament: deleteTournament,
   createMatch: createMatch,
   getMatch: getMatch,
+  getMatches: getMatches,
   updateMatch: updateMatch,
   updateMatchField: updateMatchField,
   deleteMatch: deleteMatch,
-  searchTournament: searchTournament
+  searchTournament: searchTournament,
+  createTeam: createTeam,
+  getTeam: getTeam,
+  getTeams: getTeams,
+  updateTeam: updateTeam,
+  updateTeamField: updateTeamField,
+  deleteTeam: deleteTeam,
+  createTeamMember: createTeamMember,
+  updateTeamMember: updateTeamMember,
+  deleteTeamMember: deleteTeamMember,
+  getTeamMembers: getTeamMembers
 };

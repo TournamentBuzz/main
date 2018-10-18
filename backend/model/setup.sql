@@ -26,21 +26,9 @@ CREATE TABLE tournaments (
     REFERENCES users(email)
 );
 
-CREATE TABLE matches (
-	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
-    location VARCHAR(255) DEFAULT NULL,
-    score VARCHAR(255) DEFAULT NULL,
-    matchTime DATETIME DEFAULT NULL,
-    matchName VARCHAR(255) DEFAULT NULL,
-    tournament INT(10) NOT NULL,
-    PRIMARY KEY(id),
-    FOREIGN KEY(tournament)
-    REFERENCES tournaments(id)
-);
-
 CREATE TABLE teams (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
-    teamName VARCHAR(255),
+    teamName VARCHAR(255) DEFAULT NULL,
     leader VARCHAR(255) NOT NULL,
     tournament INT(10) NOT NULL,
     seed INT(4) DEFAULT NULL,
@@ -49,6 +37,24 @@ CREATE TABLE teams (
     REFERENCES users(email),
     FOREIGN KEY(tournament)
     REFERENCES tournaments(id)
+);
+
+CREATE TABLE matches (
+	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+    location VARCHAR(255) DEFAULT NULL,
+    score VARCHAR(255) DEFAULT NULL,
+    matchTime DATETIME DEFAULT NULL,
+    matchName VARCHAR(255) DEFAULT NULL,
+    tournament INT(10) NOT NULL,
+    teamA INT(12) NOT NULL,
+    teamB INT(12) NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(tournament)
+    REFERENCES tournaments(id),
+    FOREIGN KEY(teamA)
+    REFERENCES teams(id),
+    FOREIGN KEY(teamB)
+    REFERENCES teams(id)
 );
 
 CREATE TABLE teamMembers (
