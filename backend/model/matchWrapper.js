@@ -7,8 +7,8 @@ function createMatch(
   matchTime = null,
   matchName = null,
   tournament,
-  teamA,
-  teamB
+  teamA = null,
+  teamB = null
 ) {
   const query =
     "INSERT INTO matches(location, score, matchTime, matchName, tournament, teamA, teamB) VALUES(?, ?, ?, ?, ?, ?, ?)";
