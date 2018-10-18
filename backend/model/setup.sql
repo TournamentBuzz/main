@@ -46,8 +46,9 @@ CREATE TABLE matches (
     matchTime DATETIME DEFAULT NULL,
     matchName VARCHAR(255) DEFAULT NULL,
     tournament INT(10) NOT NULL,
-    teamA INT(12) NOT NULL,
-    teamB INT(12) NOT NULL,
+    teamA INT(12) DEFAULT NULL,
+    teamB INT(12) DEFAULT NULL,
+    isPublished BOOL DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
     REFERENCES tournaments(id),
