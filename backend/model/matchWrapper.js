@@ -40,6 +40,20 @@ function getMatch(connection, id) {
   });
 }
 
+function getPublishedMatch(connection, id) {
+  const query =
+    "SELECT (id, location, score, matchTime, matchName, tournament, teamA, teamB) FROM matches WHERE id = ? AND published = true;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [id], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 function updateMatch(
   connection,
   id,
@@ -140,6 +154,7 @@ function getPublishedMatches(connection, tournamentId) {
 module.exports = {
   createMatch: createMatch,
   getMatch: getMatch,
+  getPublishedMatch: getPublishedMatch,
   updateMatch: updateMatch,
   updateMatchField: updateMatchField,
   deleteMatch: deleteMatch,
