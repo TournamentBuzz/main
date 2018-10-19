@@ -25,6 +25,7 @@ router.get("/:id", async function(req, res, next) {
         return;
       }
       const tournamentObject = await sqlwrapper.getTournament(
+        c,
         matchObject[0].tournament
       );
       if (!tournamentObject[0]) {
