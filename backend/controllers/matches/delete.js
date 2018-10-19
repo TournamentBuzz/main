@@ -1,8 +1,8 @@
 "use strict";
 
 const express = require("express");
-const sqlwrapper = require("../../model/wrapper");
-const connection = require("../../model/connect");
+const sqlwrapper = require("../model/wrapper");
+const connection = require("../model/connect");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
@@ -38,24 +38,18 @@ router.post("", async (req, res, next) => {
       return;
     }
     if (req.headers.id === tournamentObject[0].creator) {
-      await sqlwrapper.updateMatch(
-        c,
-        req.body.matchId,
-        req.body.location,
-        req.body.score,
-        req.body.matchTime,
-        req.body.matchName,
-        req.routeParams.id,
-        req.body.teamA,
-        req.body.teamB
-      );
-      res.status(200);
-      res.json({
-        tournamentId: tournamentObject.id,
-        matchId: req.body.matchId
-      });
+      const results = await sqlwrapper.deleteMatch(c, req.body.matchId);
+      if (results.affectedRows > 0) {
+        res.status(200);
+        res.json({ deleteStatus: "success" });
+      } else {
+        const err = new Error(
+          "Something went wrong, match exists but cannot be deleted!"
+        );
+        next(err);
+      }
     } else {
-      const err = new Error("You cannot edit this match!");
+      const err = new Error("You cannot delete this match!");
       err.status = 401;
       next(err);
     }

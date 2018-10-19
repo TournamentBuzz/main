@@ -1,12 +1,12 @@
 "use strict";
 
 const express = require("express");
-const sqlwrapper = require("../../model/wrapper");
-const connection = require("../../model/connect");
+const sqlwrapper = require("../model/wrapper");
+const connection = require("../model/connect");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
-  if (!req.body) {
+  if (!req.body || req.tournament < 0) {
     const err = new Error("Malformed Request");
     err.status = 400;
     next(err);
@@ -22,7 +22,7 @@ router.post("", async (req, res, next) => {
       );
       const tournamentObject = await sqlwrapper.getTournament(
         c,
-        req.routeParams.id
+        req.body.tournament
       );
       if (!tournamentObject[0]) {
         const err = new Error("Tournament does not exist!");
@@ -37,12 +37,12 @@ router.post("", async (req, res, next) => {
           req.body.score,
           req.body.matchTime,
           req.body.matchName,
-          req.routeParams.id,
+          req.body.tournament,
           req.body.teamA,
           req.body.teamB
         );
         res.status(200);
-        res.json({ tournamentId: req.routeParams.id, matchId: rows.insertId });
+        res.json({ tournamentId: req.body.tournament, matchId: rows.insertId });
       } else {
         const err = new Error("You cannot create matches for this tournament!");
         err.status = 401;
