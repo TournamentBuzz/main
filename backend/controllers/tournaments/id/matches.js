@@ -17,19 +17,10 @@ router.get("/", async function(req, res, next) {
       c,
       req.routeParams.id
     );
-    if (req.headers.id !== null) {
-      if (req.headers.id === tournamentObject[0].creator) {
-        const results = await sqlwrapper.getMatches(c, req.routeParams.id);
-        res.status(200);
-        res.json({ matches: results });
-      } else {
-        const results = await sqlwrapper.getPublishedMatches(
-          c,
-          req.routeParams.id
-        );
-        res.status(200);
-        res.json({ matches: results });
-      }
+    if (req.headers.id === tournamentObject[0].creator) {
+      const results = await sqlwrapper.getMatches(c, req.routeParams.id);
+      res.status(200);
+      res.json({ matches: results });
     } else {
       const results = await sqlwrapper.getPublishedMatches(
         c,

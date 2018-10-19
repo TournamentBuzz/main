@@ -8,6 +8,8 @@ const connection = require("../../model/connect");
 
 const matches = require("./id/matches");
 
+const requireAuth = require("../middleware/auth/verify");
+
 router.get("/:id", async function(req, res, next) {
   try {
     const c = connection.connect(
@@ -35,6 +37,6 @@ router.use("/:id", function(req, res, next) {
   next();
 });
 
-router.use("/:id/matches", matches);
+router.use("/:id/matches", requireAuth, matches);
 
 module.exports = router;
