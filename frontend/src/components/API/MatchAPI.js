@@ -3,7 +3,7 @@ import Authentication from "./Authentication";
 
 export default class MatchAPI {
   static async createMatch(
-    tournamentId,
+    tournament,
     location,
     details,
     matchName,
@@ -12,10 +12,11 @@ export default class MatchAPI {
     teamB
   ) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/create`, {
+    const res = await fetch(`/matches/create`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
+        tournament,
         location,
         details,
         matchName,
@@ -34,7 +35,6 @@ export default class MatchAPI {
   }
 
   static async editMatch(
-    tournamentId,
     matchId,
     location,
     details,
@@ -44,7 +44,7 @@ export default class MatchAPI {
     teamB
   ) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/edit`, {
+    const res = await fetch(`/matches/edit`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -66,9 +66,9 @@ export default class MatchAPI {
     }
   }
 
-  static async deleteMatch(tournamentId, matchId) {
+  static async deleteMatch(matchId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/delete`, {
+    const res = await fetch(`/matches/delete`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -84,9 +84,9 @@ export default class MatchAPI {
     }
   }
 
-  static async publishMatch(tournamentId, matchId, publish) {
+  static async publishMatch(matchId, publish) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/publish`, {
+    const res = await fetch(`/matches/publish`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -104,7 +104,6 @@ export default class MatchAPI {
   }
 
   static async getMatches(tournamentID) {
-    if (!Authentication.loggedIn()) return;
     const res = await fetch(`/tournaments/id/${tournamentID}/matches/`, {
       method: "GET",
       headers: Authentication.withoutJWT()
@@ -115,5 +114,18 @@ export default class MatchAPI {
     }
     const json = await res.json();
     return json.matches;
+  }
+
+  static async getMatch(matchID) {
+    const res = await fetch(`/matches/id/${matchID}`, {
+      method: "GET",
+      headers: Authentication.withoutJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.match;
   }
 }
