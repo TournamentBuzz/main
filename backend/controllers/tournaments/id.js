@@ -8,7 +8,7 @@ const connection = require("../../model/connect");
 
 const matches = require("./id/matches");
 
-const requireAuth = require("../middleware/auth/verify");
+const requireAuth = require("../../middleware/auth/verify");
 
 router.get("/:id", async function(req, res, next) {
   try {
