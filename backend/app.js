@@ -6,6 +6,7 @@ const express = require("express");
 const config = require("./config");
 const user = require("./controllers/user");
 const tournaments = require("./controllers/tournaments");
+const matches = require("./controllers/matches");
 
 // logging
 const logger = require("morgan");
@@ -40,6 +41,7 @@ app.use(function(req, res, next) {
 
 app.use("/user", user);
 app.use("/tournaments", tournaments);
+app.use("/matches", matches);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

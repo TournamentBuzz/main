@@ -17,6 +17,12 @@ router.get("/:id", async function(req, res, next) {
       req.app.get("databaseConfig").schema
     );
     const tournamentObject = await sqlwrapper.getTournament(c, req.param("id"));
+    if (!tournamentObject[0]) {
+      const err = new Error("Tournament does not exist!");
+      err.status = 404;
+      next(err);
+      return;
+    }
     res.status(200);
     res.json({ tournament: tournamentObject });
   } catch (err) {
