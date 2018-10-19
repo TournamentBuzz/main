@@ -6,6 +6,8 @@ import Input from "@material-ui/core/Input";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Button from "@material-ui/core/Button";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 
 import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
@@ -24,7 +26,8 @@ class MatchCreate extends React.Component {
       matchName: "",
       matchTime: "",
       teamA: "",
-      teamB: ""
+      teamB: "",
+      published: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -37,7 +40,7 @@ class MatchCreate extends React.Component {
 
   async handleFormSubmit(event) {
     event.preventDefault();
-    await MatchAPI.createMatch(
+    const newMatchID = await MatchAPI.createMatch(
       this.state.tournamentId,
       this.state.location,
       this.state.details,
@@ -49,6 +52,9 @@ class MatchCreate extends React.Component {
       this.state.teamA,
       this.state.teamB
     );
+    if (this.state.published) {
+      await MatchAPI.publishMatch(newMatchID, true);
+    }
     this.props.history.push(`/tournament/${this.state.tournamentId}`);
   }
 
@@ -159,13 +165,21 @@ class MatchCreate extends React.Component {
               </FormControl>
             </div>
             <div>
-              <Button
-                simple
-                color="primary"
-                size="lg"
-                value="submit"
-                type="submit"
-              >
+              <FormControl>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={this.state.published}
+                  inputProps={{ id: "published" }}
+                  onChange={e => this.setState({ published: e.target.value })}
+                >
+                  <MenuItem value={false}>Unpublished</MenuItem>
+                  <MenuItem value={true}>Published</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <br />
+            <div>
+              <Button color="primary" size="large" value="submit" type="submit">
                 Create
               </Button>
             </div>

@@ -6,6 +6,8 @@ import Input from "@material-ui/core/Input";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Button from "@material-ui/core/Button";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 
 import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
@@ -25,7 +27,9 @@ class MatchEdit extends React.Component {
       matchName: "",
       matchTime: "",
       teamA: "",
-      teamB: ""
+      teamB: "",
+      publish: false,
+      initialPublish: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -48,7 +52,9 @@ class MatchEdit extends React.Component {
     }
     details = details[0];
     details.matchTime = details.matchTime.slice(0, 19);
+    details.publish = details.publish === 1 ? true : false;
     this.setState(details);
+    this.setState({ initialPublish: details.publish });
   }
 
   async componentDidMount() {
@@ -72,6 +78,9 @@ class MatchEdit extends React.Component {
       this.state.teamA,
       this.state.teamB
     );
+    if (this.state.publish !== this.state.initialPublish) {
+      await MatchAPI.publishMatch(this.state.matchId, this.state.publish);
+    }
     this.props.history.push(`/tournament/${this.state.tournamentId}`);
   }
 
@@ -182,13 +191,21 @@ class MatchEdit extends React.Component {
               </FormControl>
             </div>
             <div>
-              <Button
-                simple
-                color="primary"
-                size="lg"
-                value="submit"
-                type="submit"
-              >
+              <FormControl>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={this.state.publish}
+                  inputProps={{ id: "publish" }}
+                  onChange={e => this.setState({ publish: e.target.value })}
+                >
+                  <MenuItem value={false}>Unpublished</MenuItem>
+                  <MenuItem value={true}>Published</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <br />
+            <div>
+              <Button color="primary" size="large" value="submit" type="submit">
                 Save
               </Button>
             </div>
