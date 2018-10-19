@@ -48,7 +48,7 @@ CREATE TABLE matches (
     tournament INT(10) NOT NULL,
     teamA INT(12) DEFAULT NULL,
     teamB INT(12) DEFAULT NULL,
-    isPublished BOOL DEFAULT FALSE NOT NULL,
+    publish BOOL DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
     REFERENCES tournaments(id),

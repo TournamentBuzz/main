@@ -165,10 +165,8 @@ function updateMatch(
   score,
   matchTime,
   matchName,
-  tournament,
   teamA,
-  teamB,
-  isPublished
+  teamB
 ) {
   return matchWrapper.updateMatch(
     connection,
@@ -177,10 +175,8 @@ function updateMatch(
     score,
     matchTime,
     matchName,
-    tournament,
     teamA,
-    teamB,
-    isPublished
+    teamB
   );
 }
 

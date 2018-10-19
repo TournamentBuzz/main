@@ -41,8 +41,7 @@ function getMatch(connection, id) {
 }
 
 function getPublishedMatch(connection, id) {
-  const query =
-    "SELECT (id, location, score, matchTime, matchName, tournament, teamA, teamB) FROM matches WHERE id = ? AND published = true;";
+  const query = "SELECT * FROM matches WHERE id = ? AND publish = 1;";
   return new Promise((resolve, reject) => {
     connection.query(query, [id], function(err, rows, fields) {
       if (err) {
@@ -61,27 +60,15 @@ function updateMatch(
   score,
   matchTime,
   matchName,
-  tournament,
   teamA,
-  teamB,
-  isPublished
+  teamB
 ) {
   const query =
-    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, tournament = ?, teamA = ?, teamB = ?, isPublished = ? WHERE id = ?;";
+    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, teamA = ?, teamB = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
-      [
-        location,
-        score,
-        matchTime,
-        matchName,
-        tournament,
-        id,
-        teamA,
-        teamB,
-        isPublished
-      ],
+      [location, score, matchTime, matchName, teamA, teamB, id],
       function(err, rows, fields) {
         if (err) {
           reject(err);
@@ -94,7 +81,7 @@ function updateMatch(
 }
 
 function updateMatchField(connection, id, fieldName, fieldValue) {
-  const query = "UPDATE matches SET ? = ? WHERE id = ?;";
+  const query = "UPDATE matches SET ?? = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [fieldName, fieldValue, id], function(
       err,
@@ -139,7 +126,7 @@ function getMatches(connection, tournamentId) {
 
 function getPublishedMatches(connection, tournamentId) {
   const query =
-    "SELECT * FROM matches WHERE tournament = ? AND isPublished = 1 AND matchTime >= NOW() ORDER BY matchTime DESC;";
+    "SELECT * FROM matches WHERE tournament = ? AND publish = 1 AND matchTime >= NOW() ORDER BY matchTime DESC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], function(err, rows, fields) {
       if (err) {
