@@ -38,7 +38,12 @@ router.post("", async (req, res, next) => {
       return;
     }
     if (req.headers.id === tournamentObject[0].creator) {
-      await sqlwrapper.updateMatchField(c, req.body.matchId, "publish", 1);
+      await sqlwrapper.updateMatchField(
+        c,
+        req.body.matchId,
+        "publish",
+        req.body.publish
+      );
       res.status(200);
       res.json({
         publishStatus: "success"
