@@ -17,6 +17,7 @@ import TournamentCreate from "views/TournamentCreate";
 import TournamentEdit from "views/TournamentEdit";
 import NotFound from "views/NotFound";
 import MatchCreate from "views/MatchCreate";
+import MatchEdit from "views/MatchEdit";
 
 class App extends Component {
   render() {
@@ -57,7 +58,13 @@ class App extends Component {
               />
               <Route
                 path="/tournament/:tournamentID/match/:matchID"
+                exact
                 component={MatchDetails}
+              />
+              <Route
+                path="/tournament/:tournamentID/match/:matchID/edit"
+                exact
+                component={MatchEdit}
               />
               <Route component={NotFound} />
             </Switch>

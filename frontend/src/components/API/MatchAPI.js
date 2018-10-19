@@ -104,9 +104,15 @@ export default class MatchAPI {
   }
 
   static async getMatches(tournamentID) {
+    let authHeader;
+    if (Authentication.loggedIn()) {
+      authHeader = Authentication.withJWT();
+    } else {
+      authHeader = Authentication.withoutJWT();
+    }
     const res = await fetch(`/tournaments/id/${tournamentID}/matches/`, {
       method: "GET",
-      headers: Authentication.withoutJWT()
+      headers: authHeader
     });
 
     if (!res.ok) {
@@ -117,9 +123,15 @@ export default class MatchAPI {
   }
 
   static async getMatch(matchID) {
+    let authHeader;
+    if (Authentication.loggedIn()) {
+      authHeader = Authentication.withJWT();
+    } else {
+      authHeader = Authentication.withoutJWT();
+    }
     const res = await fetch(`/matches/id/${matchID}`, {
       method: "GET",
-      headers: Authentication.withoutJWT()
+      headers: authHeader
     });
 
     if (!res.ok) {

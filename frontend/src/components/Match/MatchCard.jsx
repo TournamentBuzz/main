@@ -16,13 +16,13 @@ class MatchCard extends React.Component {
   }
 
   render() {
-    const { classes, id, team1, team2, time } = this.props;
+    const { classes, id, matchName, time } = this.props;
     return (
       <Card className={classes.card}>
         <CardActionArea onClick={() => this.handleClick(id)}>
           <CardContent>
             <Typography className={classes.title} component="h1">
-              {team1 + " vs " + team2}
+              {matchName}
             </Typography>
             <Typography color="textSecondary">{time}</Typography>
           </CardContent>

@@ -21,7 +21,9 @@ const matchDetailsStyle = {
     marginBottom: "10px"
   },
   detailsIcons: {
-    float: "right"
+    float: "right",
+    position: "fixed",
+    right: "1%"
   }
 };
 
@@ -32,7 +34,13 @@ class MatchDetails extends React.Component {
       currentUser: Authentication.getUID(),
       creator: null,
       tournamentID: this.props.match.params.tournamentID,
-      matchID: this.props.match.params.matchID
+      matchID: this.props.match.params.matchID,
+      location: null,
+      matchTime: null,
+      matchName: null,
+      teamA: null,
+      teamB: null,
+      published: null
     };
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickDelete = this.handleClickDelete.bind(this);
@@ -57,6 +65,26 @@ class MatchDetails extends React.Component {
     }
   }
 
+  async getMatchDetails(id) {
+    let details = undefined;
+    try {
+      details = await MatchAPI.getMatch(id);
+    } catch (error) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (details === undefined) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (details.length < 1) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    details = details[0];
+    this.setState(details);
+  }
+
   async getTournamentDetails(id) {
     let details = undefined;
     try {
@@ -78,6 +106,7 @@ class MatchDetails extends React.Component {
   }
 
   async componentDidMount() {
+    await this.getMatchDetails(this.state.matchID);
     await this.getTournamentDetails(this.state.tournamentID);
   }
 
@@ -100,29 +129,32 @@ class MatchDetails extends React.Component {
           />
         </div>
         <div>
-          {this.state.currentUser != null &&
-          this.state.currentUser === this.state.creator ? (
-            <div className={classes.detailsIcons}>
-              <IconButton
-                className={classes.button}
-                aria-label="Delete"
-                onClick={this.handleClickEdit}
-              >
-                <PencilIcon />
-              </IconButton>
-              <IconButton
-                className={classes.button}
-                aria-label="Delete"
-                onClick={this.handleClickDelete}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </div>
-          ) : null}
+          <div>
+            {this.state.currentUser != null &&
+            this.state.currentUser === this.state.creator ? (
+              <div className={classes.detailsIcons}>
+                <IconButton
+                  className={classes.button}
+                  aria-label="Delete"
+                  onClick={this.handleClickEdit}
+                >
+                  <PencilIcon />
+                </IconButton>
+                <IconButton
+                  className={classes.button}
+                  aria-label="Delete"
+                  onClick={this.handleClickDelete}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            ) : null}
+            <h2>{this.state.matchName}</h2>
+          </div>
           <Grid container>
             <Grid item xs={4}>
               <Typography variant="headline" className={classes.detailsText}>
-                <b>Ballin Bowlers</b>
+                <b>{this.state.teamA}</b>
               </Typography>
             </Grid>
             <Grid item xs={4}>
@@ -130,15 +162,15 @@ class MatchDetails extends React.Component {
                 <b>VS</b>
               </Typography>
               <Typography variant="body1" className={classes.detailsText}>
-                3/29/2019 @ 7:00
+                {this.state.matchTime}
               </Typography>
               <Typography variant="body1" className={classes.detailsText}>
-                Tech Rec
+                {this.state.location}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="headline" className={classes.detailsText}>
-                <b>Nothing but Strikes</b>
+                <b>{this.state.teamB}</b>
               </Typography>
             </Grid>
           </Grid>

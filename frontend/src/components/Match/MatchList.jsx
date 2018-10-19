@@ -1,66 +1,74 @@
 import React from "react";
+import { withRouter } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
 import MatchCard from "components/Match/MatchCard.jsx";
+import MatchAPI from "components/API/MatchAPI.js";
 
 class MatchList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tournamentID: this.props.match.params.tournamentID,
+      matchList: null
+    };
+  }
+
+  async createMatchList() {
+    let matches = undefined;
+    try {
+      matches = await MatchAPI.getMatches(this.state.tournamentID);
+    } catch (error) {
+      let message = <h2>Error loading matches</h2>;
+      this.setState({ matchList: message });
+      return;
+    }
+    console.log(matches);
+    if (matches === undefined) {
+      let message = <h2>Error loading matches</h2>;
+      this.setState({ matchList: message });
+      return;
+    }
+    if (matches.length < 1) {
+      let message = <h2>No matches</h2>;
+      this.setState({ matchList: message });
+      return;
+    }
+    let list = [];
+    for (let match of matches) {
+      let card = (
+        <Grid item xs={4} key={match.id}>
+          <MatchCard
+            key={match.id}
+            id={match.id}
+            matchName={match.matchName}
+            time={match.matchTime}
+          />
+        </Grid>
+      );
+      list.push(card);
+    }
+    this.setState({ matchList: list });
+  }
+
+  async componentDidMount() {
+    await this.createMatchList();
+  }
+
   render() {
-    // use later for retrieving matches (rather than hard coding)
-    const { tournamentID } = this.props;
     return (
       <div>
-        <Grid container>
-          <Grid item xs={4}>
-            <MatchCard
-              id="1"
-              team1="Ballin Bowlers"
-              team2="Nothing but Strikes"
-              time="3/24/19 7:00pm"
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <MatchCard
-              id="2"
-              team1="Ballin Bowlers"
-              team2="Nothing but Strikes"
-              time="3/25/19 7:00pm"
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <MatchCard
-              id="3"
-              team1="Ballin Bowlers"
-              team2="Nothing but Strikes"
-              time="3/26/19 7:00pm"
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <MatchCard
-              id="4"
-              team1="Ballin Bowlers"
-              team2="Nothing but Strikes"
-              time="3/27/19 7:00pm"
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <MatchCard
-              id="5"
-              team1="Ballin Bowlers"
-              team2="Nothing but Strikes"
-              time="3/28/19 7:00pm"
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <MatchCard
-              id="6"
-              team1="Ballin Bowlers"
-              team2="Nothing but Strikes"
-              time="3/29/19 7:00pm"
-            />
-          </Grid>
-        </Grid>
+        {this.state.matchList === null ? (
+          <div>
+            <CircularProgress />
+          </div>
+        ) : (
+          <Grid container>{this.state.matchList}</Grid>
+        )}
       </div>
     );
   }
 }
 
-export default MatchList;
+export default withRouter(MatchList);

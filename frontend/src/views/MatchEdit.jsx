@@ -13,13 +13,14 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import MatchAPI from "components/API/MatchAPI";
 import Authentication from "components/API/Authentication";
 
-class MatchCreate extends React.Component {
+class MatchEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       submitted: false,
       formError: "",
       tournamentId: this.props.match.params.tournamentID,
+      matchId: this.props.match.params.matchID,
       location: "",
       matchName: "",
       matchTime: "",
@@ -29,16 +30,38 @@ class MatchCreate extends React.Component {
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
 
-  componentDidMount() {
+  async getMatchDetails(id) {
+    let details = undefined;
+    try {
+      details = await MatchAPI.getMatch(id);
+    } catch (error) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (details === undefined) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (details.length < 1) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    details = details[0];
+    details.matchTime = details.matchTime.slice(0, 19);
+    this.setState(details);
+  }
+
+  async componentDidMount() {
     if (!Authentication.loggedIn()) {
       this.props.history.push("/login");
     }
+    await this.getMatchDetails(this.state.matchId);
   }
 
   async handleFormSubmit(event) {
     event.preventDefault();
-    await MatchAPI.createMatch(
-      this.state.tournamentId,
+    await MatchAPI.editMatch(
+      this.state.matchId,
       this.state.location,
       this.state.details,
       this.state.matchName,
@@ -72,7 +95,7 @@ class MatchCreate extends React.Component {
         </div>
         <div>
           <form onSubmit={this.handleFormSubmit}>
-            <h2>Create Match</h2>
+            <h2>Edit Match</h2>
             <FormHelperText error>{this.state.formError}</FormHelperText>
 
             <div>
@@ -117,7 +140,7 @@ class MatchCreate extends React.Component {
                   id="matchTime"
                   fullWidth={true}
                   required={true}
-                  placeholder=""
+                  value={this.state.matchTime}
                 />
                 <FormHelperText>
                   {this.state.submitted && !this.state.matchTime
@@ -166,7 +189,7 @@ class MatchCreate extends React.Component {
                 value="submit"
                 type="submit"
               >
-                Create
+                Save
               </Button>
             </div>
           </form>
@@ -176,4 +199,4 @@ class MatchCreate extends React.Component {
   }
 }
 
-export default withRouter(MatchCreate);
+export default withRouter(MatchEdit);
