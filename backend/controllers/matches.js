@@ -15,6 +15,6 @@ router.use("/create", requireAuth, create);
 router.use("/edit", requireAuth, edit);
 router.use("/delete", requireAuth, deletejs);
 router.use("/id", id);
-router.use("publish", requireAuth, publish);
+router.use("/publish", requireAuth, publish);
 
 module.exports = router;
