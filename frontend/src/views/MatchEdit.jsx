@@ -51,7 +51,14 @@ class MatchEdit extends React.Component {
       return;
     }
     details = details[0];
-    details.matchTime = details.matchTime.slice(0, 19);
+    let date = new Date(
+      details.matchTime.slice(0, 19).replace("T", " ") + " UTC"
+    );
+    details.matchTime = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .slice(0, 19);
     details.publish = details.publish === 1 ? true : false;
     this.setState(details);
     this.setState({ initialPublish: details.publish });
@@ -118,7 +125,7 @@ class MatchEdit extends React.Component {
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.name
+                  {this.state.submitted && !this.state.matchName
                     ? "Match Name is required"
                     : ""}
                 </FormHelperText>

@@ -24,7 +24,6 @@ class MatchList extends React.Component {
       this.setState({ matchList: message });
       return;
     }
-    console.log(matches);
     if (matches === undefined) {
       let message = <h2>Error loading matches</h2>;
       this.setState({ matchList: message });
@@ -37,13 +36,16 @@ class MatchList extends React.Component {
     }
     let list = [];
     for (let match of matches) {
+      let timeString = new Date(
+        match.matchTime.slice(0, 19).replace("T", " ") + " UTC"
+      ).toLocaleString();
       let card = (
         <Grid item xs={4} key={match.id}>
           <MatchCard
             key={match.id}
             id={match.id}
             matchName={match.matchName}
-            time={match.matchTime}
+            time={timeString}
           />
         </Grid>
       );

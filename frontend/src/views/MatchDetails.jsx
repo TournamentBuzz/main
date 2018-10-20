@@ -82,6 +82,9 @@ class MatchDetails extends React.Component {
       return;
     }
     details = details[0];
+    details.matchTime = new Date(
+      details.matchTime.slice(0, 19).replace("T", " ") + " UTC"
+    ).toLocaleString();
     this.setState(details);
   }
 

@@ -92,7 +92,7 @@ class MatchCreate extends React.Component {
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.name
+                  {this.state.submitted && !this.state.matchName
                     ? "Match Name is required"
                     : ""}
                 </FormHelperText>
