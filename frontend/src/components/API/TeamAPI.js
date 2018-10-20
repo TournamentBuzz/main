@@ -2,7 +2,7 @@ import * as errors from "./errors";
 import Authentication from "./Authentication";
 
 export default class TeamAPI {
-  createTeam(tournamentId, teamName) {
+  static async createTeam(tournamentId, teamName) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/tournaments/id/${tournamentId}/teams/create`, {
       method: "POST",
@@ -58,5 +58,30 @@ export default class TeamAPI {
     }
     const json = await res.json();
     return json.teams;
+  }
+
+  static async getTeam(tournamentId, teamId) {
+    const res = await fetch(`/tournaments/id/${tournamentId}/teams/id/${teamId}`, {
+      method: "GET",
+      headers: Authentication.withoutJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.team;
+  }
+
+  static async promote() {
+    // todo
+  }
+
+  static async remove() {
+    // todo
+  }
+
+  static async invite() {
+    // todo
   }
 }
