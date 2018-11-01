@@ -2,9 +2,9 @@ CREATE SCHEMA tournamentbuzz;
 USE tournamentbuzz;
 
 CREATE TABLE users (
-  email VARCHAR(255) NOT NULL UNIQUE CHECK(email REGEXP '^[A-Za-z0-9][A-Za-z0-9]*@[A-Za-z0-9][A-Za-z0-9]*\\.[A-Za-z0-9]*$'),
-  password VARCHAR(255) NOT NULL CHECK(passw LIKE '%________%'),
-  username VARCHAR(60),
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  userName VARCHAR(60),
   admin BOOL DEFAULT FALSE NOT NULL, 
   PRIMARY KEY(email)
 );
@@ -12,7 +12,7 @@ CREATE TABLE users (
 CREATE TABLE tournaments (
 	id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
     creator VARCHAR(255) NOT NULL,
-    sponsor VARCHAR(255) DEFAULT NULL,
+    description VARCHAR(255) DEFAULT NULL,
     teamEvent BOOL NOT NULL DEFAULT FALSE,
     location VARCHAR(255) DEFAULT NULL,
     scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
@@ -41,7 +41,7 @@ CREATE TABLE matches (
 
 CREATE TABLE teams (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
-    teamName VARCHAR(255) /*CHECK(NOT EXISTS(SELECT * FROM teamparticipates WHERE teamname = tname))*/,
+    teamName VARCHAR(255),
     leader VARCHAR(255) NOT NULL,
     tournament INT(10) NOT NULL,
     PRIMARY KEY(id),
