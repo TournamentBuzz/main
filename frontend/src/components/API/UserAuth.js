@@ -2,14 +2,7 @@ import * as errors from "./errors";
 import Authentication from "./Authentication";
 
 export default class UserAuth {
-  constructor() {
-    this.login = this.login.bind(this);
-    this.register = this.register.bind(this);
-    this.renew = this.renew.bind(this);
-    this.logout = this.logout.bind(this);
-  }
-
-  async login(email, password) {
+  static async login(email, password) {
     const res = await fetch("/user/login", {
       method: "POST",
       headers: Authentication.withoutJWT(),
@@ -27,7 +20,7 @@ export default class UserAuth {
     Authentication.setToken(json.jwt);
   }
 
-  async register(name, email, password) {
+  static async register(name, email, password) {
     const res = await fetch("/user/register", {
       method: "POST",
       headers: Authentication.withoutJWT(),
@@ -46,8 +39,8 @@ export default class UserAuth {
     Authentication.setToken(json.jwt);
   }
 
-  async renew() {
-    if (!this.loggedIn()) return;
+  static async renew() {
+    if (!Authentication.loggedIn()) return;
     const res = await fetch("/user/renew", {
       method: "GET",
       headers: Authentication.withJWT()
@@ -61,7 +54,13 @@ export default class UserAuth {
     }
   }
 
-  logout() {
+  static logout() {
     localStorage.removeItem("userToken");
+  }
+
+  static startAutoRenewal() {
+    const delay = 10 * 60 * 1000; // 10 minutes
+    UserAuth.renew();
+    setInterval(() => UserAuth.renew(), delay);
   }
 }

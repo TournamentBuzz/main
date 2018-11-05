@@ -15,6 +15,7 @@ import CardFooter from "components/Card/CardFooter";
 import Button from "components/CustomButtons/Button";
 
 import TournamentAPI from "components/API/TournamentAPI";
+import Authentication from "components/API/Authentication.js";
 
 class TournamentEdit extends React.Component {
   constructor(props) {
@@ -24,14 +25,14 @@ class TournamentEdit extends React.Component {
       submitted: false,
       formError: "",
       id: "",
-      name: "",
+      tournamentName: "",
       description: "",
-      teamEvent: false,
+      maxTeamSize: "",
       location: "",
       scoringType: "Points",
       tournamentType: "Single Elim",
       entryCost: "",
-      maxParticipants: "",
+      maxTeams: "",
       startDate: "2019-01-01",
       endDate: "2019-01-01"
     };
@@ -44,22 +45,45 @@ class TournamentEdit extends React.Component {
   }
 
   async componentDidMount() {
-    const info = await TournamentAPI.getTournament(this.state.tournamentID);
+    if (!Authentication.loggedIn()) {
+      this.props.history.push("/NotFound");
+    }
+    let info = undefined;
+    try {
+      info = await TournamentAPI.getTournament(this.state.tournamentID);
+    } catch (error) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (info === undefined) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (info.length < 1) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    info = info[0];
+    if (Authentication.getUID() !== info.creator) {
+      this.props.history.push("/NotFound");
+    }
+    info.startDate = info.startDate.split("T")[0];
+    info.endDate = info.endDate.split("T")[0];
     this.setState(info);
   }
 
   async handleFormSubmit(event) {
     event.preventDefault();
     await TournamentAPI.editTournament(
-      this.props.tournamentID,
-      this.state.name,
+      this.state.tournamentID,
+      this.state.tournamentName,
       this.state.description,
-      this.state.teamEvent,
+      this.state.maxTeamSize,
       this.state.location,
       this.state.scoringType,
       this.state.tournamentType,
       Number(this.state.entryCost),
-      Number(this.state.maxParticipants),
+      Number(this.state.maxTeams),
       new Date(this.state.startDate).toISOString().split("T")[0],
       new Date(this.state.endDate).toISOString().split("T")[0]
     );
@@ -80,13 +104,15 @@ class TournamentEdit extends React.Component {
               <FormControl>
                 <InputLabel>Tournament Name</InputLabel>
                 <Input
-                  value={this.state.name}
-                  onChange={e => this.setState({ name: e.target.value })}
-                  id="name"
+                  value={this.state.tournamentName}
+                  onChange={e =>
+                    this.setState({ tournamentName: e.target.value })
+                  }
+                  id="tournamentName"
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.name
+                  {this.state.submitted && !this.state.tournamentName
                     ? "Tournament Name is required"
                     : ""}
                 </FormHelperText>
@@ -112,16 +138,24 @@ class TournamentEdit extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Team Event</InputLabel>
-                <Select
-                  value={this.state.teamEvent}
-                  inputProps={{ id: "teamEvent" }}
-                  onChange={e => this.setState({ teamEvent: e.target.value })}
-                >
-                  <MenuItem value={false}>Individual</MenuItem>
-                  <MenuItem value={true}>Team</MenuItem>
-                </Select>
+                <InputLabel>Max Team Size</InputLabel>
+                <Input
+                  value={this.state.maxTeamSize}
+                  onChange={e => this.setState({ maxTeamSize: e.target.value })}
+                  id="maxTeamSize"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !this.state.maxTeamSize
+                    ? "Max Team Size is required"
+                    : ""}
+                  {!Number.isInteger(Number(this.state.maxTeamSize))
+                    ? "Max Team Size must be a number"
+                    : ""}
+                </FormHelperText>
               </FormControl>
+            </div>
+            <div>
               <FormControl>
                 <InputLabel>Tournament Type</InputLabel>
                 <Select
@@ -177,21 +211,19 @@ class TournamentEdit extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Max Participants</InputLabel>
+                <InputLabel>Max Teams</InputLabel>
                 <Input
-                  value={this.state.maxParticipants}
-                  onChange={e =>
-                    this.setState({ maxParticipants: e.target.value })
-                  }
-                  id="maxParticipants"
+                  value={this.state.maxTeams}
+                  onChange={e => this.setState({ maxTeams: e.target.value })}
+                  id="maxTeams"
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.maxParticipants
-                    ? "Max Participants is required"
+                  {this.state.submitted && !this.state.maxTeams
+                    ? "Max Teams is required"
                     : ""}
-                  {!Number.isInteger(Number(this.state.maxParticipants))
-                    ? "Max Participants must be a number"
+                  {!Number.isInteger(Number(this.state.maxTeams))
+                    ? "Max Teams must be a number"
                     : ""}
                 </FormHelperText>
               </FormControl>
@@ -199,14 +231,14 @@ class TournamentEdit extends React.Component {
 
             <div>
               <FormControl>
-                <InputLabel>Start Date</InputLabel>
+                <InputLabel shrink={true}>Start Date</InputLabel>
                 <Input
                   type="date"
                   onChange={e => this.setState({ startDate: e.target.value })}
                   id="startDate"
                   fullWidth={true}
                   required={true}
-                  placeholder=""
+                  value={this.state.startDate}
                 />
                 <FormHelperText>
                   {this.state.submitted && !this.state.startDate
@@ -215,14 +247,14 @@ class TournamentEdit extends React.Component {
                 </FormHelperText>
               </FormControl>
               <FormControl>
-                <InputLabel>End Date</InputLabel>
+                <InputLabel shrink={true}>End Date</InputLabel>
                 <Input
                   type="date"
                   onChange={e => this.setState({ endDate: e.target.value })}
                   id="endDate"
                   fullWidth={true}
                   required={true}
-                  placeholder=""
+                  value={this.state.endDate}
                 />
                 <FormHelperText>
                   {this.state.submitted && !this.state.endDate
@@ -232,7 +264,7 @@ class TournamentEdit extends React.Component {
               </FormControl>
             </div>
           </CardBody>
-          <CardFooter>
+          <CardFooter style={{ display: "block" }}>
             <Button
               simple
               color="primary"

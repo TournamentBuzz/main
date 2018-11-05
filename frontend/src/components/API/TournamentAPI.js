@@ -18,12 +18,12 @@ export default class TournamentAPI {
   static async createTournament(
     tournamentName,
     description,
-    teamEvent,
+    maxTeamSize,
     location,
     scoringType,
     tournamentType,
     entryCost,
-    maxParticipants,
+    maxTeams,
     startDate,
     endDate
   ) {
@@ -34,12 +34,12 @@ export default class TournamentAPI {
       body: JSON.stringify({
         tournamentName,
         description,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate,
         endDate
       })
@@ -57,12 +57,12 @@ export default class TournamentAPI {
     tournamentId,
     tournamentName,
     description,
-    teamEvent,
+    maxTeamSize,
     location,
     scoringType,
     tournamentType,
     entryCost,
-    maxParticipants,
+    maxTeams,
     startDate,
     endDate
   ) {
@@ -74,12 +74,12 @@ export default class TournamentAPI {
         tournamentId,
         tournamentName,
         description,
-        teamEvent,
+        maxTeamSize,
         location,
         scoringType,
         tournamentType,
         entryCost,
-        maxParticipants,
+        maxTeams,
         startDate,
         endDate
       })
@@ -108,10 +108,9 @@ export default class TournamentAPI {
   }
 
   static async getTournaments() {
-    if (!Authentication.loggedIn()) return;
     const res = await fetch("/tournaments", {
       method: "GET",
-      headers: Authentication.withJWT()
+      headers: Authentication.withoutJWT()
     });
 
     if (!res.ok) {
@@ -122,10 +121,9 @@ export default class TournamentAPI {
   }
 
   static async getTournament(id) {
-    if (!Authentication.loggedIn()) return;
     const res = await fetch(`/tournaments/id/${id}`, {
       method: "GET",
-      headers: Authentication.withJWT()
+      headers: Authentication.withoutJWT()
     });
 
     if (!res.ok) {
@@ -148,107 +146,5 @@ export default class TournamentAPI {
     }
     const json = await res.json();
     return json.tournamentId;
-  }
-
-  static async getMatches(tournamentID) {
-    if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentID}/matches/`, {
-      method: "GET",
-      headers: Authentication.withJWT()
-    });
-
-    if (!res.ok) {
-      throw new errors.UnexpectedError();
-    }
-    const json = await res.json();
-    return json.tournaments;
-  }
-
-  static async createMatch(
-    tournamentId,
-    location,
-    details,
-    time,
-    partyA,
-    partyB
-  ) {
-    if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/create`, {
-      method: "POST",
-      headers: Authentication.withJWT(),
-      body: JSON.stringify({
-        tournamentId,
-        location,
-        details,
-        time,
-        partyA,
-        partyB
-      })
-    });
-
-    if (!res.ok) {
-      throw new errors.UnexpectedError();
-    }
-    return res.json();
-  }
-
-  static async editMatch(
-    tournamentId,
-    matchId,
-    location,
-    details,
-    time,
-    partyA,
-    partyB
-  ) {
-    if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/edit`, {
-      method: "POST",
-      headers: Authentication.withJWT(),
-      body: JSON.stringify({
-        tournamentId,
-        matchId,
-        location,
-        details,
-        time,
-        partyA,
-        partyB
-      })
-    });
-
-    if (!res.ok) {
-      throw new errors.UnexpectedError();
-    }
-    return res.json();
-  }
-
-  static async deleteMatch(tournamentId, matchId) {
-    if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/delete`, {
-      method: "POST",
-      headers: Authentication.withJWT(),
-      body: JSON.stringify({ tournamentId, matchId })
-    });
-
-    if (!res.ok) {
-      throw new errors.UnexpectedError();
-    }
-    const json = await res.json();
-    return json.deleteStatus;
-  }
-
-  static async publishMatch(tournamentId, matchId, publish) {
-    if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/matches/publish`, {
-      method: "POST",
-      headers: Authentication.withJWT(),
-      body: JSON.stringify({ tournamentId, matchId, publish })
-    });
-
-    if (!res.ok) {
-      throw new errors.UnexpectedError();
-    }
-    const json = await res.json();
-    return json.publishStatus;
   }
 }

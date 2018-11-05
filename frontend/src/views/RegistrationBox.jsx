@@ -34,7 +34,6 @@ class RegistrationBox extends React.Component {
     this.passwordsMatch = this.passwordsMatch.bind(this);
     this.canSubmit = this.canSubmit.bind(this);
     this.allFieldsComplete = this.allFieldsComplete.bind(this);
-    this.userAuth = new UserAuth();
   }
 
   handleChange(e) {
@@ -78,7 +77,7 @@ class RegistrationBox extends React.Component {
     this.setState({ submitted: true, APIBusy: true });
     try {
       const { regName, regEmail, regPassword } = this.state;
-      await this.userAuth.register(regName, regEmail, regPassword);
+      await UserAuth.register(regName, regEmail, regPassword);
       window.location.reload();
     } catch (error) {
       this.setState({ formError: error.message, APIBusy: false });

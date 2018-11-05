@@ -6,12 +6,12 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import PencilIcon from "@material-ui/icons/Create";
+import AddIcon from "@material-ui/icons/Add";
 
 // core components
 import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
-import UserAuth from "components/API/UserAuth.js";
 import Authentication from "components/API/Authentication.js";
 import TournamentAPI from "components/API/TournamentAPI.js";
 import MatchList from "components/Match/MatchList.jsx";
@@ -21,24 +21,24 @@ import tournamentDetailsStyle from "assets/jss/views/tournamentDetailsStyle.jsx"
 class TournamentDetails extends React.Component {
   constructor(props) {
     super(props);
-    this.UserAuth = new UserAuth();
     this.state = {
       tournamentName: null,
       tournamentID: this.props.match.params.tournamentID,
       creator: null,
       description: null,
-      teamEvent: null,
+      maxTeamSize: null,
       location: null,
       scoringType: null,
       tournamentType: null,
       entryCost: null,
-      maxParticipants: null,
+      maxTeams: null,
       startDate: null,
       endDate: null,
       currentUser: Authentication.getUID()
     };
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickDelete = this.handleClickDelete.bind(this);
+    this.handleClickAddMatch = this.handleClickAddMatch.bind(this);
   }
 
   handleClickEdit() {
@@ -60,6 +60,12 @@ class TournamentDetails extends React.Component {
     }
   }
 
+  handleClickAddMatch() {
+    this.props.history.push(
+      `/tournament/${this.state.tournamentID}/match/create`
+    );
+  }
+
   async getTournamentDetails(id) {
     let details = undefined;
     try {
@@ -77,22 +83,9 @@ class TournamentDetails extends React.Component {
       return;
     }
     details = details[0];
-    details.teamEvent = details.teamEvent === 0 ? "No" : "Yes";
-    details.startDate = new Date(Date.parse(details.startDate)).toDateString();
-    details.endDate = new Date(Date.parse(details.endDate)).toDateString();
-    this.setState({
-      tournamentName: details.tournamentName,
-      creator: details.creator,
-      description: details.description,
-      teamEvent: details.teamEvent,
-      location: details.location,
-      scoringType: details.scoringType,
-      tournamentType: details.tournamentType,
-      entryCost: details.entryCost,
-      maxParticipants: details.maxParticipants,
-      startDate: details.startDate,
-      endDate: details.endDate
-    });
+    details.startDate = new Date(details.startDate).toDateString();
+    details.endDate = new Date(details.endDate).toDateString();
+    this.setState(details);
   }
 
   async componentDidMount() {
@@ -123,7 +116,7 @@ class TournamentDetails extends React.Component {
             <div className={classes.detailsIcons}>
               <IconButton
                 className={classes.button}
-                aria-label="Delete"
+                aria-label="Edit"
                 onClick={this.handleClickEdit}
               >
                 <PencilIcon />
@@ -159,13 +152,13 @@ class TournamentDetails extends React.Component {
             <b>Tournament Type:</b> {this.state.tournamentType}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Team Event:</b> {this.state.teamEvent}
+            <b>Max Team Size:</b> {this.state.maxTeamSize}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Entry Cost:</b> {this.state.entryCost}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
-            <b>Max Participants:</b> {this.state.maxParticipants}
+            <b>Max Teams:</b> {this.state.maxTeams}
           </Typography>
           <Typography variant="body1" className={classes.detailsText}>
             <b>Start Date:</b> {this.state.startDate}
@@ -176,8 +169,20 @@ class TournamentDetails extends React.Component {
         </div>
         <hr />
         <div>
+          {this.state.currentUser != null &&
+          this.state.currentUser === this.state.creator ? (
+            <div className={classes.detailsIcons}>
+              <IconButton
+                className={classes.button}
+                aria-label="Add Match"
+                onClick={this.handleClickAddMatch}
+              >
+                <AddIcon />
+              </IconButton>
+            </div>
+          ) : null}
           <Typography variant="headline" className={classes.detailsText}>
-            <b>Upcoming Matches</b>
+            <b>Matches</b>
           </Typography>
           <MatchList tournamentID={this.props.match.params.tournamentID} />
         </div>

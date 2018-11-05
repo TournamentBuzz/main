@@ -5,6 +5,8 @@ import {
   Switch,
   withRouter
 } from "react-router-dom";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import theme from "assets/jss/theme";
 import "./App.css";
 
 // Pages
@@ -14,45 +16,60 @@ import MatchDetails from "views/MatchDetails";
 import TournamentCreate from "views/TournamentCreate";
 import TournamentEdit from "views/TournamentEdit";
 import NotFound from "views/NotFound";
+import MatchCreate from "views/MatchCreate";
+import MatchEdit from "views/MatchEdit";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <Router>
-          <Switch>
-            <Route path="/" exact component={HomePage} />
-            <Route
-              path="/login"
-              render={props => <HomePage {...props} login={true} />}
-            />
-            <Route
-              path="/register"
-              render={props => <HomePage {...props} register={true} />}
-            />
-            <Route path="/tournament" exact component={HomePage} />
-            <Route
-              path="/tournament/create"
-              exact
-              component={TournamentCreate}
-            />
-            <Route
-              path="/tournament/:tournamentID"
-              exact
-              component={TournamentDetails}
-            />
-            <Route
-              path="/tournament/:tournamentID/edit"
-              exact
-              component={TournamentEdit}
-            />
-            <Route
-              path="/tournament/:tournamentID/match/:matchID"
-              component={MatchDetails}
-            />
-            <Route component={NotFound} />
-          </Switch>
-        </Router>
+        <MuiThemeProvider theme={theme}>
+          <Router>
+            <Switch>
+              <Route path="/" exact component={HomePage} />
+              <Route
+                path="/login"
+                render={props => <HomePage {...props} login={true} />}
+              />
+              <Route
+                path="/register"
+                render={props => <HomePage {...props} register={true} />}
+              />
+              <Route path="/tournament" exact component={HomePage} />
+              <Route
+                path="/tournament/create"
+                exact
+                component={TournamentCreate}
+              />
+              <Route
+                path="/tournament/:tournamentID"
+                exact
+                component={TournamentDetails}
+              />
+              <Route
+                path="/tournament/:tournamentID/edit"
+                exact
+                component={TournamentEdit}
+              />
+              <Route
+                path="/tournament/:tournamentID/match/create"
+                exact
+                component={MatchCreate}
+              />
+              <Route
+                path="/tournament/:tournamentID/match/:matchID"
+                exact
+                component={MatchDetails}
+              />
+              <Route
+                path="/tournament/:tournamentID/match/:matchID/edit"
+                exact
+                component={MatchEdit}
+              />
+              <Route component={NotFound} />
+            </Switch>
+          </Router>
+        </MuiThemeProvider>
       </div>
     );
   }

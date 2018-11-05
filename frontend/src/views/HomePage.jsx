@@ -10,15 +10,9 @@ import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import TournamentList from "components/Tournament/TournamentList.jsx";
 
-import UserAuth from "components/API/UserAuth.js";
 import Authentication from "components/API/Authentication.js";
 
 class HomePage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.UserAuth = new UserAuth();
-  }
-
   render() {
     const { classes, login, register, ...rest } = this.props;
     return (
