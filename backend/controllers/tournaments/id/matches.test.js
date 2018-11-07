@@ -66,6 +66,15 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
   specC.destroy();
+  app.set(
+    "databaseConnection",
+    connection.connect(
+      app.get("databaseConfig").host,
+      app.get("databaseConfig").username,
+      app.get("databaseConfig").password,
+      app.get("databaseConfig").schema
+    )
+  );
 }
 
 async function cleanupTemporarySchema(
@@ -83,6 +92,7 @@ async function cleanupTemporarySchema(
   const setupSchemaQuery = "DROP SCHEMA " + temporarySchema + ";";
   await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
+  app.get("databaseConnection").destroy();
 }
 
 describe("matches", () => {

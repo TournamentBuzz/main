@@ -4,6 +4,7 @@ const express = require("express");
 //const favicon = require('serve-favicon');
 
 const config = require("./config");
+const connection = require("./model/connect");
 const user = require("./controllers/user");
 const tournaments = require("./controllers/tournaments");
 const matches = require("./controllers/matches");
@@ -23,6 +24,14 @@ app.set("serverConfig", config.serverConfig);
 app.set("authConfig", config.authConfig);
 // set database config
 app.set("databaseConfig", config.databaseConfig);
+// Initiate database connection
+const c = connection.connect(
+  app.get("databaseConfig").host,
+  app.get("databaseConfig").username,
+  app.get("databaseConfig").password,
+  app.get("databaseConfig").schema
+);
+app.set("databaseConnection", c);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -30,14 +39,16 @@ app.use(logger("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+if (app.get("serverConfig").env === "development") {
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+  });
+}
 
 app.use("/user", user);
 app.use("/tournaments", tournaments);

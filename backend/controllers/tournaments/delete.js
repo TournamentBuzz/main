@@ -2,7 +2,6 @@
 
 const express = require("express");
 const sqlwrapper = require("../../model/wrapper");
-const connection = require("../../model/connect");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
@@ -13,12 +12,7 @@ router.post("", async (req, res, next) => {
     return;
   }
   try {
-    const c = connection.connect(
-      req.app.get("databaseConfig").host,
-      req.app.get("databaseConfig").username,
-      req.app.get("databaseConfig").password,
-      req.app.get("databaseConfig").schema
-    );
+    const c = req.app.get("databaseConnection");
     const tournamentObject = await sqlwrapper.getTournament(
       c,
       req.body.tournamentId

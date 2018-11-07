@@ -4,7 +4,6 @@ const express = require("express");
 const router = express.Router();
 
 const sqlwrapper = require("../../model/wrapper");
-const connection = require("../../model/connect");
 
 const matches = require("./id/matches");
 
@@ -12,12 +11,7 @@ const requireAuth = require("../../middleware/auth/verify");
 
 router.get("/:id", async function(req, res, next) {
   try {
-    const c = connection.connect(
-      req.app.get("databaseConfig").host,
-      req.app.get("databaseConfig").username,
-      req.app.get("databaseConfig").password,
-      req.app.get("databaseConfig").schema
-    );
+    const c = req.app.get("databaseConnection");
     const tournamentObject = await sqlwrapper.getTournament(c, req.param("id"));
     if (!tournamentObject[0]) {
       const err = new Error("Tournament does not exist!");
