@@ -11,6 +11,12 @@ router.get("/", async function(req, res, next) {
       c,
       req.routeParams.id
     );
+    if (!tournamentObject[0]) {
+      const err = new Error("Tournament does not exist!");
+      err.status = 404;
+      next(err);
+      return;
+    }
     if (req.headers.id === tournamentObject[0].creator) {
       const results = await sqlwrapper.getMatches(c, req.routeParams.id);
       res.status(200);

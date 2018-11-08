@@ -65,6 +65,22 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     PRIMARY KEY(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
+  const setupExampleTournamentQuery =
+    "INSERT INTO tournaments (creator, tournamentName, startDate, endDate) VALUES (?, ?, ?, ?)";
+  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
+    "example@example.com",
+    "test tournament",
+    "9999-01-01 UTC",
+    "9999-01-02 UTC"
+  ]);
+  const setupExampleTournamentQuery2 =
+    "INSERT INTO tournaments (creator, tournamentName, startDate, endDate) VALUES (?, ?, ?, ?)";
+  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery2, [
+    "example@example.com",
+    "test tournament 2",
+    "9999-01-01 UTC",
+    "9999-01-02 UTC"
+  ]);
   specC.destroy();
   app.set(
     "databaseConnection",

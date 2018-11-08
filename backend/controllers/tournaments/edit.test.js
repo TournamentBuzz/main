@@ -175,8 +175,8 @@ describe("edit", () => {
       startDate: "2019-01-01",
       endDate: "2019-01-02"
     };
-    const t1Date = new Date("January 1, 2019");
-    const t2Date = new Date("January 2, 2019");
+    const t1Date = new Date("January 1, 2019 UTC");
+    const t2Date = new Date("January 2, 2019 UTC");
     const tt1Date = t1Date.toISOString();
     const tt2Date = t2Date.toISOString();
     await request(app)

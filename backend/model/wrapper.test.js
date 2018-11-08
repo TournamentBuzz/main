@@ -125,8 +125,8 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
     "example@example.com",
     "test tournament",
-    "2020-01-01",
-    "2020-01-02"
+    "9999-01-01 UTC",
+    "9999-01-02 UTC"
   ]);
   specC.destroy();
   dc = connection.connect(
@@ -338,8 +338,8 @@ describe("sql wrapper", () => {
       "Single Elim",
       0,
       16,
-      "2020-01-01",
-      "2020-01-02"
+      "9999-01-01",
+      "9999-01-02"
     );
     const result = await sqlwrapper.executeSQL(c, getTestTournament, [
       testTournamentName
