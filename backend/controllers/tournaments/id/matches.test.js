@@ -32,7 +32,7 @@ function mockErrorHandler(err, req, res, next) {
   }
 }
 
-app.use("/tournaments/id/:id/matches", matches);
+app.use("/matches", matches);
 app.use(mockErrorHandler);
 
 async function setupTemporarySchema(host, username, password, temporarySchema) {
@@ -65,9 +65,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       maxTeams INT(5) NOT NULL DEFAULT 16,
       startDate DATE DEFAULT NULL,
       endDate DATE DEFAULT NULL,
-      PRIMARY KEY(id),
-      FOREIGN KEY(creator)
-      REFERENCES users(email)
+      PRIMARY KEY(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
   const setupMatchesTableQuery = `CREATE TABLE matches (
@@ -79,7 +77,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     tournament INT(10) NOT NULL,
     teamA INT(12) DEFAULT NULL,
     teamB INT(12) DEFAULT NULL,
-    isPublished BOOL DEFAULT FALSE NOT NULL,
+    publish BOOL DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
@@ -88,14 +86,14 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
     "example@example.com",
     "test tournament",
-    "9999-01-01 UTC",
-    "9999-01-02 UTC"
+    "9999-01-01",
+    "9999-01-02"
   ]);
   await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
     "example@example.com",
     "test tournament 2",
-    "9999-01-01 UTC",
-    "9999-01-02 UTC"
+    "9999-01-01",
+    "9999-01-02"
   ]);
   specC.destroy();
   app.set(
@@ -219,7 +217,9 @@ describe("matches", () => {
 
   test("Matches Success", async done => {
     await request(app)
-      .get("/tournaments/id/1/matches")
+      .get("/matches")
+      .set("id", "example@example.com")
+      .set("tournamentid", "1")
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(res => {

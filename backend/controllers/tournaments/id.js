@@ -27,7 +27,7 @@ router.get("/:id", async function(req, res, next) {
 });
 
 router.use("/:id", function(req, res, next) {
-  req.routeParams = req.params;
+  req.headers.tournamentid = req.params.id;
   next();
 });
 

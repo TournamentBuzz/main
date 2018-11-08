@@ -9,7 +9,7 @@ router.get("/", async function(req, res, next) {
     const c = req.app.get("databaseConnection");
     const tournamentObject = await sqlwrapper.getTournament(
       c,
-      req.routeParams.id
+      req.headers.tournamentid
     );
     if (!tournamentObject[0]) {
       const err = new Error("Tournament does not exist!");
@@ -18,13 +18,13 @@ router.get("/", async function(req, res, next) {
       return;
     }
     if (req.headers.id === tournamentObject[0].creator) {
-      const results = await sqlwrapper.getMatches(c, req.routeParams.id);
+      const results = await sqlwrapper.getMatches(c, req.headers.tournamentid);
       res.status(200);
       res.json({ matches: results });
     } else {
       const results = await sqlwrapper.getPublishedMatches(
         c,
-        req.routeParams.id
+        req.headers.tournamentid
       );
       res.status(200);
       res.json({ matches: results });
