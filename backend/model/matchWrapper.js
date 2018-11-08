@@ -112,7 +112,7 @@ function deleteMatch(connection, id) {
 
 function getMatches(connection, tournamentId) {
   const query =
-    "SELECT * FROM matches WHERE tournament = ? ORDER BY matchTime DESC;";
+    "SELECT * FROM matches WHERE tournament = ? ORDER BY matchTime ASC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], function(err, rows, fields) {
       if (err) {
@@ -126,7 +126,7 @@ function getMatches(connection, tournamentId) {
 
 function getPublishedMatches(connection, tournamentId) {
   const query =
-    "SELECT * FROM matches WHERE tournament = ? AND publish = 1 ORDER BY matchTime DESC;";
+    "SELECT * FROM matches WHERE tournament = ? AND publish = 1 ORDER BY matchTime ASC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], function(err, rows, fields) {
       if (err) {
