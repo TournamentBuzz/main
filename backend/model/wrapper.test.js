@@ -121,10 +121,12 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     "example"
   ]);
   const setupExampleTournamentQuery =
-    "INSERT INTO tournaments (creator, tournamentName) VALUES (?, ?)";
+    "INSERT INTO tournaments (creator, tournamentName, startDate, endDate) VALUES (?, ?, ?, ?)";
   await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
     "example@example.com",
-    "test tournament"
+    "test tournament",
+    "2020-01-01",
+    "2020-01-02"
   ]);
   specC.destroy();
   dc = connection.connect(
@@ -322,7 +324,7 @@ describe("sql wrapper", () => {
     // This test requires the create user to test to pass as tournaments needs it as a foreign key
     const c = dc;
     const testUserEmail = "example@example.com";
-    const testTournamentName = "test tournament 2";
+    const testTournamentName = "tournament test";
     const getTestTournament =
       "SELECT * FROM tournaments WHERE tournamentName = ?;";
     await sqlwrapper.createTournament(
@@ -333,7 +335,7 @@ describe("sql wrapper", () => {
       16,
       "CULC",
       "Points",
-      "Single Elimination",
+      "Single Elim",
       0,
       16,
       "2020-01-01",
