@@ -14,12 +14,7 @@ const databaseConfig = {
   schema: "tempwrapperjestschema"
 };
 
-const dc = connection.connect(
-  databaseConfig.host,
-  databaseConfig.username,
-  databaseConfig.password,
-  databaseConfig.schema
-);
+let dc;
 
 async function setupTemporarySchema(host, username, password, temporarySchema) {
   const c = mysql.createConnection({
@@ -132,6 +127,12 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     "test tournament"
   ]);
   specC.destroy();
+  dc = connection.connect(
+    databaseConfig.host,
+    databaseConfig.username,
+    databaseConfig.password,
+    databaseConfig.schema
+  );
 }
 
 async function cleanupTemporarySchema(
