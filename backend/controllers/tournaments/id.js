@@ -12,7 +12,7 @@ const requireAuth = require("../../middleware/auth/verify");
 router.get("/:id", async function(req, res, next) {
   try {
     const c = req.app.get("databaseConnection");
-    const tournamentObject = await sqlwrapper.getTournament(c, req.param("id"));
+    const tournamentObject = await sqlwrapper.getTournament(c, req.params.id);
     if (!tournamentObject[0]) {
       const err = new Error("Tournament does not exist!");
       err.status = 404;

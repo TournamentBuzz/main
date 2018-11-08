@@ -8,7 +8,7 @@
     "lint": "prettier --write \"**/*.js\" & eslint \"**/*.js\"",
     "eslint": "eslint \"**/*.js\"",
     "prettier": "prettier --write \"**/*.js\"",
-    "test": "jest --runInBand & eslint \"**/*.js\"",
+    "test": "jest & eslint \"**/*.js\"",
     "precommit": "lint-staged"
   },
   "lint-staged": {

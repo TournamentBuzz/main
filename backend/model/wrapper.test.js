@@ -111,6 +111,19 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       PRIMARY KEY(userEmail, tournamentId)
   );`;
   await sqlwrapper.executeSQL(specC, setupRefereeTableQuery, []);
+  const setupExampleUserQuery =
+    "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
+  await sqlwrapper.executeSQL(specC, setupExampleUserQuery, [
+    "example@example.com",
+    await bcrypt.hash("example", 10),
+    "example"
+  ]);
+  const setupExampleTournamentQuery =
+    "INSERT INTO tournaments (creator, tournamentName) VALUES (?, ?)";
+  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
+    "example@example.com",
+    "test tournament"
+  ]);
   specC.destroy();
 }
 
@@ -331,8 +344,8 @@ describe("sql wrapper", () => {
       databaseConfig.password,
       databaseConfig.schema
     );
-    const testUserEmail = "testUserExists@gatech.edu";
-    const testTournamentName = "test tournament";
+    const testUserEmail = "example@example.com";
+    const testTournamentName = "test tournament 2";
     const getTestTournament =
       "SELECT * FROM tournaments WHERE tournamentName = ?;";
     await sqlwrapper.createTournament(c, testUserEmail, testTournamentName);
@@ -377,7 +390,7 @@ describe("sql wrapper", () => {
       databaseConfig.schema
     );
     const testTournamentName = "test tournament";
-    const testUserEmail = "testUserExists@gatech.edu";
+    const testUserEmail = "example@example.com";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
     if (result.length < 1) {
       throw new Error("Did not find tournament in table upon searching.");
