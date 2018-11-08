@@ -189,12 +189,7 @@ describe("edit", () => {
       .expect(200)
       .expect(async res => {
         try {
-          const c = connection.connect(
-            databaseConfig.host,
-            databaseConfig.username,
-            databaseConfig.password,
-            databaseConfig.schema
-          );
+          const c = app.get("databaseConnection");
           const row = await sqlwrapper.getTournament(c, 1);
           const tourn = row[0];
           if (
@@ -266,12 +261,7 @@ describe("edit", () => {
       .expect(401)
       .expect(async res => {
         try {
-          const c = connection.connect(
-            databaseConfig.host,
-            databaseConfig.username,
-            databaseConfig.password,
-            databaseConfig.schema
-          );
+          const c = app.get("databaseConnection");
           const row = await sqlwrapper.getTournament(c, 2);
           const tourn = row[0];
           if (

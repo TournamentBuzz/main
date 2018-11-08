@@ -14,6 +14,13 @@ const databaseConfig = {
   schema: "tempwrapperjestschema"
 };
 
+const dc = connection.connect(
+  databaseConfig.host,
+  databaseConfig.username,
+  databaseConfig.password,
+  databaseConfig.schema
+);
+
 async function setupTemporarySchema(host, username, password, temporarySchema) {
   const c = mysql.createConnection({
     host: host,
@@ -165,19 +172,14 @@ describe("sql wrapper", () => {
 
   test("Execute SQL", async done => {
     const testQuery = "SELECT * FROM users;";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const result = await sqlwrapper.executeSQL(c, testQuery, []);
     if (!result) {
       throw new Error("Something went wrong.");
     }
-    if (result.length !== 0) {
+    if (result.length !== 1) {
       throw new Error(
-        "Row count not 0 as expected, got " + result.length.toString()
+        "Row count not 1 as expected, got " + result.length.toString()
       );
     }
     done();
@@ -188,12 +190,7 @@ describe("sql wrapper", () => {
     const testUserName = "Test Create User";
     const testUserEmail = "testCreateUser@gatech.edu";
     const testUserPassword = "testcreateuserpassword";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.createUser(
       c,
       testUserName,
@@ -206,9 +203,9 @@ describe("sql wrapper", () => {
     if (!result) {
       throw new Error("Something went wrong.");
     }
-    if (result.length !== 1) {
+    if (result.length !== 2) {
       throw new Error(
-        "Row count not 1 as expected, got " + result.length.toString()
+        "Row count not 2 as expected, got " + result.length.toString()
       );
     }
     const email = result[0].email;
@@ -243,12 +240,7 @@ describe("sql wrapper", () => {
     const testUserPassword = "testuserexistspassword";
     const insertUserQuery =
       "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.executeSQL(c, insertUserQuery, [
       testUserEmail,
       testUserPassword,
@@ -275,12 +267,7 @@ describe("sql wrapper", () => {
     );
     const insertUserQuery =
       "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.executeSQL(c, insertUserQuery, [
       testUserEmail,
       testUserHashedPassword,
@@ -311,12 +298,7 @@ describe("sql wrapper", () => {
     );
     const insertUserQuery =
       "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.executeSQL(c, insertUserQuery, [
       testUserEmail,
       testUserHashedPassword,
@@ -338,12 +320,7 @@ describe("sql wrapper", () => {
 
   test("Create Tournament", async done => {
     // This test requires the create user to test to pass as tournaments needs it as a foreign key
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testUserEmail = "example@example.com";
     const testTournamentName = "test tournament 2";
     const getTestTournament =
@@ -359,12 +336,7 @@ describe("sql wrapper", () => {
   });
 
   test("Search/Get Tournament", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testTournamentName = "test tournament";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
     if (result.length < 1) {
@@ -383,12 +355,7 @@ describe("sql wrapper", () => {
   });
 
   test("Create Team", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testTournamentName = "test tournament";
     const testUserEmail = "example@example.com";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
@@ -407,12 +374,7 @@ describe("sql wrapper", () => {
   });
 
   test("Add Member", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testUserEmail = "testUserExists@gatech.edu";
     const teamName = "test team";
     const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
@@ -440,12 +402,7 @@ describe("sql wrapper", () => {
   });
 
   test("Get Team/Create Match", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testTournamentName = "test tournament";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
     if (result.length < 1) {
@@ -476,12 +433,7 @@ describe("sql wrapper", () => {
   });
 
   test("Delete Match", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testTournamentName = "test tournament";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
     if (result.length < 1) {
@@ -498,12 +450,7 @@ describe("sql wrapper", () => {
   });
 
   test("Delete Team Member", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testUserEmail = "testUserExists@gatech.edu";
     const teamName = "test team";
     const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
@@ -524,12 +471,7 @@ describe("sql wrapper", () => {
   });
 
   test("Delete Team", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testTournamentName = "test tournament";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
     if (result.length < 1) {
@@ -546,12 +488,7 @@ describe("sql wrapper", () => {
   });
 
   test("Delete Tournament", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testTournamentName = "test tournament";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
     if (result.length < 1) {
