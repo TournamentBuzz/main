@@ -14,7 +14,8 @@ INSERT INTO `users` (`email`,`password`,`userName`) VALUES ('a@b.co','$2b$10$vQX
 # creates a team for the tournament with the second user
 INSERT INTO `teams` (`teamName`, `leader`, `tournament`, `seed`) VALUES ('The B Team', 'a@b.co', 1, null);
 # creates the member listing
-INSERT INTO `teamMembers` (`userEmail`, `teamId`, `invited`, `requested`, `approved`) VALUES ('a@b.co', 1, false, true, true);
+INSERT INTO `teamMembers` (`userEmail`, `teamId`, `invited`, `requested`, `approved`) VALUES ('a@b.co', 2, false, true, true);
 
 # creates a match
 INSERT INTO `matches` (`location`, `score`, `matchTime`, `matchName`, `tournament`, `teamA`, `teamB`) VALUES ('CULC 152', null, '2019-05-01 14:00:00', 'Finals', 1, 1, 2);
+

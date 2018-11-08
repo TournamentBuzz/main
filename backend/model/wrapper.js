@@ -263,6 +263,14 @@ function getTeamMembers(connection, teamId) {
   return teamWrapper.getTeamMembers(connection, teamId);
 }
 
+function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
+  return teamWrapper.getTeamsWithTeamMembers(
+    connection,
+    tournamentId,
+    numParticipants
+  );
+}
+
 module.exports = {
   checkCredentials: checkCredentials,
   createUser: createUser,
@@ -293,5 +301,6 @@ module.exports = {
   createTeamMember: createTeamMember,
   updateTeamMember: updateTeamMember,
   deleteTeamMember: deleteTeamMember,
-  getTeamMembers: getTeamMembers
+  getTeamMembers: getTeamMembers,
+  getTeamsWithTeamMembers: getTeamsWithTeamMembers
 };

@@ -174,6 +174,30 @@ function getTeamMembers(connection, teamId) {
   });
 }
 
+function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
+  const query = `SELECT
+    COUNT(*) AS 'numMembers', 
+    teams.* 
+    FROM teamMembers
+    LEFT JOIN teams ON teams.id = teamMembers.teamId
+    WHERE teams.tournament = ?
+    GROUP BY teamId
+    HAVING numMembers = ?`;
+  return new Promise((resolve, reject) => {
+    connection.query(query, [tournamentId, numParticipants], function(
+      err,
+      rows,
+      fields
+    ) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 module.exports = {
   createTeam: createTeam,
   getTeam: getTeam,
@@ -184,5 +208,6 @@ module.exports = {
   createTeamMember: createTeamMember,
   updateTeamMember: updateTeamMember,
   deleteTeamMember: deleteTeamMember,
-  getTeamMembers: getTeamMembers
+  getTeamMembers: getTeamMembers,
+  getTeamsWithTeamMembers: getTeamsWithTeamMembers
 };
