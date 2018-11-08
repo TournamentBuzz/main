@@ -143,8 +143,8 @@ describe("matches", () => {
   const testT1DateTime = "2018-01-20 10:00:00";
   const testT2DateTime = "2018-01-20 13:30:00";
   const testT3DateTime = "2018-01-01 09:15:00";
-  const t2Date = new Date(1, 20, 2018, 13, 30, 0);
-  const t3Date = new Date(1, 1, 2018, 9, 15, 0);
+  const t2Date = new Date("2018-01-20 13:30:00 UTC");
+  const t3Date = new Date("2018-01-01 09:15:00 UTC");
   const tt2Date = t2Date.toISOString();
   const tt3Date = t3Date.toISOString();
 
@@ -219,7 +219,7 @@ describe("matches", () => {
     await request(app)
       .get("/matches")
       .set("id", "example@example.com")
-      .set("tournamentid", "1")
+      .set("tournamentid", "2")
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(res => {
