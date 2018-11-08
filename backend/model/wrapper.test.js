@@ -188,7 +188,7 @@ describe("sql wrapper", () => {
   });
 
   test("Create user", async done => {
-    const testGetUsers = "SELECT * FROM users;";
+    const testGetUsers = "SELECT * FROM users WHERE email = ?;";
     const testUserName = "Test Create User";
     const testUserEmail = "testCreateUser@gatech.edu";
     const testUserPassword = "testcreateuserpassword";
@@ -200,13 +200,15 @@ describe("sql wrapper", () => {
       testUserPassword,
       0
     );
-    const result = await sqlwrapper.executeSQL(c, testGetUsers, []);
+    const result = await sqlwrapper.executeSQL(c, testGetUsers, [
+      testUserEmail
+    ]);
     if (!result) {
       throw new Error("Something went wrong.");
     }
-    if (result.length !== 2) {
+    if (result.length !== 1) {
       throw new Error(
-        "Row count not 2 as expected, got " + result.length.toString()
+        "Row count not 1 as expected, got " + result.length.toString()
       );
     }
     const email = result[0].email;
@@ -323,7 +325,20 @@ describe("sql wrapper", () => {
     const testTournamentName = "test tournament 2";
     const getTestTournament =
       "SELECT * FROM tournaments WHERE tournamentName = ?;";
-    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName);
+    await sqlwrapper.createTournament(
+      c,
+      testUserEmail,
+      testTournamentName,
+      testTournamentName,
+      16,
+      "CULC",
+      "Points",
+      "Single Elimination",
+      0,
+      16,
+      "2020-01-01",
+      "2020-01-02"
+    );
     const result = await sqlwrapper.executeSQL(c, getTestTournament, [
       testTournamentName
     ]);
