@@ -134,12 +134,7 @@ describe("delete", () => {
     ).catch(function(err) {
       throw new Error("Unable to create temporary schema: " + err.message);
     });
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = app.get("databaseConnection");
     await sqlwrapper
       .createUser(c, testUserName, testUserEmail, testUserPassword, 0)
       .catch(function(err) {
@@ -147,7 +142,6 @@ describe("delete", () => {
       });
     await sqlwrapper.createTournament(c, testUserEmail, testTournamentName1);
     await sqlwrapper.createTournament(c, testUserEmail, testTournamentName2);
-    c.destroy();
     done();
   });
 

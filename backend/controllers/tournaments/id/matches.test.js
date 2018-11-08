@@ -52,6 +52,24 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     database: temporarySchema
   });
   specC.connect();
+  const setupTournamentsTableQuery = `CREATE TABLE tournaments (
+    id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
+      creator VARCHAR(255) NOT NULL,
+      description VARCHAR(255) DEFAULT NULL,
+      maxTeamSize INT(5) NOT NULL DEFAULT 1,
+      location VARCHAR(255) DEFAULT NULL,
+      scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
+      tournamentName VARCHAR(255) DEFAULT NULL,
+      tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+      entryCost INT(5) NOT NULL DEFAULT 0,
+      maxTeams INT(5) NOT NULL DEFAULT 16,
+      startDate DATE DEFAULT NULL,
+      endDate DATE DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(creator)
+      REFERENCES users(email)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
   const setupMatchesTableQuery = `CREATE TABLE matches (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
     location VARCHAR(255) DEFAULT NULL,
@@ -73,9 +91,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     "9999-01-01 UTC",
     "9999-01-02 UTC"
   ]);
-  const setupExampleTournamentQuery2 =
-    "INSERT INTO tournaments (creator, tournamentName, startDate, endDate) VALUES (?, ?, ?, ?)";
-  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery2, [
+  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
     "example@example.com",
     "test tournament 2",
     "9999-01-01 UTC",
@@ -143,12 +159,7 @@ describe("matches", () => {
     ).catch(function(err) {
       throw new Error("Unable to create temporary schema: " + err.message);
     });
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      temporarySchema
-    );
+    const c = app.get("databaseConnection");
     await sqlwrapper
       .createMatch(
         c,
@@ -191,7 +202,6 @@ describe("matches", () => {
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);
       });
-    c.destroy();
     done();
   });
 

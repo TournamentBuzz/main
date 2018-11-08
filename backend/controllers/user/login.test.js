@@ -104,18 +104,12 @@ describe("login", () => {
     ).catch(function(err) {
       throw new Error("Unable to create temporary schema: " + err.message);
     });
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      temporarySchema
-    );
+    const c = app.get("databaseConnection");
     await sqlwrapper
       .createUser(c, testUserName, testUserEmail, testUserPassword, 0)
       .catch(function(err) {
         throw new Error("Unable to create user: " + err.message);
       });
-    c.destroy();
     done();
   });
 

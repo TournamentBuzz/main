@@ -125,8 +125,8 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
     "example@example.com",
     "test tournament",
-    "9999-01-01 UTC",
-    "9999-01-02 UTC"
+    "9999-01-01",
+    "9999-01-02"
   ]);
   specC.destroy();
   dc = connection.connect(
