@@ -150,6 +150,7 @@ async function cleanupTemporarySchema(
   const setupSchemaQuery = "DROP SCHEMA " + temporarySchema + ";";
   await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
+  dc.destroy();
 }
 
 describe("sql wrapper", () => {
@@ -200,7 +201,6 @@ describe("sql wrapper", () => {
       0
     );
     const result = await sqlwrapper.executeSQL(c, testGetUsers, []);
-    c.destroy();
     if (!result) {
       throw new Error("Something went wrong.");
     }
@@ -248,7 +248,6 @@ describe("sql wrapper", () => {
       testUserName
     ]);
     const exists = await sqlwrapper.userExists(c, testUserEmail);
-    c.destroy();
     if (!exists) {
       throw new Error(
         "Expected for user to exist, instead got user does not exist."
@@ -279,7 +278,6 @@ describe("sql wrapper", () => {
       testUserEmail,
       testUserPassword
     );
-    c.destroy();
     if (!validCredentials) {
       throw new Error(
         "Expected valid credentials, instead got invalid credentials."
@@ -310,7 +308,6 @@ describe("sql wrapper", () => {
       testUserEmail,
       "invalid credentials"
     );
-    c.destroy();
     if (validCredentials) {
       throw new Error(
         "Expected invalid credentials, instead got valid credentials."
