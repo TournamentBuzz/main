@@ -7,7 +7,7 @@ const connection = require("../../../model/connect");
 const create = require("./teams/create");
 const withdraw = require("./teams/withdraw");
 
-const requireAuth = require("../middleware/auth/verify");
+const requireAuth = require("../../../middleware/auth/verify");
 
 router.get("/", function(req, res, next) {
   try {

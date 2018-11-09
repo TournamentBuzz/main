@@ -1,8 +1,8 @@
 "use strict";
 
 const express = require("express");
-const sqlwrapper = require("../../model/wrapper");
-const connection = require("../../model/connect");
+const sqlwrapper = require("../../../../model/wrapper");
+const connection = require("../../../../model/connect");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
