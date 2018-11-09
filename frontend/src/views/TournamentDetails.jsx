@@ -39,6 +39,7 @@ class TournamentDetails extends React.Component {
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickDelete = this.handleClickDelete.bind(this);
     this.handleClickAddMatch = this.handleClickAddMatch.bind(this);
+    this.handleClickAddTeam = this.handleClickAddTeam.bind(this);
   }
 
   handleClickEdit() {
@@ -63,6 +64,12 @@ class TournamentDetails extends React.Component {
   handleClickAddMatch() {
     this.props.history.push(
       `/tournament/${this.state.tournamentID}/match/create`
+    );
+  }
+
+  handleClickAddTeam() {
+    this.props.history.push(
+      `/tournament/${this.state.tournamentID}/team/create`
     );
   }
 
@@ -185,6 +192,21 @@ class TournamentDetails extends React.Component {
             <b>Matches</b>
           </Typography>
           <MatchList tournamentID={this.props.match.params.tournamentID} />
+        </div>
+        <hr />
+        <div>
+          <div className={classes.detailsIcons}>
+            <IconButton
+              className={classes.button}
+              aria-label="Add Team"
+              onClick={this.handleClickAddTeam}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
+          <Typography variant="headline" className={classes.detailsText}>
+            <b>Teams</b>
+          </Typography>
         </div>
       </div>
     );

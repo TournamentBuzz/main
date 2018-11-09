@@ -68,7 +68,7 @@ class App extends Component {
                 component={MatchEdit}
               />
               <Route
-                path="/tournament/:tournamentID/teams/create"
+                path="/tournament/:tournamentID/team/create"
                 exact
                 component={TeamCreate}
               />

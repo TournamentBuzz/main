@@ -60,7 +60,7 @@ class TeamCreate extends React.Component {
         </div>
         <div>
           <form onSubmit={this.handleFormSubmit}>
-            <h2>Create Match</h2>
+            <h2>Create Team</h2>
             <FormHelperText error>{this.state.formError}</FormHelperText>
 
             <div>
