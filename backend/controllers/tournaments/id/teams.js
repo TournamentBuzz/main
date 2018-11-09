@@ -31,6 +31,7 @@ router.get("/", async function(req, res, next) {
 });
 
 router.use("/create", requireAuth, create);
-router.use("/withdraw", requireAuth, withdraw);
+// router.use("/withdraw", requireAuth, withdraw);
+router.use("/withdraw", withdraw);
 
 module.exports = router;
