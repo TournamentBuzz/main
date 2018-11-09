@@ -6,8 +6,6 @@ import Input from "@material-ui/core/Input";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Button from "@material-ui/core/Button";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 
 import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
@@ -35,7 +33,7 @@ class TeamCreate extends React.Component {
 
   async handleFormSubmit(event) {
     event.preventDefault();
-    const newMatchID = await TeamAPI.createTeam(
+    await TeamAPI.createTeam(
       this.state.tournamentId,
       this.state.teamName
     );
@@ -94,4 +92,4 @@ class TeamCreate extends React.Component {
   }
 }
 
-export default withRouter(MatchCreate);
+export default withRouter(TeamCreate);
