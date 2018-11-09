@@ -167,11 +167,14 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     "9999-01-02"
   ]);
   specC.destroy();
-  dc = connection.connect(
-    databaseConfig.host,
-    databaseConfig.username,
-    databaseConfig.password,
-    databaseConfig.schema
+  app.set(
+    "databaseConnection",
+    connection.connect(
+      app.get("databaseConfig").host,
+      app.get("databaseConfig").username,
+      app.get("databaseConfig").password,
+      app.get("databaseConfig").schema
+    )
   );
 }
 
@@ -239,13 +242,13 @@ describe("teams", () => {
       });
     done();
   });
-  /*
+
   test("Team Invite", async done => {
     const testUserEmail = "example@example.com";
     const testUserEmail1 = "example1@example.com";
     const teamObject = {
-      team_id: 1,
-      email: "example1@example.com"
+      teamId: 1,
+      email: testUserEmail1
     };
     await request(app)
       .post("/teams/invite")
@@ -253,10 +256,9 @@ describe("teams", () => {
       .set("id", testUserEmail)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      //.expect("Content-Type", /json/)
-      //.expect(200)
+      .expect("Content-Type", /json/)
+      .expect(200)
       .expect(res => {
-        console.log(res);
         try {
           if (!res.body.inviteStatus) {
             throw new Error("Invite failed");
@@ -267,5 +269,5 @@ describe("teams", () => {
         }
       });
     done();
-  });*/
+  });
 });

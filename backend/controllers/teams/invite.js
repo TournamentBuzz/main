@@ -29,7 +29,7 @@ router.post("", async (req, res, next) => {
         false,
         false
       );
-      if (results.insertId > 0) {
+      if (results.affectedRows > 0) {
         res.status(200);
         res.json({ inviteStatus: true });
       } else {
