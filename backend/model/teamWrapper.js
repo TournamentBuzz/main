@@ -161,8 +161,35 @@ function deleteTeamMember(connection, userEmail, teamId) {
   });
 }
 
+function getTeamMember(connection, teamId, userEmail) {
+  const query = "SELECT * FROM teamMembers WHERE teamId = ? AND userEmail = ?;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [teamId, userEmail], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 function getTeamMembers(connection, teamId) {
   const query = "SELECT * FROM teamMembers WHERE teamId = ?;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [teamId], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function getApprovedTeamMembers(connection, teamId) {
+  const query =
+    "SELECT * FROM teamMembers WHERE teamId = ? AND approved = TRUE;";
   return new Promise((resolve, reject) => {
     connection.query(query, [teamId], function(err, rows, fields) {
       if (err) {
@@ -180,7 +207,7 @@ function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
     teams.* 
     FROM teamMembers
     LEFT JOIN teams ON teams.id = teamMembers.teamId
-    WHERE teams.tournament = ?
+    WHERE teams.tournament = ? AND teamMembers.approved = TRUE
     GROUP BY teamId
     HAVING numMembers = ?`;
   return new Promise((resolve, reject) => {
@@ -208,6 +235,8 @@ module.exports = {
   createTeamMember: createTeamMember,
   updateTeamMember: updateTeamMember,
   deleteTeamMember: deleteTeamMember,
+  getTeamMember: getTeamMember,
   getTeamMembers: getTeamMembers,
+  getApprovedTeamMembers: getApprovedTeamMembers,
   getTeamsWithTeamMembers: getTeamsWithTeamMembers
 };

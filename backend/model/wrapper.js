@@ -259,8 +259,16 @@ function deleteTeamMember(connection, userEmail, teamId) {
   return teamWrapper.deleteTeamMember(connection, userEmail, teamId);
 }
 
+function getTeamMember(connection, teamId, userEmail) {
+  return teamWrapper.getTeamMembers(connection, teamId, userEmail);
+}
+
 function getTeamMembers(connection, teamId) {
   return teamWrapper.getTeamMembers(connection, teamId);
+}
+
+function getApprovedTeamMembers(connection, teamId) {
+  return teamWrapper.getApprovedTeamMembers(connection, teamId);
 }
 
 function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
@@ -301,6 +309,8 @@ module.exports = {
   createTeamMember: createTeamMember,
   updateTeamMember: updateTeamMember,
   deleteTeamMember: deleteTeamMember,
+  getTeamMember: getTeamMember,
   getTeamMembers: getTeamMembers,
+  getApprovedTeamMembers: getApprovedTeamMembers,
   getTeamsWithTeamMembers: getTeamsWithTeamMembers
 };
