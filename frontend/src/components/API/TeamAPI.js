@@ -73,4 +73,43 @@ export default class TeamAPI {
     const json = await res.json();
     return json.promoteStatus;
   }
+
+  static async getTeams(tournamentId) {
+    const res = await fetch(`/tournament/id/${tournamentId}/teams`, {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json;
+  }
+
+  static async getTeam(teamId) {
+    const res = await fetch(`/teams/id/${teamId}`, {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json;
+  }
+
+  static async getTeamMembers(teamId) {
+    const res = await fetch(`/teams/id/${teamId}/members`, {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json;
+  }
 }
