@@ -2,24 +2,29 @@
 
 const express = require("express");
 const router = express.Router();
-const connection = require("../../../model/connect");
+const sqlwrapper = require("../../../model/wrapper");
 
 const create = require("./teams/create");
 const withdraw = require("./teams/withdraw");
 
 const requireAuth = require("../../../middleware/auth/verify");
 
-router.get("/", function(req, res, next) {
+router.get("/", async function(req, res, next) {
   try {
-    const c = connection.connect(
-      req.app.get("databaseConfig").host,
-      req.app.get("databaseConfig").username,
-      req.app.get("databaseConfig").password,
-      req.app.get("databaseConfig").schema
+    const c = req.app.get("databaseConnection");
+    const tournamentObject = await sqlwrapper.getTournament(
+      c,
+      req.headers.tournamentid
     );
-    if (c === null) {
-      throw new Error("No database connection");
+    if (!tournamentObject[0]) {
+      const err = new Error("Tournament does not exist!");
+      err.status = 404;
+      next(err);
+      return;
     }
+    const results = await sqlwrapper.getTeams(c, req.headers.tournamentid);
+    res.status(200);
+    res.json({ teams: results });
   } catch (err) {
     next(err);
   }

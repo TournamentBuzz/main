@@ -8,6 +8,7 @@ const connection = require("./model/connect");
 const user = require("./controllers/user");
 const tournaments = require("./controllers/tournaments");
 const matches = require("./controllers/matches");
+const teams = require("./controllers/teams");
 
 // logging
 const logger = require("morgan");
@@ -53,6 +54,7 @@ if (app.get("serverConfig").env === "development") {
 app.use("/user", user);
 app.use("/tournaments", tournaments);
 app.use("/matches", matches);
+app.use("/teams", teams);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

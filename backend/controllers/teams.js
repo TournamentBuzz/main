@@ -7,6 +7,7 @@ const connection = require("../model/connect");
 const promote = require("./teams/promote");
 const remove = require("./teams/remove");
 const invite = require("./teams/invite");
+const id = require("./teams/id");
 
 const requireAuth = require("../middleware/auth/verify");
 
@@ -29,5 +30,6 @@ router.get("/", function(req, res, next) {
 router.use("/promote", requireAuth, promote);
 router.use("/remove", requireAuth, remove);
 router.use("/invite", requireAuth, invite);
+router.use("/id", id);
 
 module.exports = router;
