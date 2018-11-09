@@ -24,7 +24,7 @@ router.post("", async (req, res, next) => {
         c,
         req.body.teamName,
         req.headers.id,
-        req.param("id"),
+        req.headers.tournamentid,
         null
       );
       const results = await sqlwrapper.createTeamMember(
@@ -35,7 +35,7 @@ router.post("", async (req, res, next) => {
         false,
         true
       );
-      if (results.insertId > 0) {
+      if (results.affectedRows > 0) {
         res.status(200);
         res.json({ teamId: rows.insertId });
       } else {
