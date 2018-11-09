@@ -75,16 +75,15 @@ export default class TeamAPI {
   }
 
   static async getTeams(tournamentId) {
-    const res = await fetch(`/tournament/id/${tournamentId}/teams`, {
+    const res = await fetch(`/tournaments/id/${tournamentId}/teams`, {
       method: "GET",
       headers: Authentication.withJWT()
     });
-
     if (!res.ok) {
       throw new errors.UnexpectedError();
     }
     const json = await res.json();
-    return json;
+    return json.teams;
   }
 
   static async getTeam(teamId) {
@@ -97,7 +96,7 @@ export default class TeamAPI {
       throw new errors.UnexpectedError();
     }
     const json = await res.json();
-    return json;
+    return json.team;
   }
 
   static async getTeamMembers(teamId) {
@@ -110,6 +109,6 @@ export default class TeamAPI {
       throw new errors.UnexpectedError();
     }
     const json = await res.json();
-    return json;
+    return json.members;
   }
 }

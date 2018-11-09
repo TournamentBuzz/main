@@ -15,6 +15,7 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import Authentication from "components/API/Authentication.js";
 import TournamentAPI from "components/API/TournamentAPI.js";
 import MatchList from "components/Match/MatchList.jsx";
+import TeamList from "components/Team/TeamList.jsx";
 
 import tournamentDetailsStyle from "assets/jss/views/tournamentDetailsStyle.jsx";
 
@@ -207,6 +208,7 @@ class TournamentDetails extends React.Component {
           <Typography variant="headline" className={classes.detailsText}>
             <b>Teams</b>
           </Typography>
+          <TeamList tournamentID={this.props.match.params.tournamentID} />
         </div>
       </div>
     );
