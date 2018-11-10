@@ -21,6 +21,7 @@ import MatchEdit from "views/MatchEdit";
 import TeamCreate from "views/TeamCreate";
 import TeamDetails from "views/TeamDetails";
 import TeamInvite from "views/TeamInvite";
+import Notifications from "views/Notifications";
 
 class App extends Component {
   render() {
@@ -38,6 +39,7 @@ class App extends Component {
                 path="/register"
                 render={props => <HomePage {...props} register={true} />}
               />
+              <Route path="/notifications" exact component={Notifications} />
               <Route path="/tournament" exact component={HomePage} />
               <Route
                 path="/tournament/create"

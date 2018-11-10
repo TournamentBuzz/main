@@ -124,4 +124,32 @@ export default class TeamAPI {
     const json = await res.json();
     return json.team;
   }
+
+  static async acceptInvite(teamId) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch("/invites/accept", {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId })
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.acceptStatus;
+  }
+
+  static async declineInvite(teamId) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch("/invites/decline", {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId })
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.declineStatus;
+  }
 }
