@@ -8,6 +8,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
+import Divider from "@material-ui/core/Divider";
 
 // core components
 import Header from "components/Header/Header.jsx";
@@ -24,6 +25,10 @@ const teamDetailsStyle = {
     float: "right",
     position: "fixed",
     right: "1%"
+  },
+  listStyle: {
+    width: "min-content",
+    margin: "auto"
   }
 };
 
@@ -52,6 +57,16 @@ class TeamDetails extends React.Component {
         return;
       }
       this.props.history.push("/");
+    }
+  }
+
+  async handleClickDeleteMember(email) {
+    let confirm = window.confirm(
+      "Are you sure you want to remove this team member?"
+    );
+    if (confirm) {
+      await TeamAPI.removeFromTeam(this.state.teamID, email);
+      window.location.reload();
     }
   }
 
@@ -87,14 +102,25 @@ class TeamDetails extends React.Component {
     }
     let list = [];
     for (let member of members) {
+      list.push(<Divider />);
       let listItem = (
         <ListItem>
-          <ListItemText primary="Single-line item" />
-          <ListItemSecondaryAction>
-            <IconButton aria-label="Delete">
-              <DeleteIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
+          <ListItemText primary={member.userEmail} />
+          {this.state.currentUser != null &&
+          this.state.currentUser === this.state.leader &&
+          member.userEmail !== this.state.leader ? (
+            <ListItemSecondaryAction>
+              <IconButton
+                aria-label="Delete"
+                onClick={this.handleClickDeleteMember.bind(
+                  this,
+                  member.userEmail
+                )}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </ListItemSecondaryAction>
+          ) : null}
         </ListItem>
       );
       list.push(listItem);
@@ -145,7 +171,9 @@ class TeamDetails extends React.Component {
             {this.state.membersList === null ? (
               <div>{null}</div>
             ) : (
-              <List>{this.state.membersList}</List>
+              <div className={classes.listStyle}>
+                <List>{this.state.membersList}</List>
+              </div>
             )}
           </div>
         </div>
