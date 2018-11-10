@@ -196,15 +196,17 @@ class TournamentDetails extends React.Component {
         </div>
         <hr />
         <div>
-          <div className={classes.detailsIcons}>
-            <IconButton
-              className={classes.button}
-              aria-label="Add Team"
-              onClick={this.handleClickAddTeam}
-            >
-              <AddIcon />
-            </IconButton>
-          </div>
+          {this.state.currentUser != null ? (
+            <div className={classes.detailsIcons}>
+              <IconButton
+                className={classes.button}
+                aria-label="Add Team"
+                onClick={this.handleClickAddTeam}
+              >
+                <AddIcon />
+              </IconButton>
+            </div>
+          ) : null}
           <Typography variant="headline" className={classes.detailsText}>
             <b>Teams</b>
           </Typography>

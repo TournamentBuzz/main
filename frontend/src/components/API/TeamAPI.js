@@ -109,6 +109,7 @@ export default class TeamAPI {
       throw new errors.UnexpectedError();
     }
     const json = await res.json();
+    console.log(json.members);
     return json.members;
   }
 }
