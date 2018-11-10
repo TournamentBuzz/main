@@ -15,7 +15,6 @@ router.get("/", async function(req, res, next) {
     const teamObjects = await sqlwrapper.getInvites(c, req.headers.id);
     res.status(200);
     res.json({ team: teamObjects });
-    c.destroy();
   } catch (err) {
     next(err);
   }
