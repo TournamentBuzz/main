@@ -260,7 +260,7 @@ function deleteTeamMember(connection, userEmail, teamId) {
 }
 
 function getTeamMember(connection, teamId, userEmail) {
-  return teamWrapper.getTeamMembers(connection, teamId, userEmail);
+  return teamWrapper.getTeamMember(connection, teamId, userEmail);
 }
 
 function getTeamMembers(connection, teamId) {

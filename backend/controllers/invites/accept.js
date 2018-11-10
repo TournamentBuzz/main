@@ -5,7 +5,7 @@ const sqlwrapper = require("../../model/wrapper");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
-  if (!req.body || !(req.body.team_id > 0)) {
+  if (!req.body || !(req.body.teamId > 0)) {
     const err = new Error("Malformed Request");
     err.status = 400;
     next(err);
@@ -16,7 +16,7 @@ router.post("", async (req, res, next) => {
       const c = req.app.get("databaseConnection");
       const check = await sqlwrapper.getTeamMember(
         c,
-        req.body.team_id,
+        req.body.teamId,
         req.headers.id
       );
       if (check[0].invited !== true) {
@@ -28,12 +28,12 @@ router.post("", async (req, res, next) => {
       const results = await sqlwrapper.updateTeamMember(
         c,
         req.headers.id,
-        req.body.team_id,
+        req.body.teamId,
         true,
         false,
         true
       );
-      if (results.insertId > 0) {
+      if (results.affectedRows > 0) {
         res.status(200);
         res.json({ inviteStatus: true });
       } else {
