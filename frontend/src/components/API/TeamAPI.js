@@ -111,4 +111,17 @@ export default class TeamAPI {
     const json = await res.json();
     return json.members;
   }
+
+  static async getPendingInvites() {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch("/invites", {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.team;
+  }
 }
