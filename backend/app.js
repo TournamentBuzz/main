@@ -11,6 +11,8 @@ const matches = require("./controllers/matches");
 const teams = require("./controllers/teams");
 const invites = require("./controllers/invites");
 
+const requireAuth = require("./middleware/auth/verify");
+
 // logging
 const logger = require("morgan");
 const log4js = require("log4js").getLogger();
@@ -56,7 +58,7 @@ app.use("/user", user);
 app.use("/tournaments", tournaments);
 app.use("/matches", matches);
 app.use("/teams", teams);
-app.use("/invites", invites);
+app.use("/invites", requireAuth, invites);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
