@@ -227,7 +227,7 @@ function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
 
 function getInvites(connection, userEmail) {
   const query =
-    "SELECT * FROM teamMembers WHERE userEmail = ? AND approved = FALSE;";
+    "SELECT * FROM teamMembers WHERE userEmail = ? AND approved = FALSE AND invited = TRUE;";
   return new Promise((resolve, reject) => {
     connection.query(query, [userEmail], function(err, rows, fields) {
       if (err) {
