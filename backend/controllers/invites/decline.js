@@ -5,7 +5,7 @@ const sqlwrapper = require("../../model/wrapper");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
-  if (!req.body || !(req.body.team_id > 0)) {
+  if (!req.body || !(req.body.teamId > 0)) {
     const err = new Error("Malformed Request");
     err.status = 400;
     next(err);
@@ -17,7 +17,7 @@ router.post("", async (req, res, next) => {
       const results = await sqlwrapper.updateTeamMember(
         c,
         req.headers.id,
-        req.body.team_id,
+        req.body.teamId,
         false,
         false,
         false

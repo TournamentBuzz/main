@@ -19,7 +19,7 @@ router.post("", async (req, res, next) => {
         req.body.teamId,
         req.headers.id
       );
-      if (check[0].invited !== true) {
+      if (!!check[0].invited !== true) {
         const err = new Error(
           "Something went wrong, user was not invited but trying to accept!"
         );
