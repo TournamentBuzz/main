@@ -4,6 +4,7 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
+import AddIcon from "@material-ui/icons/Add";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
@@ -45,6 +46,7 @@ class TeamDetails extends React.Component {
       currentUser: Authentication.getUID()
     };
     this.handleClickDelete = this.handleClickDelete.bind(this);
+    this.handleClickAddMember = this.handleClickAddMember.bind(this);
   }
 
   async handleClickDelete() {
@@ -68,6 +70,10 @@ class TeamDetails extends React.Component {
       await TeamAPI.removeFromTeam(this.state.teamID, email);
       window.location.reload();
     }
+  }
+
+  handleClickAddMember() {
+    this.props.history.push(`/team/${this.state.teamID}/invite`);
   }
 
   async getTeamDetails(id) {
@@ -165,9 +171,21 @@ class TeamDetails extends React.Component {
                 </IconButton>
               </div>
             ) : null}
-            <h2>{this.state.teamName}</h2>
+            <h1>{this.state.teamName}</h1>
             <br />
-            <h3>Members</h3>
+            <h2 style={{ margin: "0px", display: "inline-flex" }}>Members</h2>
+            {this.state.currentUser != null &&
+            this.state.currentUser === this.state.leader ? (
+              <div style={{ display: "inline-flex" }}>
+                <IconButton
+                  className={classes.button}
+                  aria-label="Add Member"
+                  onClick={this.handleClickAddMember}
+                >
+                  <AddIcon />
+                </IconButton>
+              </div>
+            ) : null}
             {this.state.membersList === null ? (
               <div>{null}</div>
             ) : (

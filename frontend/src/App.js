@@ -20,6 +20,7 @@ import MatchCreate from "views/MatchCreate";
 import MatchEdit from "views/MatchEdit";
 import TeamCreate from "views/TeamCreate";
 import TeamDetails from "views/TeamDetails";
+import TeamInvite from "views/TeamInvite";
 
 class App extends Component {
   render() {
@@ -74,6 +75,7 @@ class App extends Component {
                 component={TeamCreate}
               />
               <Route path="/team/:teamID" exact component={TeamDetails} />
+              <Route path="/team/:teamID/invite" exact component={TeamInvite} />
               <Route component={NotFound} />
             </Switch>
           </Router>

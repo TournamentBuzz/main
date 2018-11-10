@@ -13,14 +13,14 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import TeamAPI from "components/API/TeamAPI";
 import Authentication from "components/API/Authentication";
 
-class TeamCreate extends React.Component {
+class TeamInvite extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       submitted: false,
       formError: "",
-      tournamentId: this.props.match.params.tournamentID,
-      teamName: ""
+      teamID: this.props.match.params.teamID,
+      memberEmail: ""
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -33,8 +33,12 @@ class TeamCreate extends React.Component {
 
   async handleFormSubmit(event) {
     event.preventDefault();
-    await TeamAPI.createTeam(this.state.tournamentId, this.state.teamName);
-    this.props.history.push(`/tournament/${this.state.tournamentId}`);
+    try {
+      await TeamAPI.inviteToTeam(this.state.teamID, this.state.memberEmail);
+      this.props.history.push(`/team/${this.state.teamID}`);
+    } catch (error) {
+      this.setState({ formError: "Could not add user" });
+    }
   }
 
   render() {
@@ -57,29 +61,24 @@ class TeamCreate extends React.Component {
         </div>
         <div>
           <form onSubmit={this.handleFormSubmit}>
-            <h2>Create Team</h2>
-            <FormHelperText error>{this.state.formError}</FormHelperText>
-
+            <h2>Invite to Team</h2>
             <div>
               <FormControl>
-                <InputLabel>Team Name</InputLabel>
+                <InputLabel>Email Address</InputLabel>
                 <Input
-                  value={this.state.teamName}
+                  value={this.state.memberEmail}
                   required={true}
-                  onChange={e => this.setState({ teamName: e.target.value })}
-                  id="teamName"
+                  onChange={e => this.setState({ memberEmail: e.target.value })}
+                  id="memberEmail"
                   fullWidth={true}
+                  type="email"
                 />
-                <FormHelperText>
-                  {this.state.submitted && !this.state.teamName
-                    ? "Team Name is required"
-                    : ""}
-                </FormHelperText>
+                <FormHelperText error>{this.state.formError}</FormHelperText>
               </FormControl>
             </div>
             <div>
               <Button color="primary" size="large" value="submit" type="submit">
-                Create
+                Invite
               </Button>
             </div>
           </form>
@@ -89,4 +88,4 @@ class TeamCreate extends React.Component {
   }
 }
 
-export default withRouter(TeamCreate);
+export default withRouter(TeamInvite);
