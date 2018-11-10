@@ -13,6 +13,7 @@ import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import MatchAPI from "components/API/MatchAPI";
+import TeamAPI from "components/API/TeamAPI";
 import Authentication from "components/API/Authentication";
 
 class MatchCreate extends React.Component {
@@ -27,15 +28,17 @@ class MatchCreate extends React.Component {
       matchTime: "",
       teamA: "",
       teamB: "",
-      published: false
+      published: false,
+      teams: []
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (!Authentication.loggedIn()) {
       this.props.history.push("/login");
     }
+    await this.getTeams(this.state.tournamentId);
   }
 
   async handleFormSubmit(event) {
@@ -56,6 +59,27 @@ class MatchCreate extends React.Component {
       await MatchAPI.publishMatch(newMatchID, true);
     }
     this.props.history.push(`/tournament/${this.state.tournamentId}`);
+  }
+
+  async getTeams(id) {
+    let teams = undefined;
+    try {
+      teams = await TeamAPI.getTeams(id);
+    } catch (error) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    if (teams === undefined) {
+      this.props.history.push("/NotFound");
+      return;
+    }
+    this.setState({ teams });
+  }
+
+  renderTeamsOptions() {
+    return this.state.teams.map(
+      ({ id, teamName }) => <MenuItem key={id} value={id}>{teamName}</MenuItem>
+    );
   }
 
   render() {
@@ -135,33 +159,27 @@ class MatchCreate extends React.Component {
             <div>
               <FormControl>
                 <InputLabel>Team A</InputLabel>
-                <Input
+                <Select
                   value={this.state.teamA}
                   required={true}
+                  autoWidth={true}
+                  displayEmpty={true}
                   onChange={e => this.setState({ teamA: e.target.value })}
-                  id="teamA"
-                  fullWidth={true}
-                />
-                <FormHelperText>
-                  {this.state.submitted && !this.state.teamA
-                    ? "Team A is required"
-                    : ""}
-                </FormHelperText>
+                >
+                  {this.renderTeamsOptions()}
+                </Select>
               </FormControl>
               <FormControl>
                 <InputLabel>Team B</InputLabel>
-                <Input
+                <Select
                   value={this.state.teamB}
                   required={true}
+                  autoWidth={true}
+                  displayEmpty={true}
                   onChange={e => this.setState({ teamB: e.target.value })}
-                  id="teamB"
-                  fullWidth={true}
-                />
-                <FormHelperText>
-                  {this.state.submitted && !this.state.teamB
-                    ? "Team B is required"
-                    : ""}
-                </FormHelperText>
+                >
+                  {this.renderTeamsOptions()}
+                </Select>
               </FormControl>
             </div>
             <div>
