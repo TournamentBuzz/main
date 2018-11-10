@@ -279,6 +279,10 @@ function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
   );
 }
 
+function getInvites(connection, userEmail) {
+  return teamWrapper.getInvites(connection, userEmail);
+}
+
 module.exports = {
   checkCredentials: checkCredentials,
   createUser: createUser,
@@ -312,5 +316,6 @@ module.exports = {
   getTeamMember: getTeamMember,
   getTeamMembers: getTeamMembers,
   getApprovedTeamMembers: getApprovedTeamMembers,
-  getTeamsWithTeamMembers: getTeamsWithTeamMembers
+  getTeamsWithTeamMembers: getTeamsWithTeamMembers,
+  getInvites: getInvites
 };

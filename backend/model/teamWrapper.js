@@ -225,6 +225,20 @@ function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
   });
 }
 
+function getInvites(connection, userEmail) {
+  const query =
+    "SELECT * FROM teamMembers WHERE userEmail = ? AND approved = FALSE;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [userEmail], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 module.exports = {
   createTeam: createTeam,
   getTeam: getTeam,
@@ -238,5 +252,6 @@ module.exports = {
   getTeamMember: getTeamMember,
   getTeamMembers: getTeamMembers,
   getApprovedTeamMembers: getApprovedTeamMembers,
-  getTeamsWithTeamMembers: getTeamsWithTeamMembers
+  getTeamsWithTeamMembers: getTeamsWithTeamMembers,
+  getInvites: getInvites
 };
