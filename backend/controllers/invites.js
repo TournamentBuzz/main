@@ -9,10 +9,10 @@ const decline = require("./invites/decline");
 
 const requireAuth = require("../middleware/auth/verify");
 
-router.get("/", function(req, res, next) {
+router.get("/", async function(req, res, next) {
   try {
     const c = req.app.get("databaseConnection");
-    const teamObjects = sqlwrapper.getInvites(c, req.headers.id);
+    const teamObjects = await sqlwrapper.getInvites(c, req.headers.id);
     res.status(200);
     res.json({ team: teamObjects });
     c.destroy();
