@@ -132,7 +132,7 @@ function updateTeamMember(
   approved
 ) {
   const query =
-    "UPDATE teamMembers SET invited = ?, requested = ?, approved = ? WHERE id = userEmail = ? AND teamId = ?;";
+    "UPDATE teamMembers SET invited = ?, requested = ?, approved = ? WHERE userEmail = ? AND teamId = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
