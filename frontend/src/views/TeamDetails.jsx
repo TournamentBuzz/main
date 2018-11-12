@@ -113,7 +113,8 @@ class TeamDetails extends React.Component {
         <ListItem>
           <ListItemText primary={member.userEmail} />
           {this.state.currentUser != null &&
-          this.state.currentUser === this.state.leader &&
+          (this.state.currentUser === this.state.leader ||
+            this.state.currentUser === member.userEmail) &&
           member.userEmail !== this.state.leader ? (
             <ListItemSecondaryAction>
               <IconButton
