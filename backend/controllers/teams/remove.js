@@ -20,7 +20,7 @@ router.post("", async (req, res, next) => {
       next(err);
       return;
     }
-    if (req.headers.id === teamObject[0].leader) {
+    if (req.headers.id === teamObject[0].leader || req.headers.id === req.body.email) {
       const results = await sqlwrapper.deleteTeamMember(
         c,
         req.body.email,
@@ -28,7 +28,7 @@ router.post("", async (req, res, next) => {
       );
       if (results.affectedRows > 0) {
         res.status(200);
-        res.json({ promoteStatus: true });
+        res.json({ kickStatus: true });
       } else {
         const err = new Error("Something went wrong, member not removed!");
         next(err);
