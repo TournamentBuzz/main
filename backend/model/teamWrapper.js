@@ -132,7 +132,7 @@ function updateTeamMember(
   approved
 ) {
   const query =
-    "UPDATE teamMembers SET invited = ?, requested = ?, approved = ? WHERE id = userEmail = ? AND teamId = ?;";
+    "UPDATE teamMembers SET invited = ?, requested = ?, approved = ? WHERE userEmail = ? AND teamId = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
@@ -161,10 +161,75 @@ function deleteTeamMember(connection, userEmail, teamId) {
   });
 }
 
+function getTeamMember(connection, teamId, userEmail) {
+  const query = "SELECT * FROM teamMembers WHERE teamId = ? AND userEmail = ?;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [teamId, userEmail], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 function getTeamMembers(connection, teamId) {
   const query = "SELECT * FROM teamMembers WHERE teamId = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [teamId], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function getApprovedTeamMembers(connection, teamId) {
+  const query =
+    "SELECT * FROM teamMembers WHERE teamId = ? AND approved = TRUE;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [teamId], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
+  const query = `SELECT
+    COUNT(*) AS 'numMembers', 
+    teams.* 
+    FROM teamMembers
+    LEFT JOIN teams ON teams.id = teamMembers.teamId
+    WHERE teams.tournament = ? AND teamMembers.approved = TRUE
+    GROUP BY teamId
+    HAVING numMembers = ?`;
+  return new Promise((resolve, reject) => {
+    connection.query(query, [tournamentId, numParticipants], function(
+      err,
+      rows,
+      fields
+    ) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function getInvites(connection, userEmail) {
+  const query =
+    "SELECT * FROM teamMembers WHERE userEmail = ? AND approved = FALSE AND invited = TRUE;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [userEmail], function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
@@ -184,5 +249,9 @@ module.exports = {
   createTeamMember: createTeamMember,
   updateTeamMember: updateTeamMember,
   deleteTeamMember: deleteTeamMember,
-  getTeamMembers: getTeamMembers
+  getTeamMember: getTeamMember,
+  getTeamMembers: getTeamMembers,
+  getApprovedTeamMembers: getApprovedTeamMembers,
+  getTeamsWithTeamMembers: getTeamsWithTeamMembers,
+  getInvites: getInvites
 };
