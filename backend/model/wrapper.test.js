@@ -14,6 +14,8 @@ const databaseConfig = {
   schema: "tempwrapperjestschema"
 };
 
+let dc;
+
 async function setupTemporarySchema(host, username, password, temporarySchema) {
   const c = mysql.createConnection({
     host: host,
@@ -40,36 +42,99 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     );`;
   await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
   const setupTournamentsTableQuery = `CREATE TABLE tournaments (
-        id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
-        creator VARCHAR(255) NOT NULL,
-        description VARCHAR(255) DEFAULT NULL,
-        teamEvent BOOL NOT NULL DEFAULT FALSE,
-        location VARCHAR(255) DEFAULT NULL,
-        scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
-        tournamentName VARCHAR(255) DEFAULT NULL,
-        tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
-        entryCost INT(5) NOT NULL DEFAULT 0,
-        maxParticipants INT(5) NOT NULL DEFAULT 16,
-        startDate DATE DEFAULT NULL,
-        endDate DATE DEFAULT NULL,
-        PRIMARY KEY(id),
-        FOREIGN KEY(creator)
-        REFERENCES users(email)
-    );`;
+    id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
+      creator VARCHAR(255) NOT NULL,
+      description VARCHAR(255) DEFAULT NULL,
+      maxTeamSize INT(5) NOT NULL DEFAULT 1,
+      location VARCHAR(255) DEFAULT NULL,
+      scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
+      tournamentName VARCHAR(255) DEFAULT NULL,
+      tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+      entryCost INT(5) NOT NULL DEFAULT 0,
+      maxTeams INT(5) NOT NULL DEFAULT 16,
+      startDate DATE DEFAULT NULL,
+      endDate DATE DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(creator)
+      REFERENCES users(email)
+  );`;
   await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
+  const setupTeamsTableQuery = `CREATE TABLE teams (
+    id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+      teamName VARCHAR(255),
+      leader VARCHAR(255) NOT NULL,
+      tournament INT(10) NOT NULL,
+      seed INT(4) DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(leader)
+      REFERENCES users(email),
+      FOREIGN KEY(tournament)
+      REFERENCES tournaments(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupTeamsTableQuery, []);
   const setupMatchesTableQuery = `CREATE TABLE matches (
-        id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
-        location VARCHAR(255) DEFAULT NULL,
-        score VARCHAR(255) DEFAULT NULL,
-        matchTime DATETIME DEFAULT NULL,
-        matchName VARCHAR(255) DEFAULT NULL,
-        tournament INT(10) NOT NULL,
-        PRIMARY KEY(id),
-        FOREIGN KEY(tournament)
-        REFERENCES tournaments(id)
+    id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+      location VARCHAR(255) DEFAULT NULL,
+      score VARCHAR(255) DEFAULT NULL,
+      matchTime DATETIME DEFAULT NULL,
+      matchName VARCHAR(255) DEFAULT NULL,
+      tournament INT(10) NOT NULL,
+      teamA INT(12) NOT NULL,
+      teamB INT(12) NOT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(tournament)
+      REFERENCES tournaments(id),
+      FOREIGN KEY(teamA)
+      REFERENCES teams(id),
+      FOREIGN KEY(teamB)
+      REFERENCES teams(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
+  const setupTeamMembersTableQuery = `CREATE TABLE teamMembers (
+    userEmail VARCHAR(255) NOT NULL,
+      teamId INT(12) NOT NULL,
+      invited BOOL DEFAULT FALSE NOT NULL,
+      requested BOOL DEFAULT FALSE NOT NULL,
+      approved BOOL DEFAULT FALSE NOT NULL,
+    PRIMARY KEY(userEmail, teamId),
+      FOREIGN KEY(userEmail)
+      REFERENCES users(email),
+      FOREIGN KEY(teamId)
+      REFERENCES teams(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupTeamMembersTableQuery, []);
+  const setupRefereeTableQuery = `CREATE TABLE referees (
+    userEmail VARCHAR(255) NOT NULL,
+      tournamentId INT(12) NOT NULL,
+      FOREIGN KEY(userEmail)
+      REFERENCES users(email),
+      FOREIGN KEY(tournamentId)
+      REFERENCES tournaments(id),
+      PRIMARY KEY(userEmail, tournamentId)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupRefereeTableQuery, []);
+  const setupExampleUserQuery =
+    "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
+  await sqlwrapper.executeSQL(specC, setupExampleUserQuery, [
+    "example@example.com",
+    await bcrypt.hash("example", 10),
+    "example"
+  ]);
+  const setupExampleTournamentQuery =
+    "INSERT INTO tournaments (creator, tournamentName, startDate, endDate) VALUES (?, ?, ?, ?)";
+  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
+    "example@example.com",
+    "test tournament",
+    "9999-01-01",
+    "9999-01-02"
+  ]);
   specC.destroy();
+  dc = connection.connect(
+    databaseConfig.host,
+    databaseConfig.username,
+    databaseConfig.password,
+    databaseConfig.schema
+  );
 }
 
 async function cleanupTemporarySchema(
@@ -87,6 +152,7 @@ async function cleanupTemporarySchema(
   const setupSchemaQuery = "DROP SCHEMA " + temporarySchema + ";";
   await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
+  dc.destroy();
 }
 
 describe("sql wrapper", () => {
@@ -110,35 +176,25 @@ describe("sql wrapper", () => {
 
   test("Execute SQL", async done => {
     const testQuery = "SELECT * FROM users;";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const result = await sqlwrapper.executeSQL(c, testQuery, []);
     if (!result) {
       throw new Error("Something went wrong.");
     }
-    if (result.length !== 0) {
+    if (result.length !== 1) {
       throw new Error(
-        "Row count not 0 as expected, got " + result.length.toString()
+        "Row count not 1 as expected, got " + result.length.toString()
       );
     }
     done();
   });
 
   test("Create user", async done => {
-    const testGetUsers = "SELECT * FROM users;";
+    const testGetUsers = "SELECT * FROM users WHERE email = ?;";
     const testUserName = "Test Create User";
     const testUserEmail = "testCreateUser@gatech.edu";
     const testUserPassword = "testcreateuserpassword";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.createUser(
       c,
       testUserName,
@@ -146,8 +202,9 @@ describe("sql wrapper", () => {
       testUserPassword,
       0
     );
-    const result = await sqlwrapper.executeSQL(c, testGetUsers, []);
-    c.destroy();
+    const result = await sqlwrapper.executeSQL(c, testGetUsers, [
+      testUserEmail
+    ]);
     if (!result) {
       throw new Error("Something went wrong.");
     }
@@ -188,19 +245,13 @@ describe("sql wrapper", () => {
     const testUserPassword = "testuserexistspassword";
     const insertUserQuery =
       "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.executeSQL(c, insertUserQuery, [
       testUserEmail,
       testUserPassword,
       testUserName
     ]);
     const exists = await sqlwrapper.userExists(c, testUserEmail);
-    c.destroy();
     if (!exists) {
       throw new Error(
         "Expected for user to exist, instead got user does not exist."
@@ -220,12 +271,7 @@ describe("sql wrapper", () => {
     );
     const insertUserQuery =
       "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.executeSQL(c, insertUserQuery, [
       testUserEmail,
       testUserHashedPassword,
@@ -236,7 +282,6 @@ describe("sql wrapper", () => {
       testUserEmail,
       testUserPassword
     );
-    c.destroy();
     if (!validCredentials) {
       throw new Error(
         "Expected valid credentials, instead got invalid credentials."
@@ -256,12 +301,7 @@ describe("sql wrapper", () => {
     );
     const insertUserQuery =
       "INSERT INTO users(email, password, username, admin) VALUES (?, ?, ?, false);";
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     await sqlwrapper.executeSQL(c, insertUserQuery, [
       testUserEmail,
       testUserHashedPassword,
@@ -272,7 +312,6 @@ describe("sql wrapper", () => {
       testUserEmail,
       "invalid credentials"
     );
-    c.destroy();
     if (validCredentials) {
       throw new Error(
         "Expected invalid credentials, instead got valid credentials."
@@ -283,17 +322,25 @@ describe("sql wrapper", () => {
 
   test("Create Tournament", async done => {
     // This test requires the create user to test to pass as tournaments needs it as a foreign key
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
-    const testUserEmail = "testUserExists@gatech.edu";
-    const testTournamentName = "test tournament";
+    const c = dc;
+    const testUserEmail = "example@example.com";
+    const testTournamentName = "tournament test";
     const getTestTournament =
       "SELECT * FROM tournaments WHERE tournamentName = ?;";
-    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName);
+    await sqlwrapper.createTournament(
+      c,
+      testUserEmail,
+      testTournamentName,
+      testTournamentName,
+      16,
+      "CULC",
+      "Points",
+      "Single Elim",
+      0,
+      16,
+      "9999-01-01",
+      "9999-01-02"
+    );
     const result = await sqlwrapper.executeSQL(c, getTestTournament, [
       testTournamentName
     ]);
@@ -304,12 +351,7 @@ describe("sql wrapper", () => {
   });
 
   test("Search/Get Tournament", async done => {
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = dc;
     const testTournamentName = "test tournament";
     const result = await sqlwrapper.searchTournament(c, testTournamentName);
     if (result.length < 1) {
@@ -323,6 +365,155 @@ describe("sql wrapper", () => {
     }
     if (name !== testTournamentName) {
       throw new Error("Name field does not match.");
+    }
+    done();
+  });
+
+  test("Create Team", async done => {
+    const c = dc;
+    const testTournamentName = "test tournament";
+    const testUserEmail = "example@example.com";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    const teamName = "test team";
+    await sqlwrapper.createTeam(c, teamName, testUserEmail, testId, null);
+    const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    done();
+  });
+
+  test("Add Member", async done => {
+    const c = dc;
+    const testUserEmail = "testUserExists@gatech.edu";
+    const teamName = "test team";
+    const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    const teamId = result1[0].id;
+    await sqlwrapper.createTeamMember(
+      c,
+      testUserEmail,
+      teamId,
+      true,
+      true,
+      true
+    );
+    const getTestTeamMembers = "SELECT * FROM teamMembers WHERE teamId = ?;";
+    const result2 = await sqlwrapper.executeSQL(c, getTestTeamMembers, [
+      teamId
+    ]);
+    if (result2.length < 1) {
+      throw new Error("Did not find team member in table upon searching.");
+    }
+    done();
+  });
+
+  test("Get Team/Create Match", async done => {
+    const c = dc;
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    const result1 = await sqlwrapper.getTeams(c, testId);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    const teamId = result[0].id;
+    await sqlwrapper.createMatch(
+      c,
+      null,
+      null,
+      null,
+      null,
+      testId,
+      teamId,
+      teamId
+    );
+    const getTestMatch = "SELECT * FROM matches WHERE tournament = ?;";
+    const result2 = await sqlwrapper.executeSQL(c, getTestMatch, [testId]);
+    if (result2.length < 1) {
+      throw new Error("Did not find match in table upon searching.");
+    }
+    done();
+  });
+
+  test("Delete Match", async done => {
+    const c = dc;
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    await sqlwrapper.deleteMatch(c, 1);
+    const getTestMatch = "SELECT * FROM matches WHERE tournament = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestMatch, [testId]);
+    if (result1.length > 1) {
+      throw new Error("Match deletion failed?");
+    }
+    done();
+  });
+
+  test("Delete Team Member", async done => {
+    const c = dc;
+    const testUserEmail = "testUserExists@gatech.edu";
+    const teamName = "test team";
+    const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
+    if (result1.length < 1) {
+      throw new Error("Did not find team in table upon searching.");
+    }
+    const teamId = result1[0].id;
+    await sqlwrapper.deleteTeamMember(c, testUserEmail, teamId);
+    const getTestTeamMembers = "SELECT * FROM teamMembers WHERE userEmail = ?;";
+    const result2 = await sqlwrapper.executeSQL(c, getTestTeamMembers, [
+      testUserEmail
+    ]);
+    if (result2.length > 1) {
+      throw new Error("Team member deletion failed?");
+    }
+    done();
+  });
+
+  test("Delete Team", async done => {
+    const c = dc;
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    await sqlwrapper.deleteTeam(c, 1);
+    const getTestTeam = "SELECT * FROM teams WHERE tournament = ?;";
+    const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [testId]);
+    if (result1.length > 1) {
+      throw new Error("Team deletion failed?");
+    }
+    done();
+  });
+
+  test("Delete Tournament", async done => {
+    const c = dc;
+    const testTournamentName = "test tournament";
+    const result = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (result.length < 1) {
+      throw new Error("Did not find tournament in table upon searching.");
+    }
+    const testId = result[0].id;
+    await sqlwrapper.deleteTournament(c, testId);
+    const exists = await sqlwrapper.searchTournament(c, testTournamentName);
+    if (exists.length > 1) {
+      throw new Error("Tournament deletion failed?");
     }
     done();
   });

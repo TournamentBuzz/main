@@ -2,18 +2,17 @@
 
 const express = require("express");
 const sqlwrapper = require("../../model/wrapper");
-const connection = require("../../model/connect");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
   if (
     !req.body ||
     req.body.tournamentId < 0 ||
-    (req.body.teamEvent !== true && req.body.teamEvent !== false) ||
+    req.body.maxTeamSize < 1 ||
     !req.body.scoringType ||
     !req.body.tournamentType ||
     req.body.entryCost < 0 ||
-    req.body.maxParticipants < 0
+    req.body.maxTeams < 0
   ) {
     const err = new Error("Malformed Request");
     err.status = 400;
@@ -21,12 +20,7 @@ router.post("", async (req, res, next) => {
     return;
   }
   try {
-    const c = connection.connect(
-      req.app.get("databaseConfig").host,
-      req.app.get("databaseConfig").username,
-      req.app.get("databaseConfig").password,
-      req.app.get("databaseConfig").schema
-    );
+    const c = req.app.get("databaseConnection");
     const tournamentObject = await sqlwrapper.getTournament(
       c,
       req.body.tournamentId
@@ -43,13 +37,13 @@ router.post("", async (req, res, next) => {
         req.body.tournamentId,
         req.headers.id,
         req.body.description,
-        req.body.teamEvent,
+        req.body.maxTeamSize,
         req.body.location,
         req.body.scoringType,
         req.body.tournamentName,
         req.body.tournamentType,
         req.body.entryCost,
-        req.body.maxParticipants,
+        req.body.maxTeams,
         req.body.startDate,
         req.body.endDate
       );

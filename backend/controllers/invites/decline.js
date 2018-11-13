@@ -5,14 +5,7 @@ const sqlwrapper = require("../../model/wrapper");
 const router = express.Router();
 
 router.post("", async (req, res, next) => {
-  if (
-    !req.body ||
-    req.body.maxTeamSize < 1 ||
-    !req.body.scoringType ||
-    !req.body.tournamentType ||
-    req.body.entryCost < 0 ||
-    req.body.maxTeams < 0
-  ) {
+  if (!req.body || !(req.body.teamId > 0)) {
     const err = new Error("Malformed Request");
     err.status = 400;
     next(err);
@@ -21,22 +14,21 @@ router.post("", async (req, res, next) => {
   if (req.headers.id !== null) {
     try {
       const c = req.app.get("databaseConnection");
-      const rows = await sqlwrapper.createTournament(
+      const results = await sqlwrapper.updateTeamMember(
         c,
         req.headers.id,
-        req.body.tournamentName,
-        req.body.description,
-        req.body.maxTeamSize,
-        req.body.location,
-        req.body.scoringType,
-        req.body.tournamentType,
-        req.body.entryCost,
-        req.body.maxTeams,
-        req.body.startDate,
-        req.body.endDate
+        req.body.teamId,
+        false,
+        false,
+        false
       );
-      res.status(200);
-      res.json({ tournamentId: rows.insertId });
+      if (results.affectedRows > 0) {
+        res.status(200);
+        res.json({ promoteStatus: true });
+      } else {
+        const err = new Error("Something went wrong, status not updated!");
+        next(err);
+      }
     } catch (err) {
       err.status = 500;
       next(err);
