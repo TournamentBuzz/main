@@ -7,6 +7,7 @@ import {
   warningColor,
   dangerColor,
   roseColor,
+  goldColor,
   transition,
   boxShadow,
   drawerWidth
@@ -98,6 +99,12 @@ const headerStyle = {
   },
   rose: {
     backgroundColor: roseColor,
+    color: "#FFFFFF",
+    boxShadow:
+      "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 12px -5px rgba(233, 30, 99, 0.46)"
+  },
+  gold: {
+    backgroundColor: goldColor,
     color: "#FFFFFF",
     boxShadow:
       "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 12px -5px rgba(233, 30, 99, 0.46)"

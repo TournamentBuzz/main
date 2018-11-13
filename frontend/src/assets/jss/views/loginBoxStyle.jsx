@@ -5,8 +5,9 @@ const loginBoxStyle = {
     ...container,
     zIndex: "2",
     position: "relative",
-    paddingTop: "20vh",
-    color: "#FFFFFF"
+    paddingTop: "5vh",
+    color: "#FFFFFF",
+    width: "80%"
   },
   cardHidden: {
     opacity: "0",
@@ -41,7 +42,7 @@ const loginBoxStyle = {
     "& footer": {
       position: "absolute",
       bottom: "0",
-      width: "100%",
+      width: "100%"
     }
   },
   form: {
@@ -53,7 +54,7 @@ const loginBoxStyle = {
     marginLeft: "20px",
     marginRight: "20px",
     marginTop: "-40px",
-    padding: "20px 0",
+    padding: "10px 0",
     marginBottom: "15px"
   },
   socialIcons: {
