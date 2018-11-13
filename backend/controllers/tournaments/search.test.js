@@ -3,12 +3,11 @@
 const request = require("supertest");
 const express = require("express");
 const mysql = require("mysql");
-const jwt = require("jsonwebtoken");
 
 const config = require("../../config");
 const sqlwrapper = require("../../model/wrapper");
 const connection = require("../../model/connect");
-const register = require("./register");
+const search = require("./search");
 
 const app = express();
 app.use(express.json());
@@ -16,15 +15,15 @@ const databaseConfig = {
   host: config.databaseConfig.host,
   username: config.databaseConfig.username,
   password: config.databaseConfig.password,
-  schema: "tempregisterjestschema"
+  schema: "temptournsearchschema"
 };
-const authConfig = { authKey: "registerTestSecret", expiresIn: "1s" };
+const authConfig = { authKey: "loginTestSecret", expiresIn: "1s" };
 app.set("authConfig", authConfig);
 app.set("serverConfig", config.serverConfig);
 app.set("databaseConfig", databaseConfig);
 
 function mockErrorHandler(err, req, res, next) {
-  if (err) {
+  if (err && err.status) {
     res.status(err.status);
     res.json({ status: err.status, message: err.message });
   } else {
@@ -33,7 +32,7 @@ function mockErrorHandler(err, req, res, next) {
   }
 }
 
-app.use("/user/register", register);
+app.use("/tournaments/search", search);
 app.use(mockErrorHandler);
 
 async function setupTemporarySchema(host, username, password, temporarySchema) {
@@ -60,6 +59,36 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         PRIMARY KEY(email)
     );`;
   await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
+  const setupTournamentsTableQuery = `CREATE TABLE tournaments (
+    id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
+      creator VARCHAR(255) NOT NULL,
+      description VARCHAR(255) DEFAULT NULL,
+      maxTeamSize INT(5) NOT NULL DEFAULT 1,
+      location VARCHAR(255) DEFAULT NULL,
+      scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
+      tournamentName VARCHAR(255) DEFAULT NULL,
+      tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+      entryCost INT(5) NOT NULL DEFAULT 0,
+      maxTeams INT(5) NOT NULL DEFAULT 16,
+      startDate DATE DEFAULT NULL,
+      endDate DATE DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(creator)
+      REFERENCES users(email)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
+  const setupMatchesTableQuery = `CREATE TABLE matches (
+        id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+        location VARCHAR(255) DEFAULT NULL,
+        score VARCHAR(255) DEFAULT NULL,
+        matchTime DATETIME DEFAULT NULL,
+        matchName VARCHAR(255) DEFAULT NULL,
+        tournament INT(10) NOT NULL,
+        PRIMARY KEY(id),
+        FOREIGN KEY(tournament)
+        REFERENCES tournaments(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
   specC.destroy();
   app.set(
     "databaseConnection",
@@ -90,20 +119,29 @@ async function cleanupTemporarySchema(
   app.get("databaseConnection").destroy();
 }
 
-describe("register", () => {
+describe("search", () => {
   const testUserEmail = "test@gatech.edu";
   const testUserPassword = "testpassword";
   const testUserName = "Test User";
-  const temporarySchema = "tempregisterjestschema";
+  const testTournamentName1 = "Test Tournament";
+  const testTournamentName2 = "Test Tournament 2";
   beforeAll(async done => {
     await setupTemporarySchema(
       databaseConfig.host,
       databaseConfig.username,
       databaseConfig.password,
-      temporarySchema
+      databaseConfig.schema
     ).catch(function(err) {
       throw new Error("Unable to create temporary schema: " + err.message);
     });
+    const c = app.get("databaseConnection");
+    await sqlwrapper
+      .createUser(c, testUserName, testUserEmail, testUserPassword, 0)
+      .catch(function(err) {
+        throw new Error("Unable to create user: " + err.message);
+      });
+    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName1);
+    await sqlwrapper.createTournament(c, testUserEmail, testTournamentName2);
     done();
   });
 
@@ -112,115 +150,53 @@ describe("register", () => {
       databaseConfig.host,
       databaseConfig.username,
       databaseConfig.password,
-      temporarySchema
+      databaseConfig.schema
     ).catch(function(err) {
       throw new Error("Unable to cleanup temporary schema: " + err.message);
     });
     done();
   });
-
-  test("Register Success", async done => {
-    const registerObject = {
-      email: testUserEmail,
-      password: testUserPassword,
-      name: testUserName
+  test("Tournament Search Success", async done => {
+    const tournamentObject = {
+      search: testTournamentName1
     };
     await request(app)
-      .post("/user/register")
-      .send(registerObject)
+      .post("/tournaments/search")
+      .send(tournamentObject)
+      .set("id", testUserEmail)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(async function(res) {
+      .expect(async res => {
         try {
-          const payload = jwt.verify(
-            res.body.jwt,
-            app.get("authConfig").authKey
+          const c = connection.connect(
+            databaseConfig.host,
+            databaseConfig.username,
+            databaseConfig.password,
+            databaseConfig.schema
           );
-          if (payload.id !== testUserEmail) {
-            throw new Error(
-              "Unexpected ID, expected " +
-                testUserEmail +
-                ", got " +
-                payload.id +
-                " instead"
-            );
+          const row = await sqlwrapper.getTournament(c, 1);
+          const tourn = row[0];
+          if (
+            tourn.id !== 1 ||
+            tourn.creator !== testUserEmail ||
+            tourn.description !== null ||
+            tourn.maxTeamSize !== 1 ||
+            tourn.location !== null ||
+            tourn.scoringType !== "Points" ||
+            tourn.tournamentName !== testTournamentName1 ||
+            tourn.tournamentType !== "Single Elim" ||
+            tourn.entryCost !== 0 ||
+            tourn.maxTeams !== 16 ||
+            tourn.startDate !== null ||
+            tourn.endDate !== null
+          ) {
+            throw new Error("Tournament(s) found did not match!");
           }
         } catch (e) {
-          e.message =
-            "Returned JWT is not valid for some reason or another: " +
-            e.message;
+          e.message = "Something went big boom " + e.message;
           throw e;
-        }
-        const c = connection.connect(
-          databaseConfig.host,
-          databaseConfig.username,
-          databaseConfig.password,
-          temporarySchema
-        );
-        try {
-          const userExists = await sqlwrapper.userExists(c, testUserEmail);
-          if (!userExists) {
-            throw new Error("User was not actually created!");
-          }
-        } catch (err) {
-          throw new Error(
-            "Unexpected error while checking user existence: " + err.message
-          );
-        }
-      });
-    done();
-  });
-
-  test("Register Duplicate", async done => {
-    const registerObject = {
-      email: testUserEmail,
-      password: testUserPassword,
-      name: testUserName
-    };
-    await request(app)
-      .post("/user/register")
-      .send(registerObject)
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect("Content-Type", /json/)
-      .expect(409)
-      .expect(res => {
-        const expectedError = "User already exists!";
-        if (res.body.message !== expectedError) {
-          throw new Error(
-            "Expected error: " +
-              expectedError +
-              ", received: " +
-              res.body.message
-          );
-        }
-      });
-    done();
-  });
-  test("Register Malformed", async done => {
-    const registerObject = {
-      emaiel: testUserEmail,
-      passwords: testUserPassword,
-      namee: testUserName
-    };
-    await request(app)
-      .post("/user/register")
-      .send(registerObject)
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect("Content-Type", /json/)
-      .expect(400)
-      .expect(res => {
-        const expectedError = "Malformed Request";
-        if (res.body.message !== expectedError) {
-          throw new Error(
-            "Expected error: " +
-              expectedError +
-              ", received: " +
-              res.body.message
-          );
         }
       });
     done();

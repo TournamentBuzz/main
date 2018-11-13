@@ -4,10 +4,10 @@ const request = require("supertest");
 const express = require("express");
 const mysql = require("mysql");
 
-const config = require("../config");
-const sqlwrapper = require("../model/wrapper");
-const connection = require("../model/connect");
-const tournaments = require("./tournaments");
+const config = require("../../../config");
+const sqlwrapper = require("../../../model/wrapper");
+const connection = require("../../../model/connect");
+const matches = require("./matches");
 
 const app = express();
 app.use(express.json());
@@ -15,9 +15,9 @@ const databaseConfig = {
   host: config.databaseConfig.host,
   username: config.databaseConfig.username,
   password: config.databaseConfig.password,
-  schema: "temptournamentsjestschema"
+  schema: "tempmatchesjestschema"
 };
-const authConfig = { authKey: "tournamentsTestSecret", expiresIn: "1s" };
+const authConfig = { authKey: "matchesTestSecret", expiresIn: "1s" };
 app.set("authConfig", authConfig);
 app.set("serverConfig", config.serverConfig);
 app.set("databaseConfig", databaseConfig);
@@ -32,7 +32,7 @@ function mockErrorHandler(err, req, res, next) {
   }
 }
 
-app.use("/tournaments", tournaments);
+app.use("/matches", matches);
 app.use(mockErrorHandler);
 
 async function setupTemporarySchema(host, username, password, temporarySchema) {
@@ -52,12 +52,6 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     database: temporarySchema
   });
   specC.connect();
-  const setupUsersTableQuery = `CREATE TABLE users (
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        userName VARCHAR(60),
-        PRIMARY KEY(email)
-    );`;
   const setupTournamentsTableQuery = `CREATE TABLE tournaments (
     id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
       creator VARCHAR(255) NOT NULL,
@@ -71,12 +65,36 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       maxTeams INT(5) NOT NULL DEFAULT 16,
       startDate DATE DEFAULT NULL,
       endDate DATE DEFAULT NULL,
-      PRIMARY KEY(id),
-      FOREIGN KEY(creator)
-      REFERENCES users(email)
+      PRIMARY KEY(id)
   );`;
-  await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
   await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
+  const setupMatchesTableQuery = `CREATE TABLE matches (
+	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+    location VARCHAR(255) DEFAULT NULL,
+    score VARCHAR(255) DEFAULT NULL,
+    matchTime DATETIME DEFAULT NULL,
+    matchName VARCHAR(255) DEFAULT NULL,
+    tournament INT(10) NOT NULL,
+    teamA INT(12) DEFAULT NULL,
+    teamB INT(12) DEFAULT NULL,
+    publish BOOL DEFAULT FALSE NOT NULL,
+    PRIMARY KEY(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
+  const setupExampleTournamentQuery =
+    "INSERT INTO tournaments (creator, tournamentName, startDate, endDate) VALUES (?, ?, ?, ?)";
+  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
+    "example@example.com",
+    "test tournament",
+    "9999-01-01",
+    "9999-01-02"
+  ]);
+  await sqlwrapper.executeSQL(specC, setupExampleTournamentQuery, [
+    "example@example.com",
+    "test tournament 2",
+    "9999-01-01",
+    "9999-01-02"
+  ]);
   specC.destroy();
   app.set(
     "databaseConnection",
@@ -107,21 +125,26 @@ async function cleanupTemporarySchema(
   app.get("databaseConnection").destroy();
 }
 
-describe("tournaments", () => {
-  const testUserEmail = "test@gatech.edu";
-  const testUserPassword = "testpassword";
-  const testUserName = "Test User";
-  const temporarySchema = "temptournamentsjestschema";
-  const testTournamentName1 = "Test Tournament";
-  const testTournamentName2 = "Bob's Bowling Tournament";
-  const testTournamentName3 = "Test Tournament 2";
-  const testT1Date = "9999-01-10";
-  const testT2Date = "9999-01-20";
-  const testT3Date = "9999-01-01";
-  const t1Date = new Date("January 10, 9999 UTC");
-  const t2Date = new Date("January 20, 9999 UTC");
-  const t3Date = new Date("January 1, 9999 UTC");
-  const tt1Date = t1Date.toISOString();
+describe("matches", () => {
+  const temporarySchema = "tempmatchesjestschema";
+  const tournament1 = 1;
+  const tournament2 = 2;
+  const loc1 = "location test";
+  const loc2 = "CULC";
+  const loc3 = "Russia";
+  const score1 = null;
+  const score2 = null;
+  const score3 = "0-100";
+  const teamA = 1;
+  const teamB = 2;
+  const testMatchName1 = "Test Match";
+  const testMatchName2 = "A vs B";
+  const testMatchName3 = "D vs C";
+  const testT1DateTime = "2018-01-20 10:00:00";
+  const testT2DateTime = "2018-01-20 13:30:00";
+  const testT3DateTime = "2018-01-01 09:15:00";
+  const t2Date = new Date("2018-01-20 13:30:00 UTC");
+  const t3Date = new Date("2018-01-01 09:15:00 UTC");
   const tt2Date = t2Date.toISOString();
   const tt3Date = t3Date.toISOString();
 
@@ -134,72 +157,49 @@ describe("tournaments", () => {
     ).catch(function(err) {
       throw new Error("Unable to create temporary schema: " + err.message);
     });
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      temporarySchema
-    );
+    const c = app.get("databaseConnection");
     await sqlwrapper
-      .createUser(c, testUserName, testUserEmail, testUserPassword, 0)
-      .catch(function(err) {
-        throw new Error("Unable to create user: " + err.message);
-      });
-    await sqlwrapper
-      .createTournament(
+      .createMatch(
         c,
-        testUserEmail,
-        testTournamentName1,
+        loc1,
+        score1,
+        testT1DateTime,
+        testMatchName1,
+        tournament1,
         null,
-        false,
-        null,
-        "Points",
-        "Single Elim",
-        0,
-        16,
-        testT1Date,
         null
       )
       .catch(function(err) {
-        throw new Error("Unable to create tournament: " + err.message);
+        throw new Error("Unable to create match: " + err.message);
       });
     await sqlwrapper
-      .createTournament(
+      .createMatch(
         c,
-        testUserEmail,
-        testTournamentName2,
+        loc2,
+        score2,
+        testT2DateTime,
+        testMatchName2,
+        tournament2,
         null,
-        false,
-        null,
-        "Points",
-        "Single Elim",
-        0,
-        16,
-        testT2Date,
         null
       )
       .catch(function(err) {
-        throw new Error("Unable to create tournament: " + err.message);
+        throw new Error("Unable to create match: " + err.message);
       });
     await sqlwrapper
-      .createTournament(
+      .createMatch(
         c,
-        testUserEmail,
-        testTournamentName3,
-        null,
-        false,
-        null,
-        "Points",
-        "Single Elim",
-        0,
-        16,
-        testT3Date,
-        null
+        loc3,
+        score3,
+        testT3DateTime,
+        testMatchName3,
+        tournament2,
+        teamA,
+        teamB
       )
       .catch(function(err) {
-        throw new Error("Unable to create tournament: " + err.message);
+        throw new Error("Unable to create match: " + err.message);
       });
-    c.destroy();
     done();
   });
 
@@ -215,40 +215,43 @@ describe("tournaments", () => {
     done();
   });
 
-  test("Tournaments Success ", async done => {
+  test("Matches Success", async done => {
     await request(app)
-      .get("/tournaments")
+      .get("/matches")
+      .set("id", "example@example.com")
+      .set("tournamentid", "2")
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(res => {
         try {
           if (
-            res.body.tournaments[0].creator !== testUserEmail ||
-            res.body.tournaments[0].tournamentName !== testTournamentName2 ||
-            res.body.tournaments[0].startDate !== tt2Date
+            res.body.matches[0].location !== loc3 ||
+            res.body.matches[0].score !== score3 ||
+            res.body.matches[0].matchTime !== tt3Date ||
+            res.body.matches[0].matchName !== testMatchName3 ||
+            res.body.matches[0].tournament !== tournament2 ||
+            res.body.matches[0].teamA !== teamA ||
+            res.body.matches[0].teamB !== teamB
           ) {
-            throw new Error("Creator or tournament name does not match!");
+            throw new Error("Match fields do not match!");
           }
           if (
-            res.body.tournaments[1].creator !== testUserEmail ||
-            res.body.tournaments[1].tournamentName !== testTournamentName1 ||
-            res.body.tournaments[1].startDate !== tt1Date
+            res.body.matches[1].location !== loc2 ||
+            res.body.matches[1].score !== score2 ||
+            res.body.matches[1].matchTime !== tt2Date ||
+            res.body.matches[1].matchName !== testMatchName2 ||
+            res.body.matches[1].tournament !== tournament2 ||
+            res.body.matches[1].teamA !== null ||
+            res.body.matches[1].teamB !== null
           ) {
-            throw new Error("Creator or tournament name does not match!");
+            throw new Error("Match fields do not match!");
           }
-          if (
-            res.body.tournaments[2].creator !== testUserEmail ||
-            res.body.tournaments[2].tournamentName !== testTournamentName3 ||
-            res.body.tournaments[2].startDate !== tt3Date
-          ) {
-            throw new Error("Creator or tournament name does not match!");
-          }
-          if (t2Date < t1Date || t2Date < t3Date || t1Date < t3Date) {
+          if (t2Date < t3Date) {
             throw new Error("Tournaments are not in descending order!");
           }
         } catch (e) {
           e.message =
-            "Returned tournaments is not valid for some reason or another: " +
+            "Returned matches is not valid for some reason or another: " +
             e.message;
           throw e;
         }
