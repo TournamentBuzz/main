@@ -29,6 +29,7 @@ router.post("", async (req, res, next) => {
           c,
           req.body.location,
           req.body.score,
+          req.body.winner,
           req.body.matchTime,
           req.body.matchName,
           req.body.tournament,

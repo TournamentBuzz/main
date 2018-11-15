@@ -124,6 +124,7 @@ function createMatch(
   connection,
   location = null,
   score = null,
+  winner = null,
   matchTime = null,
   matchName = null,
   tournament,
@@ -134,6 +135,7 @@ function createMatch(
     connection,
     location,
     score,
+    winner,
     matchTime,
     matchName,
     tournament,
@@ -163,6 +165,7 @@ function updateMatch(
   id,
   location,
   score,
+  winner,
   matchTime,
   matchName,
   teamA,
@@ -173,6 +176,7 @@ function updateMatch(
     id,
     location,
     score,
+    winner,
     matchTime,
     matchName,
     teamA,
@@ -188,8 +192,26 @@ function deleteMatch(connection, id) {
   return matchWrapper.deleteMatch(connection, id);
 }
 
-function createTeam(connection, teamName, leader, tournament, seed) {
-  return teamWrapper.createTeam(connection, teamName, leader, tournament, seed);
+async function createTeam(
+  connection,
+  teamName,
+  leader,
+  tournament,
+  paid,
+  seed
+) {
+  const tourn = await getTournament(connection, tournament);
+  if (tourn[0].entryCost === 0) {
+    paid = true;
+  }
+  return teamWrapper.createTeam(
+    connection,
+    teamName,
+    leader,
+    tournament,
+    paid,
+    seed
+  );
 }
 
 function getTeam(connection, id) {
@@ -200,13 +222,14 @@ function getTeams(connection, tournamentId) {
   return teamWrapper.getTeams(connection, tournamentId);
 }
 
-function updateTeam(connection, id, teamName, leader, tournament, seed) {
+function updateTeam(connection, id, teamName, leader, tournament, paid, seed) {
   return teamWrapper.updateTeam(
     connection,
     id,
     teamName,
     leader,
     tournament,
+    paid,
     seed
   );
 }

@@ -64,6 +64,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       teamName VARCHAR(255),
       leader VARCHAR(255) NOT NULL,
       tournament INT(10) NOT NULL,
+      paid BOOL DEFAULT FALSE NOT NULL,
       seed INT(4) DEFAULT NULL,
       PRIMARY KEY(id),
       FOREIGN KEY(leader)
@@ -76,6 +77,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
       location VARCHAR(255) DEFAULT NULL,
       score VARCHAR(255) DEFAULT NULL,
+      winner BOOL DEFAULT NULL,
       matchTime DATETIME DEFAULT NULL,
       matchName VARCHAR(255) DEFAULT NULL,
       tournament INT(10) NOT NULL,
@@ -379,7 +381,14 @@ describe("sql wrapper", () => {
     }
     const testId = result[0].id;
     const teamName = "test team";
-    await sqlwrapper.createTeam(c, teamName, testUserEmail, testId, null);
+    await sqlwrapper.createTeam(
+      c,
+      teamName,
+      testUserEmail,
+      testId,
+      false,
+      null
+    );
     const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
     const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
     if (result1.length < 1) {
@@ -431,6 +440,7 @@ describe("sql wrapper", () => {
     const teamId = result[0].id;
     await sqlwrapper.createMatch(
       c,
+      null,
       null,
       null,
       null,

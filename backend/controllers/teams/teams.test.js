@@ -97,6 +97,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       teamName VARCHAR(255),
       leader VARCHAR(255) NOT NULL,
       tournament INT(10) NOT NULL,
+      paid BOOL DEFAULT FALSE NOT NULL,
       seed INT(4) DEFAULT NULL,
       PRIMARY KEY(id),
       FOREIGN KEY(leader)
@@ -109,6 +110,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
       location VARCHAR(255) DEFAULT NULL,
       score VARCHAR(255) DEFAULT NULL,
+      winner BOOL DEFAULT NULL,
       matchTime DATETIME DEFAULT NULL,
       matchName VARCHAR(255) DEFAULT NULL,
       tournament INT(10) NOT NULL,

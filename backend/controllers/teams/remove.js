@@ -20,7 +20,10 @@ router.post("", async (req, res, next) => {
       next(err);
       return;
     }
-    if (req.headers.id === teamObject[0].leader || req.headers.id === req.body.email) {
+    if (
+      req.headers.id === teamObject[0].leader ||
+      req.headers.id === req.body.email
+    ) {
       const results = await sqlwrapper.deleteTeamMember(
         c,
         req.body.email,
