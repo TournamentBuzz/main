@@ -16,6 +16,7 @@ import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import Authentication from "components/API/Authentication.js";
+import PaymentSnackbar from "components/Team/PaymentSnackbar.jsx";
 import TeamAPI from "components/API/TeamAPI.js";
 
 const teamDetailsStyle = {
@@ -171,6 +172,10 @@ class TeamDetails extends React.Component {
                   <DeleteIcon />
                 </IconButton>
               </div>
+            ) : null}
+            {this.state.currentUser != null &&
+            this.state.currentUser === this.state.leader ? (
+              <PaymentSnackbar />
             ) : null}
             <h1>{this.state.teamName}</h1>
             <br />
