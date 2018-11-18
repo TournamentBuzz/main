@@ -152,4 +152,17 @@ export default class TeamAPI {
     const json = await res.json();
     return json.declineStatus;
   }
+
+  static async payForTeam(teamId, token) {
+    const res = await fetch("/teams/charge", {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId, token })
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.paymentStatus;
+  }
 }

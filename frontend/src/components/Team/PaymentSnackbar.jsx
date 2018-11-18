@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
@@ -10,6 +9,7 @@ import amber from "@material-ui/core/colors/amber";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import WarningIcon from "@material-ui/icons/Warning";
 import { withStyles } from "@material-ui/core/styles";
+import Checkout from "components/Team/Checkout.jsx";
 
 const variantIcon = {
   success: CheckCircleIcon,
@@ -59,9 +59,11 @@ function MySnackbarContent(props) {
         </span>
       }
       action={[
-        <Button style={{ color: "white" }} className={classes.margin}>
-          Pay Now
-        </Button>
+        <Checkout
+          name={"TournamentBuzz"}
+          description={"Team Entry Fee"}
+          amount={5}
+        />
       ]}
       {...other}
     />
@@ -86,7 +88,7 @@ const styles2 = theme => ({
 
 class PaymentSnackbar extends React.Component {
   render() {
-    const { classes, id, teamName } = this.props;
+    const { classes } = this.props;
     return (
       <div align="center">
         <MySnackbarContentWrapper
