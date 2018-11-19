@@ -30,7 +30,7 @@ function createMatch(
 
 function getMatch(connection, id) {
   const query =
-    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE teams.id = ?;";
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [id], function(err, rows, fields) {
       if (err) {
@@ -44,7 +44,7 @@ function getMatch(connection, id) {
 
 function getPublishedMatch(connection, id) {
   const query =
-    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE teams.id = ? AND publish = 1;";
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.id = ? AND publish = 1;";
   return new Promise((resolve, reject) => {
     connection.query(query, [id], function(err, rows, fields) {
       if (err) {
