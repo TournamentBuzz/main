@@ -1,5 +1,6 @@
 import React from "react";
 import StripeCheckout from "react-stripe-checkout";
+import TeamAPI from "components/API/TeamAPI.js";
 
 const STRIPE_PUBLISHABLE_KEY = "pk_test_X20OBRj4crG53yFIaOaoKOMw";
 
@@ -11,11 +12,17 @@ class Checkout extends React.Component {
   constructor(props) {
     super(props);
     this.onToken = this.onToken.bind(this);
+    this.state = { teamId: props.teamId };
   }
 
-  onToken(token) {
+  async onToken(token) {
     const stripeToken = token.id;
-    console.log(stripeToken);
+    try {
+      await TeamAPI.payForTeam(this.state.teamId, stripeToken);
+    } catch (error) {
+      // charge unsuccessful
+    }
+    window.location.reload();
   }
 
   render() {

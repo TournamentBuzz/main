@@ -52,6 +52,7 @@ function MySnackbarContent(props) {
     onClose,
     variant,
     paymentAmount,
+    teamId,
     ...other
   } = props;
   const Icon = variantIcon[variant];
@@ -70,6 +71,7 @@ function MySnackbarContent(props) {
           name={"TournamentBuzz"}
           description={"Team Entry Fee"}
           amount={paymentAmount}
+          teamId={teamId}
         />
       ]}
       {...other}
@@ -95,7 +97,7 @@ const styles2 = theme => ({
 
 class PaymentSnackbar extends React.Component {
   render() {
-    const { classes, paymentAmount } = this.props;
+    const { classes, paymentAmount, teamId } = this.props;
     return (
       <div align="center">
         <MySnackbarContentWrapper
@@ -103,6 +105,7 @@ class PaymentSnackbar extends React.Component {
           className={classes.margin}
           message="You have not paid the team entry fee."
           paymentAmount={paymentAmount}
+          teamId={teamId}
         />
       </div>
     );

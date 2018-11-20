@@ -180,7 +180,10 @@ class TeamDetails extends React.Component {
             (this.state.currentUser != null &&
               this.state.currentUser === this.state.leader) &&
             this.state.entryCost != null ? (
-              <PaymentSnackbar paymentAmount={this.state.entryCost} />
+              <PaymentSnackbar
+                paymentAmount={this.state.entryCost}
+                teamId={this.state.teamID}
+              />
             ) : null}
             <h1>{this.state.teamName}</h1>
             <br />
