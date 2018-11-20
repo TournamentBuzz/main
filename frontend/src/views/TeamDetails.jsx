@@ -42,7 +42,9 @@ class TeamDetails extends React.Component {
       teamName: null,
       leader: null,
       tournamentID: null,
+      paid: null,
       seed: null,
+      entryCost: null,
       membersList: null,
       currentUser: Authentication.getUID()
     };
@@ -173,9 +175,12 @@ class TeamDetails extends React.Component {
                 </IconButton>
               </div>
             ) : null}
-            {this.state.currentUser != null &&
-            this.state.currentUser === this.state.leader ? (
-              <PaymentSnackbar />
+            {this.state.paid != null &&
+            this.state.paid === 0 &&
+            (this.state.currentUser != null &&
+              this.state.currentUser === this.state.leader) &&
+            this.state.entryCost != null ? (
+              <PaymentSnackbar paymentAmount={this.state.entryCost} />
             ) : null}
             <h1>{this.state.teamName}</h1>
             <br />

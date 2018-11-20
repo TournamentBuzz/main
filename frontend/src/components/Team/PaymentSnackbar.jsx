@@ -45,9 +45,16 @@ const styles1 = theme => ({
 });
 
 function MySnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
+  const {
+    classes,
+    className,
+    message,
+    onClose,
+    variant,
+    paymentAmount,
+    ...other
+  } = props;
   const Icon = variantIcon[variant];
-
   return (
     <SnackbarContent
       className={classNames(classes[variant], className)}
@@ -62,7 +69,7 @@ function MySnackbarContent(props) {
         <Checkout
           name={"TournamentBuzz"}
           description={"Team Entry Fee"}
-          amount={5}
+          amount={paymentAmount}
         />
       ]}
       {...other}
@@ -88,13 +95,14 @@ const styles2 = theme => ({
 
 class PaymentSnackbar extends React.Component {
   render() {
-    const { classes } = this.props;
+    const { classes, paymentAmount } = this.props;
     return (
       <div align="center">
         <MySnackbarContentWrapper
           variant="info"
           className={classes.margin}
           message="You have not paid the team entry fee."
+          paymentAmount={paymentAmount}
         />
       </div>
     );
