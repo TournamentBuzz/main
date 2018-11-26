@@ -19,6 +19,7 @@ router.post("", async (req, res, next) => {
         req.body.teamName,
         req.headers.id,
         req.headers.tournamentid,
+        false,
         null
       );
       const results = await sqlwrapper.createTeamMember(

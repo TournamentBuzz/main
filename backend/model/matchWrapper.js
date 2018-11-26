@@ -4,6 +4,7 @@ function createMatch(
   connection,
   location = null,
   score = null,
+  winner = null,
   matchTime = null,
   matchName = null,
   tournament,
@@ -11,11 +12,11 @@ function createMatch(
   teamB = null
 ) {
   const query =
-    "INSERT INTO matches(location, score, matchTime, matchName, tournament, teamA, teamB) VALUES(?, ?, ?, ?, ?, ?, ?);";
+    "INSERT INTO matches(location, score, winner, matchTime, matchName, tournament, teamA, teamB) VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
-      [location, score, matchTime, matchName, tournament, teamA, teamB],
+      [location, score, winner, matchTime, matchName, tournament, teamA, teamB],
       function(err, rows, fields) {
         if (err) {
           reject(err);
@@ -28,7 +29,8 @@ function createMatch(
 }
 
 function getMatch(connection, id) {
-  const query = "SELECT * FROM matches WHERE id = ?;";
+  const query =
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [id], function(err, rows, fields) {
       if (err) {
@@ -41,7 +43,8 @@ function getMatch(connection, id) {
 }
 
 function getPublishedMatch(connection, id) {
-  const query = "SELECT * FROM matches WHERE id = ? AND publish = 1;";
+  const query =
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.id = ? AND publish = 1;";
   return new Promise((resolve, reject) => {
     connection.query(query, [id], function(err, rows, fields) {
       if (err) {
@@ -58,17 +61,18 @@ function updateMatch(
   id,
   location,
   score,
+  winner,
   matchTime,
   matchName,
   teamA,
   teamB
 ) {
   const query =
-    "UPDATE matches SET location = ?, score = ?, matchTime = ?, matchName = ?, teamA = ?, teamB = ? WHERE id = ?;";
+    "UPDATE matches SET location = ?, score = ?, winner = ?, matchTime = ?, matchName = ?, teamA = ?, teamB = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
-      [location, score, matchTime, matchName, teamA, teamB, id],
+      [location, score, winner, matchTime, matchName, teamA, teamB, id],
       function(err, rows, fields) {
         if (err) {
           reject(err);
@@ -112,7 +116,7 @@ function deleteMatch(connection, id) {
 
 function getMatches(connection, tournamentId) {
   const query =
-    "SELECT * FROM matches WHERE tournament = ? ORDER BY matchTime ASC;";
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? ORDER BY matchTime ASC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], function(err, rows, fields) {
       if (err) {
@@ -126,7 +130,7 @@ function getMatches(connection, tournamentId) {
 
 function getPublishedMatches(connection, tournamentId) {
   const query =
-    "SELECT * FROM matches WHERE tournament = ? AND publish = 1 ORDER BY matchTime ASC;";
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? AND publish = 1 ORDER BY matchTime ASC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], function(err, rows, fields) {
       if (err) {

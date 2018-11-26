@@ -37,6 +37,7 @@ router.post("", async (req, res, next) => {
         req.body.matchId,
         req.body.location,
         req.body.score,
+        req.body.winner,
         req.body.matchTime,
         req.body.matchName,
         req.body.teamA,
