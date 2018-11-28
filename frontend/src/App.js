@@ -22,6 +22,8 @@ import TeamCreate from "views/TeamCreate";
 import TeamDetails from "views/TeamDetails";
 import TeamInvite from "views/TeamInvite";
 import Notifications from "views/Notifications";
+import TournamentReferees from "views/TournamentReferees";
+import TournamentRefereeAdd from "views/TournamentRefereeAdd";
 
 class App extends Component {
   render() {
@@ -75,6 +77,16 @@ class App extends Component {
                 path="/tournament/:tournamentID/team/create"
                 exact
                 component={TeamCreate}
+              />
+              <Route
+                path="/tournament/:tournamentID/referees"
+                exact
+                Component={TournamentReferees}
+              />
+              <Route
+                path="/tournament/:tournamentID/referees/add"
+                exact
+                Component={TournamentRefereeAdd}
               />
               <Route path="/team/:teamID" exact component={TeamDetails} />
               <Route path="/team/:teamID/invite" exact component={TeamInvite} />
