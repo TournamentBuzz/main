@@ -160,6 +160,41 @@ function searchTournament(connection, searchQuery) {
   });
 }
 
+function createReferee(connection, tournamentId, userEmail) {
+  const query = "INSERT INTO referees(tournamentId, userEmail) VALUES(?, ?)";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [tournamentId, userEmail], function(
+      err,
+      rows,
+      fields
+    ) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function deleteReferee(connection, tournamentId, userEmail) {
+  const query =
+    "DELETE FROM referees WHERE tournamentId = ? AND userEmail = ?;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [tournamentId, userEmail], function(
+      err,
+      rows,
+      fields
+    ) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 module.exports = {
   createTournament: createTournament,
   getTournament: getTournament,
@@ -167,5 +202,7 @@ module.exports = {
   updateTournament: updateTournament,
   updateTournamentField: updateTournamentField,
   deleteTournament: deleteTournament,
-  searchTournament: searchTournament
+  searchTournament: searchTournament,
+  createReferee: createReferee,
+  deleteReferee: deleteReferee
 };
