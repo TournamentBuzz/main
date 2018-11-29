@@ -128,6 +128,10 @@ function deleteReferee(connection, tournamentId, userEmail) {
   return tournamentWrapper.deleteReferee(connection, tournamentId, userEmail);
 }
 
+function getReferees(connection, tournamentId) {
+  return tournamentWrapper.getReferees(connection, tournamentId);
+}
+
 function createMatch(
   connection,
   location = null,
@@ -350,5 +354,6 @@ module.exports = {
   getTeamsWithTeamMembers: getTeamsWithTeamMembers,
   getInvites: getInvites,
   createReferee: createReferee,
-  deleteReferee: deleteReferee
+  deleteReferee: deleteReferee,
+  getReferees: getReferees
 };

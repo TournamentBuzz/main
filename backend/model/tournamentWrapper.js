@@ -195,6 +195,19 @@ function deleteReferee(connection, tournamentId, userEmail) {
   });
 }
 
+function getReferees(connection, tournamentId) {
+  const query = "SELECT * FROM referees WHERE tournamentId = ?;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [tournamentId], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 module.exports = {
   createTournament: createTournament,
   getTournament: getTournament,
@@ -204,5 +217,6 @@ module.exports = {
   deleteTournament: deleteTournament,
   searchTournament: searchTournament,
   createReferee: createReferee,
-  deleteReferee: deleteReferee
+  deleteReferee: deleteReferee,
+  getReferees: getReferees
 };
