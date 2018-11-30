@@ -14,13 +14,20 @@ router.post("", async (req, res, next) => {
   if (req.headers.id !== null) {
     try {
       const c = req.app.get("databaseConnection");
-      await sqlwrapper.deleteReferee(
+      const rows = await sqlwrapper.deleteReferee(
         c,
         req.headers.tournamentId,
         req.body.email
       );
-      res.status(200);
-      res.json({ removeSuccess: true });
+      if (rows.affectedRows > 0) {
+        res.status(200);
+        res.json({ removeSuccess: "success" });
+      } else {
+        const err = new Error(
+          "Something went wrong, referee cannot be deleted!"
+        );
+        next(err);
+      }
     } catch (err) {
       err.status = 500;
       next(err);
