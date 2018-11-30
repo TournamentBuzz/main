@@ -6,6 +6,9 @@ const router = express.Router();
 const sqlwrapper = require("../../model/wrapper");
 const verifyUtil = require("../../middleware/auth/verifyUtil");
 
+const submit = require("./id/submit");
+const requireAuth = require("../../../middleware/auth/verify");
+
 router.get("/:id", async function(req, res, next) {
   try {
     const c = req.app.get("databaseConnection");
@@ -47,5 +50,12 @@ router.get("/:id", async function(req, res, next) {
     next(err);
   }
 });
+
+router.use("/:id", function(req, res, next) {
+  req.headers.matchId = req.params.id;
+  next();
+});
+
+router.use("/:id/submit", requireAuth, submit);
 
 module.exports = router;
