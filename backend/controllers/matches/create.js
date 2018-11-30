@@ -28,13 +28,16 @@ router.post("", async (req, res, next) => {
         const rows = await sqlwrapper.createMatch(
           c,
           req.body.location,
-          req.body.score,
           req.body.winner,
           req.body.matchTime,
           req.body.matchName,
           req.body.tournament,
           req.body.teamA,
-          req.body.teamB
+          req.body.teamB,
+          req.body.feederA,
+          req.body.feederB,
+          req.body.scoreA,
+          req.body.scoreB
         );
         res.status(200);
         res.json({ tournamentId: req.body.tournament, matchId: rows.insertId });
