@@ -120,6 +120,18 @@ function searchTournament(connection, searchQuery) {
   return tournamentWrapper.searchTournament(connection, searchQuery);
 }
 
+function createReferee(connection, tournamentId, userEmail) {
+  return tournamentWrapper.createReferee(connection, tournamentId, userEmail);
+}
+
+function deleteReferee(connection, tournamentId, userEmail) {
+  return tournamentWrapper.deleteReferee(connection, tournamentId, userEmail);
+}
+
+function getReferees(connection, tournamentId) {
+  return tournamentWrapper.getReferees(connection, tournamentId);
+}
+
 function createMatch(
   connection,
   location = null,
@@ -360,5 +372,8 @@ module.exports = {
   getTeamMembers: getTeamMembers,
   getApprovedTeamMembers: getApprovedTeamMembers,
   getTeamsWithTeamMembers: getTeamsWithTeamMembers,
-  getInvites: getInvites
+  getInvites: getInvites,
+  createReferee: createReferee,
+  deleteReferee: deleteReferee,
+  getReferees: getReferees
 };

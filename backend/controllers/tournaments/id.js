@@ -7,6 +7,7 @@ const sqlwrapper = require("../../model/wrapper");
 
 const matches = require("./id/matches");
 const teams = require("./id/teams");
+const referees = require("./id/referees");
 
 const requireAuth = require("../../middleware/auth/verify");
 
@@ -35,5 +36,7 @@ router.use("/:id", function(req, res, next) {
 router.use("/:id/matches", requireAuth, matches);
 
 router.use("/:id/teams", teams);
+
+router.use("/:id/referees", referees);
 
 module.exports = router;
