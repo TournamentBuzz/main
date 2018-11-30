@@ -123,24 +123,30 @@ function searchTournament(connection, searchQuery) {
 function createMatch(
   connection,
   location = null,
-  score = null,
   winner = null,
   matchTime = null,
   matchName = null,
   tournament,
   teamA = null,
-  teamB = null
+  teamB = null,
+  feederA = null,
+  feederB = null,
+  scoreA = null,
+  scoreB = null
 ) {
   return matchWrapper.createMatch(
     connection,
     location,
-    score,
     winner,
     matchTime,
     matchName,
     tournament,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB,
+    scoreA,
+    scoreB
   );
 }
 
@@ -164,23 +170,29 @@ function updateMatch(
   connection,
   id,
   location,
-  score,
   winner,
   matchTime,
   matchName,
   teamA,
-  teamB
+  teamB,
+  feederA,
+  feederB,
+  scoreA,
+  scoreB
 ) {
   return matchWrapper.updateMatch(
     connection,
     id,
     location,
-    score,
     winner,
     matchTime,
     matchName,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB,
+    scoreA,
+    scoreB
   );
 }
 
