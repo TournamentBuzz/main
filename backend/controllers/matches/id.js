@@ -7,7 +7,7 @@ const sqlwrapper = require("../../model/wrapper");
 const verifyUtil = require("../../middleware/auth/verifyUtil");
 
 const submit = require("./id/submit");
-const requireAuth = require("../../../middleware/auth/verify");
+const requireAuth = require("../../middleware/auth/verify");
 
 router.get("/:id", async function(req, res, next) {
   try {
