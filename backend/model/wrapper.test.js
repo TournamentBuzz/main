@@ -447,7 +447,6 @@ describe("sql wrapper", () => {
       null,
       null,
       null,
-      null,
       testId,
       teamId,
       teamId,

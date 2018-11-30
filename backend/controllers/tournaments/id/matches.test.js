@@ -83,13 +83,16 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   const setupMatchesTableQuery = `CREATE TABLE matches (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
     location VARCHAR(255) DEFAULT NULL,
-    score VARCHAR(255) DEFAULT NULL,
     winner BOOL DEFAULT NULL,
     matchTime DATETIME DEFAULT NULL,
     matchName VARCHAR(255) DEFAULT NULL,
     tournament INT(10) NOT NULL,
     teamA INT(12) DEFAULT NULL,
     teamB INT(12) DEFAULT NULL,
+    feederA INT(12),
+    feederB INT(12),
+    scoreA INT(12),
+    scoreB INT(12),
     publish BOOL DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
@@ -158,9 +161,6 @@ describe("matches", () => {
   const loc1 = "location test";
   const loc2 = "CULC";
   const loc3 = "Russia";
-  const score1 = null;
-  const score2 = null;
-  const score3 = "0-100";
   const teamA = 1;
   const teamB = 2;
   const testMatchName1 = "Test Match";
@@ -188,11 +188,14 @@ describe("matches", () => {
       .createMatch(
         c,
         loc1,
-        score1,
         null,
         testT1DateTime,
         testMatchName1,
         tournament1,
+        null,
+        null,
+        null,
+        null,
         null,
         null
       )
@@ -203,11 +206,14 @@ describe("matches", () => {
       .createMatch(
         c,
         loc2,
-        score2,
         null,
         testT2DateTime,
         testMatchName2,
         tournament2,
+        null,
+        null,
+        null,
+        null,
         null,
         null
       )
@@ -218,13 +224,16 @@ describe("matches", () => {
       .createMatch(
         c,
         loc3,
-        score3,
         null,
         testT3DateTime,
         testMatchName3,
         tournament2,
         teamA,
-        teamB
+        teamB,
+        null,
+        null,
+        null,
+        null
       )
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);
@@ -255,7 +264,6 @@ describe("matches", () => {
         try {
           if (
             res.body.matches[0].location !== loc3 ||
-            res.body.matches[0].score !== score3 ||
             res.body.matches[0].matchTime !== tt3Date ||
             res.body.matches[0].matchName !== testMatchName3 ||
             res.body.matches[0].tournament !== tournament2 ||
@@ -266,7 +274,6 @@ describe("matches", () => {
           }
           if (
             res.body.matches[1].location !== loc2 ||
-            res.body.matches[1].score !== score2 ||
             res.body.matches[1].matchTime !== tt2Date ||
             res.body.matches[1].matchName !== testMatchName2 ||
             res.body.matches[1].tournament !== tournament2 ||
