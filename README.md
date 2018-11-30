@@ -1,6 +1,9 @@
 # TournamentBuzz
 
 ## Release Notes
+
+### Version 1.0.0
+
 ### Features for this release
 * User Registration
 * User Login
