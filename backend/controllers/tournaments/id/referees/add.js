@@ -16,7 +16,7 @@ router.post("", async (req, res, next) => {
       const c = req.app.get("databaseConnection");
       await sqlwrapper.createReferee(
         c,
-        req.headers.tournamentId,
+        req.headers.tournamentid,
         req.body.email
       );
       res.status(200);

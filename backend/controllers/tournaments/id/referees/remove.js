@@ -16,7 +16,7 @@ router.post("", async (req, res, next) => {
       const c = req.app.get("databaseConnection");
       const rows = await sqlwrapper.deleteReferee(
         c,
-        req.headers.tournamentId,
+        req.headers.tournamentid,
         req.body.email
       );
       if (rows.affectedRows > 0) {
