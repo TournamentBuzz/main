@@ -1,3 +1,28 @@
+# TournamentBuzz
+
+## Release Notes
+### Features for this release
+* User Registration
+* User Login
+* Tournament Viewing, Creation & Modification
+* Match Viewing, Creation & Modification
+* Team Viewing, Creation & Modification
+* Team Payment
+* Score Entry
+* Bracket Generation
+
+### Bug fixes since the last release
+None (first release)
+
+### Known bugs and defects
+* Match creation does not display properly in Firefox due to datetime not being supported
+* There is no way to recover lost passwords or emails
+* There is no way to change passwords
+* There is no way to export or delete your account data (GDPR)
+* No login brute force prevention
+* Unit test coverage is not 100%, and not all unit tests are fixed
+* Database has caps to the amount of data for each field and each table that could be exceeded
+
 ## Installation
 
 ### Prerequisites / Dependencies
