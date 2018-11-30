@@ -52,7 +52,7 @@ router.get("/:id", async function(req, res, next) {
 });
 
 router.use("/:id", function(req, res, next) {
-  req.headers.matchId = req.params.id;
+  req.headers.matchid = req.params.id;
   next();
 });
 

@@ -35,19 +35,19 @@ router.post("", async (req, res, next) => {
     if (referees.includes(req.headers.id)) {
       await sqlwrapper.updateMatchField(
         c,
-        req.headers.matchId,
+        req.headers.matchid,
         "scoreA",
         req.body.scoreA
       );
       await sqlwrapper.updateMatchField(
         c,
-        req.headers.matchId,
+        req.headers.matchid,
         "scoreB",
         req.body.scoreB
       );
       await sqlwrapper.updateMatchField(
         c,
-        req.headers.matchId,
+        req.headers.matchid,
         "winner",
         req.body.winner
       );
