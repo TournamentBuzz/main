@@ -10,17 +10,20 @@ Download using git: `git clone https://github.com/TournamentBuzz/main.git`
 Download Zip: https://github.com/TournamentBuzz/main/archive/master.zip
 
 ### Build/Installation Instructions
+
+`npm ci` is preferred over `npm install` because `npm install` can modify the pinned dependencies saved in the package-lock.json file.
+
 #### Frontend
 * In your terminal, open up the location you downloaded the application
 * Use the `cd` command to get into the frontend folder
 * Open package.json and set the proxy location to the location of the backend
-* Run `npm install`  to install the dependencies
+* Run `npm ci`  to install the dependencies
 * After the required modules are installed, `npm run build`
 * Copy all the files in the build folder into webroot location
 #### Backend
 * In your terminal, open up the location you downloaded the application
 * Use the `cd` command to get into the backend folder
-* Run `npm install` to install the dependencies
+* Run `npm ci` to install the dependencies
 #### Database
 * Create a mysql user with any username and password
 * Run backend/model/setup.sql under the new mysql user to initialize the tables
