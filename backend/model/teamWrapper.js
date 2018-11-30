@@ -212,7 +212,8 @@ function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
     LEFT JOIN teams ON teams.id = teamMembers.teamId
     WHERE teams.tournament = ? AND teamMembers.approved = TRUE
     GROUP BY teamId
-    HAVING numMembers = ?`;
+    HAVING numMembers = ? AND paid = TRUE
+    ORDER BY seed DESC;`;
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId, numParticipants], function(
       err,
