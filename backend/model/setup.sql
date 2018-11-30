@@ -54,6 +54,8 @@ CREATE TABLE matches (
     feederB INT(12) DEFAULT NULL,
     scoreA INT(10) DEFAULT NULL,
     scoreB INT(10) DEFAULT NULL,
+    feederAIsLoser BOOL DEFAULT FALSE,
+    feederBIsLoser BOOL DEFAULT FALSE,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
     REFERENCES tournaments(id),

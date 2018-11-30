@@ -132,7 +132,9 @@ function createMatch(
   feederA = null,
   feederB = null,
   scoreA = null,
-  scoreB = null
+  scoreB = null,
+  feederAIsLoser = false,
+  feederBIsLoser = false
 ) {
   return matchWrapper.createMatch(
     connection,
@@ -146,7 +148,9 @@ function createMatch(
     feederA,
     feederB,
     scoreA,
-    scoreB
+    scoreB,
+    feederAIsLoser,
+    feederBIsLoser
   );
 }
 
@@ -178,7 +182,9 @@ function updateMatch(
   feederA,
   feederB,
   scoreA,
-  scoreB
+  scoreB,
+  feederAIsLoser = false,
+  feederBIsLoser = false
 ) {
   return matchWrapper.updateMatch(
     connection,
@@ -192,7 +198,9 @@ function updateMatch(
     feederA,
     feederB,
     scoreA,
-    scoreB
+    scoreB,
+    feederAIsLoser,
+    feederBIsLoser
   );
 }
 

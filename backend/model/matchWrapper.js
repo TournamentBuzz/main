@@ -13,10 +13,12 @@ function createMatch(
   feederA = null,
   feederB = null,
   scoreA = null,
-  scoreB = null
+  scoreB = null,
+  feederAIsLoser = false,
+  feederBIsLoser = false
 ) {
   const query =
-    "INSERT INTO matches(location, winner, matchTime, matchName, tournament, teamA, teamB, feederA, feederB, scoreA, scoreB) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    "INSERT INTO matches(location, winner, matchTime, matchName, tournament, teamA, teamB, feederA, feederB, scoreA, scoreB, feederAIsLoser, feederBIsLoser) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
@@ -31,7 +33,9 @@ function createMatch(
         feederA,
         feederB,
         scoreA,
-        scoreB
+        scoreB,
+        feederAIsLoser,
+        feederBIsLoser
       ],
       function(err, rows, fields) {
         if (err) {
@@ -84,10 +88,12 @@ function updateMatch(
   feederA,
   feederB,
   scoreA,
-  scoreB
+  scoreB,
+  feederAIsLoser = false,
+  feederBIsLoser = false
 ) {
   const query =
-    "UPDATE matches SET location = ?, winner = ?, matchTime = ?, matchName = ?, teamA = ?, teamB = ?, feederA = ?, feederB = ?, scoreA = ?, scoreB = ? WHERE id = ?;";
+    "UPDATE matches SET location = ?, winner = ?, matchTime = ?, matchName = ?, teamA = ?, teamB = ?, feederA = ?, feederB = ?, scoreA = ?, scoreB = ?, feederAIsLoser = ?, feederBIsLoser = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(
       query,
@@ -102,6 +108,8 @@ function updateMatch(
         feederB,
         scoreA,
         scoreB,
+        feederAIsLoser,
+        feederBIsLoser,
         id
       ],
       function(err, rows, fields) {
