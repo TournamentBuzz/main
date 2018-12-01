@@ -5,27 +5,29 @@ function createTeam(
   teamName = null,
   leader,
   tournament,
+  paid = false,
   seed = null
 ) {
   const query =
-    "INSERT INTO teams(teamName, leader, tournament, seed) VALUES(?, ?, ?, ?)";
+    "INSERT INTO teams(teamName, leader, tournament, paid, seed) VALUES(?, ?, ?, ?, ?)";
   return new Promise((resolve, reject) => {
-    connection.query(query, [teamName, leader, tournament, seed], function(
-      err,
-      rows,
-      fields
-    ) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
+    connection.query(
+      query,
+      [teamName, leader, tournament, paid, seed],
+      function(err, rows, fields) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
       }
-    });
+    );
   });
 }
 
 function getTeam(connection, id) {
-  const query = "SELECT * FROM teams WHERE id = ?;";
+  const query =
+    "SELECT teams.*, entryCost FROM teams LEFT JOIN tournaments ON tournaments.id = teams.tournament WHERE teams.id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [id], function(err, rows, fields) {
       if (err) {
@@ -38,7 +40,8 @@ function getTeam(connection, id) {
 }
 
 function getTeams(connection, tournamentId) {
-  const query = "SELECT * FROM teams where tournament = ?;";
+  const query =
+    "SELECT teams.*, entryCost FROM teams LEFT JOIN tournaments ON tournaments.id = teams.tournament WHERE teams.tournament = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], function(err, rows, fields) {
       if (err) {
@@ -50,21 +53,21 @@ function getTeams(connection, tournamentId) {
   });
 }
 
-function updateTeam(connection, id, teamName, leader, tournament, seed) {
+function updateTeam(connection, id, teamName, leader, tournament, paid, seed) {
   const query =
-    "UPDATE teams SET teamName = ?, leader = ?, tournament = ?, seed = ? WHERE id = ?;";
+    "UPDATE teams SET teamName = ?, leader = ?, tournament = ?, paid = ?, seed = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [teamName, leader, tournament, seed, id], function(
-      err,
-      rows,
-      fields
-    ) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
+    connection.query(
+      query,
+      [teamName, leader, tournament, paid, seed, id],
+      function(err, rows, fields) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
       }
-    });
+    );
   });
 }
 
@@ -209,7 +212,8 @@ function getTeamsWithTeamMembers(connection, tournamentId, numParticipants) {
     LEFT JOIN teams ON teams.id = teamMembers.teamId
     WHERE teams.tournament = ? AND teamMembers.approved = TRUE
     GROUP BY teamId
-    HAVING numMembers = ?`;
+    HAVING numMembers = ? AND paid = TRUE
+    ORDER BY seed DESC;`;
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId, numParticipants], function(
       err,

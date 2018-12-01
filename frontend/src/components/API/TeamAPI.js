@@ -71,6 +71,34 @@ export default class TeamAPI {
       throw new errors.UnexpectedError();
     }
     const json = await res.json();
+    return json.inviteStatus;
+  }
+
+  static async removeFromTeam(teamId, email) {
+    const res = await fetch(`/teams/remove`, {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId, email })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.kickStatus;
+  }
+
+  static async promote(teamId, email) {
+    const res = await fetch(`/teams/promote`, {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId, email })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
     return json.promoteStatus;
   }
 

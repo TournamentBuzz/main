@@ -15,5 +15,8 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT || "3306",
     schema: process.env.DB_NAME || "tournamentbuzz"
+  },
+  stripeConfig: {
+    secretKey: process.env.STRIPE_SECRET_KEY
   }
 };

@@ -17,5 +17,4 @@ INSERT INTO `teams` (`teamName`, `leader`, `tournament`, `seed`) VALUES ('The B 
 INSERT INTO `teamMembers` (`userEmail`, `teamId`, `invited`, `requested`, `approved`) VALUES ('a@b.co', 2, false, true, true);
 
 # creates a match
-INSERT INTO `matches` (`location`, `score`, `matchTime`, `matchName`, `tournament`, `teamA`, `teamB`) VALUES ('CULC 152', null, '2019-05-01 14:00:00', 'Finals', 1, 1, 2);
-
+INSERT INTO `matches` (`location`, `matchTime`, `matchName`, `tournament`, `teamA`, `teamB`) VALUES ('CULC 152', '2019-05-01 14:00:00', 'Finals', 1, 1, 2);

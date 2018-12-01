@@ -45,6 +45,7 @@ class TeamDetails extends React.Component {
       paid: null,
       seed: null,
       entryCost: null,
+      seed: null,
       membersList: null,
       currentUser: Authentication.getUID()
     };
