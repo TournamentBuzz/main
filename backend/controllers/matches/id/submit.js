@@ -13,7 +13,7 @@ router.post("", async (req, res, next) => {
   }
   try {
     const c = req.app.get("databaseConnection");
-    const matchObject = await sqlwrapper.getMatch(c, req.body.matchid);
+    const matchObject = await sqlwrapper.getMatch(c, req.headers.matchid);
     if (!matchObject[0]) {
       const err = new Error("Match does not exist!");
       err.status = 404;
