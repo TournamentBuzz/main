@@ -3,7 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const sqlwrapper = require("../../../model/wrapper");
-const verifyUtil = require("../../middleware/auth/verifyUtil");
+const verifyUtil = require("../../../../middleware/auth/verifyUtil");
 
 router.get("/", async function(req, res, next) {
   try {
