@@ -196,11 +196,16 @@ function getDependentMatches(connection, matchId) {
 async function reloadMatches(connection, matchId) {
   const matches = await getDependentMatches(connection, matchId);
   const updatedMatch = await getMatch(connection, matchId);
-  let winner = updatedMatch[0].teamA;
-  let loser = updateMatch[0].teamB;
+  let winner;
+  let loser;
   if (updatedMatch[0].winner === 1) {
+    winner = updateMatch[0].teamA;
+    loser = updateMatch[0].teamB;
+  } else if (updatedMatch[0].winner === 2) {
     winner = updateMatch[0].teamB;
     loser = updateMatch[0].teamA;
+  } else {
+    return;
   }
   try {
     for (let i = 0; i < matches.length; i++) {

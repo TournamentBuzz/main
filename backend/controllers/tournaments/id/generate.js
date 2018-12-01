@@ -18,13 +18,14 @@ router.post("/", async function(req, res, next) {
       return;
     }
     if (req.headers.id === tournamentObject[0].creator) {
-      const validTeams = sqlwrapper.getTeamsWithTeamMembers(
+      const validTeams = await sqlwrapper.getTeamsWithTeamMembers(
         c,
         tournamentObject[0].id,
         tournamentObject[0].maxTeamSize
       );
+
       if (tournamentObject[0].tournamentType === "Single Elim") {
-        await generateSingleElimBracket(validTeams);
+        await generateSingleElimBracket(c, validTeams, tournamentObject[0].id);
         res.status(200);
         res.json({ generationSuccess: true });
       } else if (tournamentObject[0].tournamentType === "Double Elim") {
@@ -32,9 +33,9 @@ router.post("/", async function(req, res, next) {
         err.status = 400;
         next(err);
       } else if (tournamentObject[0].tournamentType === "Round-robin") {
-        const err = new Error("Bracket type does not exist!");
-        err.status = 400;
-        next(err);
+        await generateRoundRobinMatches(c, validTeams, tournamentObject[0].id);
+        res.status(200);
+        res.json({ generationSuccess: true });
       } else {
         const err = new Error("Bracket type does not exist!");
         err.status = 400;
@@ -69,13 +70,54 @@ async function generateSingleElimBracket(c, teams, tournamentId) {
   }
 }
 
+async function generateRoundRobinMatches(c, teams, tournamentId) {
+  for (let i = 0; i < teams.length; i++) {
+    for (let j = i; j < teams.length; j++) {
+      const match = {
+        id: null,
+        location: null,
+        winner: 0,
+        matchTime: null,
+        matchName: null,
+        tournament: tournamentId,
+        teamA: null,
+        teamB: null,
+        feederA: null,
+        feederB: null,
+        scoreA: null,
+        scoreB: null,
+        feederAIsLoser: false,
+        feederBIsLoser: false
+      };
+      match.teamA = teams[i].id;
+      match.teamB = teams[j].id;
+      await sqlwrapper.createMatch(
+        c,
+        match.location,
+        match.winner,
+        match.matchTime,
+        match.matchName,
+        match.tournament,
+        match.teamA,
+        match.teamB,
+        match.feederA,
+        match.feederB,
+        match.scoreA,
+        match.scoreB,
+        match.feederAIsLoser,
+        match.feederBIsLoser
+      );
+    }
+  }
+}
+
 async function generateMatchLayer(connection, matches, tournamentId) {
   const nextLayer = [];
   for (let x = 0; x < Math.floor(matches.length / 2); x++) {
     const match = {
       id: null,
       location: null,
-      winner: null,
+      winner: 0,
       matchTime: null,
       matchName: null,
       tournament: tournamentId,
@@ -132,7 +174,7 @@ async function generateMatchLayerFromTeams(connection, teams, tournamentId) {
     const match = {
       id: null,
       location: null,
-      winner: null,
+      winner: 0,
       matchTime: null,
       matchName: null,
       tournament: tournamentId,
