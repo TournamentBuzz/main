@@ -1,5 +1,7 @@
 "use strict";
 
+const teamWrapper = require("./teamWrapper");
+
 function createMatch(
   connection,
   location = null,
@@ -51,11 +53,39 @@ function getMatch(connection, id) {
   const query =
     "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.id = ?;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [id], function(err, rows, fields) {
+    connection.query(query, [id], async function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
-        resolve(rows);
+        const matches = [];
+        const teamA = await teamWrapper.getTeam(connection, rows[0].teamA)[0];
+        const teamB = await teamWrapper.getTeam(connection, rows[0].teamB)[0];
+        const teamAObject = {
+          teamId: teamA.id,
+          teamName: teamA.teamName
+        };
+        const teamBObject = {
+          teamId: teamB.id,
+          teamName: teamB.teamName
+        };
+        const match = {
+          id: rows[0].id,
+          location: rows[0].location,
+          winner: rows[0].winner,
+          matchTime: rows[0].matchTime,
+          matchName: rows[0].matchName,
+          tournament: rows[0].tournamentId,
+          teamA: teamAObject,
+          teamB: teamBObject,
+          feederA: rows[0].feederA,
+          feederB: rows[0].feederB,
+          scoreA: rows[0].scoreA,
+          scoreB: rows[0].scoreB,
+          feederAIsLoser: rows[0].feederAIsLoser,
+          feederBIsLoser: rows[0].feederBIsLoser
+        };
+        matches.push(match);
+        resolve(matches);
       }
     });
   });
@@ -156,11 +186,41 @@ function getMatches(connection, tournamentId) {
   const query =
     "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? ORDER BY matchTime ASC;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [tournamentId], function(err, rows, fields) {
+    connection.query(query, [tournamentId], async function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
-        resolve(rows);
+        const matches = [];
+        for (let i = 0; i < rows.length; i++) {
+          const teamA = await teamWrapper.getTeam(connection, rows[i].teamA)[0];
+          const teamB = await teamWrapper.getTeam(connection, rows[i].teamB)[0];
+          const teamAObject = {
+            teamId: teamA.id,
+            teamName: teamA.teamName
+          };
+          const teamBObject = {
+            teamId: teamB.id,
+            teamName: teamB.teamName
+          };
+          const match = {
+            id: rows[i].id,
+            location: rows[i].location,
+            winner: rows[i].winner,
+            matchTime: rows[i].matchTime,
+            matchName: rows[i].matchName,
+            tournament: rows[i].tournamentId,
+            teamA: teamAObject,
+            teamB: teamBObject,
+            feederA: rows[i].feederA,
+            feederB: rows[i].feederB,
+            scoreA: rows[i].scoreA,
+            scoreB: rows[i].scoreB,
+            feederAIsLoser: rows[i].feederAIsLoser,
+            feederBIsLoser: rows[i].feederBIsLoser
+          };
+          matches.push(match);
+        }
+        resolve(matches);
       }
     });
   });
@@ -170,11 +230,41 @@ function getPublishedMatches(connection, tournamentId) {
   const query =
     "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? AND publish = 1 ORDER BY matchTime ASC;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [tournamentId], function(err, rows, fields) {
+    connection.query(query, [tournamentId], async function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
-        resolve(rows);
+        const matches = [];
+        for (let i = 0; i < rows.length; i++) {
+          const teamA = await teamWrapper.getTeam(connection, rows[i].teamA)[0];
+          const teamB = await teamWrapper.getTeam(connection, rows[i].teamB)[0];
+          const teamAObject = {
+            teamId: teamA.id,
+            teamName: teamA.teamName
+          };
+          const teamBObject = {
+            teamId: teamB.id,
+            teamName: teamB.teamName
+          };
+          const match = {
+            id: rows[i].id,
+            location: rows[i].location,
+            winner: rows[i].winner,
+            matchTime: rows[i].matchTime,
+            matchName: rows[i].matchName,
+            tournament: rows[i].tournamentId,
+            teamA: teamAObject,
+            teamB: teamBObject,
+            feederA: rows[i].feederA,
+            feederB: rows[i].feederB,
+            scoreA: rows[i].scoreA,
+            scoreB: rows[i].scoreB,
+            feederAIsLoser: rows[i].feederAIsLoser,
+            feederBIsLoser: rows[i].feederBIsLoser
+          };
+          matches.push(match);
+        }
+        resolve(matches);
       }
     });
   });
@@ -216,6 +306,7 @@ async function reloadMatches(connection, matchId) {
           updateMatchField(connection, matches[i].id, "teamA", winner);
         }
       } else {
+        // eslint-ignore-next-line
         if (matches[i].feederBIsLoser === 1) {
           updateMatchField(connection, matches[i].id, "teamB", loser);
         } else {

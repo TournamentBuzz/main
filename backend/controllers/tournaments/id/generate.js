@@ -91,6 +91,9 @@ async function generateRoundRobinMatches(c, teams, tournamentId) {
       };
       match.teamA = teams[i].id;
       match.teamB = teams[j].id;
+      const teamA = await sqlwrapper.getTeam(c, match.teamA)[0];
+      const teamB = await sqlwrapper.getTeam(c, match.teamB)[0];
+      match.matchName = teamA.teamName + " vs " + teamB.teamName;
       await sqlwrapper.createMatch(
         c,
         match.location,
@@ -132,6 +135,11 @@ async function generateMatchLayer(connection, matches, tournamentId) {
     };
     match.feederA = matches[x].id;
     match.feederB = matches[matches.length - (x + 1)].id;
+    match.matchName =
+      "Winner of Match " +
+      match.feederA +
+      " vs Winner of Match " +
+      match.feederB;
     if (matches[x].winner !== 0) {
       if (matches[x].winner === 1) {
         match.teamA = matches[x].teamA;
@@ -192,6 +200,12 @@ async function generateMatchLayerFromTeams(connection, teams, tournamentId) {
     if (match.teamB === null) {
       // Set the winner to the first team
       match.winner = 1;
+      const teamA = await sqlwrapper.getTeam(connection, match.teamA)[0];
+      match.matchName = "BYE for " + teamA.teamName;
+    } else {
+      const teamA = await sqlwrapper.getTeam(connection, match.teamA)[0];
+      const teamB = await sqlwrapper.getTeam(connection, match.teamB)[0];
+      match.matchName = teamA.teamName + " vs " + teamB.teamName;
     }
     const created = await sqlwrapper.createMatch(
       connection,
