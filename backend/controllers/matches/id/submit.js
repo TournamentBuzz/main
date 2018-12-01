@@ -51,6 +51,9 @@ router.post("", async (req, res, next) => {
         "winner",
         req.body.winner
       );
+      if (req.body.winner !== 0) {
+        await sqlwrapper.reloadMatches(c, req.headers.matchid);
+      }
       res.status(200);
       res.json({ scoreSubmitSuccess: true });
     } else {
