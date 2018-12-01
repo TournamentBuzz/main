@@ -5,7 +5,7 @@ const router = express.Router();
 const sqlwrapper = require("../../../model/wrapper");
 
 router.post("", async (req, res, next) => {
-  if (!req.body || req.headers.matchId < 0) {
+  if (!req.body || req.headers.matchid < 0) {
     const err = new Error("Malformed Request");
     err.status = 400;
     next(err);
@@ -13,7 +13,7 @@ router.post("", async (req, res, next) => {
   }
   try {
     const c = req.app.get("databaseConnection");
-    const matchObject = await sqlwrapper.getMatch(c, req.body.matchId);
+    const matchObject = await sqlwrapper.getMatch(c, req.body.matchid);
     if (!matchObject[0]) {
       const err = new Error("Match does not exist!");
       err.status = 404;
