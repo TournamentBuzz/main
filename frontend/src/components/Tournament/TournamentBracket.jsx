@@ -22,7 +22,11 @@ function makeMatchesObject(matchesList) {
     if (score != null) {
       side.score = { score };
     }
-    if (feeder) {
+    const match = idToMatch.get(feeder);
+    if (
+      feeder &&
+      (match.feederA || match.feederB || (match.teamA && match.teamB))
+    ) {
       const match = idToMatch.get(feeder);
       side.seed = {
         rank: 1,
@@ -81,7 +85,7 @@ function isRoundRobin(matchesList) {
 }
 
 class TournamentBracket extends React.Component {
-  render() {
+  renderBracket() {
     const { matchesList } = this.props;
     if (matchesList.length > 0 && !isRoundRobin(matchesList)) {
       const matchesObject = makeMatchesObject(matchesList);
@@ -145,6 +149,14 @@ class TournamentBracket extends React.Component {
       );
     }
     return <h1>No Matches</h1>;
+  }
+
+  render() {
+    try {
+      return this.renderBracket();
+    } catch (error) {
+      return <h1>Error displaying tournament bracket</h1>;
+    }
   }
 }
 

@@ -22,7 +22,6 @@ class MatchCard extends React.Component {
           tournamentMatch.matchTime.slice(0, 19).replace("T", " ") + " UTC"
         ).toLocaleString()
       : "";
-    console.log(tournamentMatch);
     const matchName =
       `Match ${tournamentMatch.id}: ` +
       (tournamentMatch.matchName ||

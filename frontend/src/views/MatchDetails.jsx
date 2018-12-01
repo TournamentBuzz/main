@@ -45,10 +45,8 @@ class MatchDetails extends React.Component {
       location: null,
       matchTime: null,
       matchName: null,
-      teamA: null,
-      teamB: null,
-      teamAName: null,
-      teamBName: null,
+      teamA: {},
+      teamB: {},
       published: null,
       isReferee: false,
       scoreButtonText: "Enter Scores",
@@ -112,11 +110,12 @@ class MatchDetails extends React.Component {
       return;
     }
     details = details[0];
-    details.matchTime = new Date(
-      details.matchTime.slice(0, 19).replace("T", " ") + " UTC"
-    ).toLocaleString();
+    details.matchTime = details.matchTime
+      ? new Date(
+          details.matchTime.slice(0, 19).replace("T", " ") + " UTC"
+        ).toLocaleString()
+      : "";
     details.winner = "" + details.winner;
-    console.log(details.winner);
     this.setState(details);
   }
 
@@ -196,11 +195,13 @@ class MatchDetails extends React.Component {
           <Grid container>
             <Grid item xs={4}>
               <Typography variant="headline" className={classes.detailsText}>
-                <b>{this.state.teamAName}</b>
+                <b>{this.state.teamA ? this.state.teamA.teamName : "TBD"}</b>
               </Typography>
               {this.state.winner === "1" ? (
                 <Typography variant="caption" style={{ color: "#32CD32" }}>
-                  Winner
+                  <h2>
+                    <b>Winner</b>
+                  </h2>
                 </Typography>
               ) : null}
               {this.state.enteringScores ? (
@@ -225,10 +226,10 @@ class MatchDetails extends React.Component {
                 <b>VS</b>
               </Typography>
               <Typography variant="body1" className={classes.detailsText}>
-                {this.state.matchTime}
+                <b>Time:</b> {this.state.matchTime || "TBD"}
               </Typography>
               <Typography variant="body1" className={classes.detailsText}>
-                {this.state.location}
+                <b>Location:</b> {this.state.location || "TBD"}
               </Typography>
               {this.state.enteringScores ? (
                 <FormControl>
@@ -239,8 +240,12 @@ class MatchDetails extends React.Component {
                     onChange={e => this.setState({ winner: e.target.value })}
                   >
                     <MenuItem value="0">No winner</MenuItem>
-                    <MenuItem value="1">{this.state.teamAName}</MenuItem>
-                    <MenuItem value="2">{this.state.teamBName}</MenuItem>
+                    <MenuItem value="1">
+                      {this.state.teamA ? this.state.teamA.teamName : "TBD"}
+                    </MenuItem>
+                    <MenuItem value="2">
+                      {this.state.teamB ? this.state.teamB.teamName : "TBD"}
+                    </MenuItem>
                   </Select>
                 </FormControl>
               ) : null}
@@ -259,11 +264,13 @@ class MatchDetails extends React.Component {
             </Grid>
             <Grid item xs={4}>
               <Typography variant="headline" className={classes.detailsText}>
-                <b>{this.state.teamBName}</b>
+                <b>{this.state.teamB ? this.state.teamB.teamName : "TBD"}</b>
               </Typography>
               {this.state.winner === "2" ? (
                 <Typography variant="caption" style={{ color: "#32CD32" }}>
-                  Winner
+                  <h2>
+                    <b>Winner</b>
+                  </h2>
                 </Typography>
               ) : null}
               {this.state.enteringScores ? (

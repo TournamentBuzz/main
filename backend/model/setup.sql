@@ -62,11 +62,7 @@ CREATE TABLE matches (
     FOREIGN KEY(teamA)
     REFERENCES teams(id),
     FOREIGN KEY(teamB)
-    REFERENCES teams(id),
-    FOREIGN KEY(feederA)
-    REFERENCES matches(id),
-    FOREIGN KEY(feederB)
-    REFERENCES matches(id)
+    REFERENCES teams(id)
 );
 
 CREATE TABLE teamMembers (

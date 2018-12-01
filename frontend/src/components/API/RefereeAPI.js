@@ -5,7 +5,7 @@ export default class RefereeAPI {
   static async getReferees(tournamentId) {
     const res = await fetch(`/tournaments/id/${tournamentId}/referees`, {
       method: "GET",
-      headers: Authentication.withoutJWT()
+      headers: Authentication.withJWT()
     });
     if (!res.ok) {
       throw new errors.UnexpectedError();

@@ -16,6 +16,10 @@ import MatchAPI from "components/API/MatchAPI";
 import TeamAPI from "components/API/TeamAPI";
 import Authentication from "components/API/Authentication";
 
+function isIntOrEmpty(possibleIntString) {
+  return !possibleIntString || Number.isSafeInteger(Number(possibleIntString));
+}
+
 class MatchCreate extends React.Component {
   constructor(props) {
     super(props);
@@ -29,7 +33,9 @@ class MatchCreate extends React.Component {
       teamA: "",
       teamB: "",
       published: false,
-      teams: []
+      teams: [],
+      feederA: "",
+      feederB: ""
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -43,17 +49,26 @@ class MatchCreate extends React.Component {
 
   async handleFormSubmit(event) {
     event.preventDefault();
+    this.setState({ submitted: true });
+    const teamA = this.state.teamA;
+    const teamB = this.state.teamB;
+    const feederA = this.state.feederA;
+    const feederB = this.state.feederB;
+    if (![teamA, teamB, feederA, feederB].every(isIntOrEmpty)) {
+      return;
+    }
     const newMatchID = await MatchAPI.createMatch(
       this.state.tournamentId,
       this.state.location,
-      this.state.details,
       this.state.matchName,
       new Date(this.state.matchTime)
         .toISOString()
         .slice(0, 19)
         .replace("T", " "),
-      this.state.teamA,
-      this.state.teamB
+      this.state.teamA ? this.state.teamA : null,
+      this.state.teamB ? this.state.teamB : null,
+      this.state.feederA ? this.state.feederA : null,
+      this.state.feederB ? this.state.feederB : null
     );
     if (this.state.published) {
       await MatchAPI.publishMatch(newMatchID, true);
@@ -77,9 +92,11 @@ class MatchCreate extends React.Component {
   }
 
   renderTeamsOptions() {
-    return this.state.teams.map(
-      ({ id, teamName }) => <MenuItem key={id} value={id}>{teamName}</MenuItem>
-    );
+    return this.state.teams.map(({ id, teamName }) => (
+      <MenuItem key={id} value={id}>
+        {teamName}
+      </MenuItem>
+    ));
   }
 
   render() {
@@ -159,27 +176,61 @@ class MatchCreate extends React.Component {
             <div>
               <FormControl>
                 <InputLabel>Team A</InputLabel>
-                <Select
+                <Input
                   value={this.state.teamA}
-                  required={true}
-                  autoWidth={true}
-                  displayEmpty={true}
                   onChange={e => this.setState({ teamA: e.target.value })}
-                >
-                  {this.renderTeamsOptions()}
-                </Select>
+                  id="teamA"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !isIntOrEmpty(this.state.teamA)
+                    ? "Team ID must be a number"
+                    : ""}
+                </FormHelperText>
               </FormControl>
               <FormControl>
                 <InputLabel>Team B</InputLabel>
-                <Select
+                <Input
                   value={this.state.teamB}
-                  required={true}
-                  autoWidth={true}
-                  displayEmpty={true}
                   onChange={e => this.setState({ teamB: e.target.value })}
-                >
-                  {this.renderTeamsOptions()}
-                </Select>
+                  id="teamB"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !isIntOrEmpty(this.state.teamB)
+                    ? "Team ID must be a number"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+            <div>
+              <FormControl>
+                <InputLabel>Feeder Match A</InputLabel>
+                <Input
+                  value={this.state.feederA}
+                  onChange={e => this.setState({ feederA: e.target.value })}
+                  id="feederA"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !isIntOrEmpty(this.state.feederA)
+                    ? "Feeder match ID must be a number"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+              <FormControl>
+                <InputLabel>Feeder Match B</InputLabel>
+                <Input
+                  value={this.state.feederB}
+                  onChange={e => this.setState({ feederB: e.target.value })}
+                  id="feederB"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !isIntOrEmpty(this.state.feederB)
+                    ? "Feeder match ID must be a number"
+                    : ""}
+                </FormHelperText>
               </FormControl>
             </div>
             <div>

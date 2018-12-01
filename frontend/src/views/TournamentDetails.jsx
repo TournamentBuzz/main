@@ -110,7 +110,7 @@ class TournamentDetails extends React.Component {
 
   async generateBracket() {
     await TournamentAPI.generateBracket(this.state.tournamentID);
-    this.props.history.push(`/tournament/${this.state.tournamentID}`);
+    window.location.reload();
   }
 
   render() {

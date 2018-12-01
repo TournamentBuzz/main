@@ -15,6 +15,10 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import MatchAPI from "components/API/MatchAPI";
 import Authentication from "components/API/Authentication";
 
+function isIntOrEmpty(possibleIntString) {
+  return !possibleIntString || Number.isSafeInteger(Number(possibleIntString));
+}
+
 class MatchEdit extends React.Component {
   constructor(props) {
     super(props);
@@ -26,8 +30,10 @@ class MatchEdit extends React.Component {
       location: "",
       matchName: "",
       matchTime: "",
-      teamA: "",
-      teamB: "",
+      teamA: {},
+      teamB: {},
+      feederA: "",
+      feederB: "",
       publish: false,
       initialPublish: false
     };
@@ -51,15 +57,17 @@ class MatchEdit extends React.Component {
       return;
     }
     details = details[0];
-    let date = new Date(
-      details.matchTime.slice(0, 19).replace("T", " ") + " UTC"
-    );
+    let date = details.matchTime
+      ? new Date(details.matchTime.slice(0, 19).replace("T", " ") + " UTC")
+      : new Date();
     details.matchTime = new Date(
       date.getTime() - date.getTimezoneOffset() * 60000
     )
       .toISOString()
       .slice(0, 19);
     details.publish = details.publish === 1 ? true : false;
+    details.teamA = details.teamA || {};
+    details.teamB = details.teamB || {};
     this.setState(details);
     this.setState({ initialPublish: details.publish });
   }
@@ -72,18 +80,27 @@ class MatchEdit extends React.Component {
   }
 
   async handleFormSubmit(event) {
+    this.setState({ submitted: true });
     event.preventDefault();
+    const teamA = this.state.teamA.teamId;
+    const teamB = this.state.teamB.teamId;
+    const feederA = this.state.feederA;
+    const feederB = this.state.feederB;
+    if (![teamA, teamB, feederA, feederB].every(isIntOrEmpty)) {
+      return;
+    }
     await MatchAPI.editMatch(
       this.state.matchId,
       this.state.location,
-      this.state.details,
       this.state.matchName,
       new Date(this.state.matchTime)
         .toISOString()
         .slice(0, 19)
         .replace("T", " "),
-      this.state.teamA,
-      this.state.teamB
+      teamA ? Number(teamA) : null,
+      teamB ? Number(teamB) : null,
+      feederA ? Number(feederA) : null,
+      feederB ? Number(feederB) : null
     );
     if (this.state.publish !== this.state.initialPublish) {
       await MatchAPI.publishMatch(this.state.matchId, this.state.publish);
@@ -169,30 +186,64 @@ class MatchEdit extends React.Component {
               <FormControl>
                 <InputLabel>Team A</InputLabel>
                 <Input
-                  value={this.state.teamA}
-                  required={true}
-                  onChange={e => this.setState({ teamA: e.target.value })}
+                  value={this.state.teamA.teamId}
+                  onChange={e =>
+                    this.setState({ teamA: { teamId: e.target.value } })
+                  }
                   id="teamA"
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.teamA
-                    ? "Team A is required"
+                  {this.state.submitted &&
+                  !isIntOrEmpty(this.state.teamA.teamId)
+                    ? "Team ID must be a number"
                     : ""}
                 </FormHelperText>
               </FormControl>
               <FormControl>
                 <InputLabel>Team B</InputLabel>
                 <Input
-                  value={this.state.teamB}
-                  required={true}
-                  onChange={e => this.setState({ teamB: e.target.value })}
+                  value={this.state.teamB.teamId}
+                  onChange={e =>
+                    this.setState({ teamB: { teamId: e.target.value } })
+                  }
                   id="teamB"
                   fullWidth={true}
                 />
                 <FormHelperText>
-                  {this.state.submitted && !this.state.teamB
-                    ? "Team B is required"
+                  {this.state.submitted &&
+                  !isIntOrEmpty(this.state.teamB.teamId)
+                    ? "Team ID must be a number"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+            </div>
+            <div>
+              <FormControl>
+                <InputLabel>Feeder Match A</InputLabel>
+                <Input
+                  value={this.state.feederA}
+                  onChange={e => this.setState({ feederA: e.target.value })}
+                  id="feederA"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !isIntOrEmpty(this.state.feederA)
+                    ? "Feeder match ID must be a number"
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+              <FormControl>
+                <InputLabel>Feeder Match B</InputLabel>
+                <Input
+                  value={this.state.feederB}
+                  onChange={e => this.setState({ feederB: e.target.value })}
+                  id="feederB"
+                  fullWidth={true}
+                />
+                <FormHelperText>
+                  {this.state.submitted && !isIntOrEmpty(this.state.feederB)
+                    ? "Feeder match ID must be a number"
                     : ""}
                 </FormHelperText>
               </FormControl>

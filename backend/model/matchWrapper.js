@@ -60,26 +60,25 @@ function getMatch(connection, id) {
         const matches = [];
         let teamAObject = null;
         let teamBObject = null;
-        try {
-          const teamA = (await teamWrapper.getTeam(
-            connection,
-            rows[0].teamA
-          ))[0];
-          const teamB = (await teamWrapper.getTeam(
-            connection,
-            rows[0].teamB
-          ))[0];
+        const teamA = (await teamWrapper.getTeam(
+          connection,
+          rows[0].teamA
+        ))[0];
+        const teamB = (await teamWrapper.getTeam(
+          connection,
+          rows[0].teamB
+        ))[0];
+        if (teamA) {
           teamAObject = {
             teamId: teamA.id,
             teamName: teamA.teamName
           };
-          teamBObject = {
+        }
+        if (teamB) {
+        teamBObject = {
             teamId: teamB.id,
             teamName: teamB.teamName
           };
-        } catch (e) {
-          teamAObject = null;
-          teamBObject = null;
         }
         const match = {
           id: rows[0].id,
@@ -87,7 +86,7 @@ function getMatch(connection, id) {
           winner: rows[0].winner,
           matchTime: rows[0].matchTime,
           matchName: rows[0].matchName,
-          tournament: rows[0].tournamentId,
+          tournament: rows[0].tournament,
           teamA: teamAObject,
           teamB: teamBObject,
           feederA: rows[0].feederA,
@@ -108,11 +107,51 @@ function getPublishedMatch(connection, id) {
   const query =
     "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.id = ? AND publish = 1;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [id], function(err, rows, fields) {
+    connection.query(query, [id], async function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
-        resolve(rows);
+        const matches = [];
+        let teamAObject = null;
+        let teamBObject = null;
+        const teamA = (await teamWrapper.getTeam(
+          connection,
+          rows[0].teamA
+        ))[0];
+        const teamB = (await teamWrapper.getTeam(
+          connection,
+          rows[0].teamB
+        ))[0];
+        if (teamA) {
+          teamAObject = {
+            teamId: teamA.id,
+            teamName: teamA.teamName
+          };
+        }
+        if (teamB) {
+        teamBObject = {
+            teamId: teamB.id,
+            teamName: teamB.teamName
+          };
+        }
+        const match = {
+          id: rows[0].id,
+          location: rows[0].location,
+          winner: rows[0].winner,
+          matchTime: rows[0].matchTime,
+          matchName: rows[0].matchName,
+          tournament: rows[0].tournament,
+          teamA: teamAObject,
+          teamB: teamBObject,
+          feederA: rows[0].feederA,
+          feederB: rows[0].feederB,
+          scoreA: rows[0].scoreA,
+          scoreB: rows[0].scoreB,
+          feederAIsLoser: rows[0].feederAIsLoser,
+          feederBIsLoser: rows[0].feederBIsLoser
+        };
+        matches.push(match);
+        resolve(matches);
       }
     });
   });
@@ -207,26 +246,25 @@ function getMatches(connection, tournamentId) {
         for (let i = 0; i < rows.length; i++) {
           let teamAObject = null;
           let teamBObject = null;
-          try {
-            const teamA = (await teamWrapper.getTeam(
-              connection,
-              rows[i].teamA
-            ))[0];
-            const teamB = (await teamWrapper.getTeam(
-              connection,
-              rows[i].teamB
-            ))[0];
+          const teamA = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamA
+          ))[0];
+          const teamB = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamB
+          ))[0];
+          if (teamA) {
             teamAObject = {
               teamId: teamA.id,
               teamName: teamA.teamName
             };
-            teamBObject = {
+          }
+          if (teamB) {
+          teamBObject = {
               teamId: teamB.id,
               teamName: teamB.teamName
             };
-          } catch (e) {
-            teamAObject = null;
-            teamBObject = null;
           }
           const match = {
             id: rows[i].id,
@@ -264,26 +302,25 @@ function getPublishedMatches(connection, tournamentId) {
         for (let i = 0; i < rows.length; i++) {
           let teamAObject = null;
           let teamBObject = null;
-          try {
-            const teamA = (await teamWrapper.getTeam(
-              connection,
-              rows[i].teamA
-            ))[0];
-            const teamB = (await teamWrapper.getTeam(
-              connection,
-              rows[i].teamB
-            ))[0];
+          const teamA = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamA
+          ))[0];
+          const teamB = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamB
+          ))[0];
+          if (teamA) {
             teamAObject = {
               teamId: teamA.id,
               teamName: teamA.teamName
             };
-            teamBObject = {
+          }
+          if (teamB) {
+          teamBObject = {
               teamId: teamB.id,
               teamName: teamB.teamName
             };
-          } catch (e) {
-            teamAObject = null;
-            teamBObject = null;
           }
           const match = {
             id: rows[i].id,
@@ -328,11 +365,11 @@ async function reloadMatches(connection, matchId) {
   let winner;
   let loser;
   if (updatedMatch[0].winner === 1) {
-    winner = updateMatch[0].teamA;
-    loser = updateMatch[0].teamB;
+    winner = updatedMatch[0].teamA.teamId;
+    loser = updatedMatch[0].teamB.teamId;
   } else if (updatedMatch[0].winner === 2) {
-    winner = updateMatch[0].teamB;
-    loser = updateMatch[0].teamA;
+    winner = updatedMatch[0].teamB.teamId;
+    loser = updatedMatch[0].teamA.teamId;
   } else {
     return;
   }
@@ -351,6 +388,11 @@ async function reloadMatches(connection, matchId) {
         } else {
           updateMatchField(connection, matches[i].id, "teamB", winner);
         }
+      }
+      const updatedMatch = (await getMatch(connection, matches[i].id))[0];
+      if (updatedMatch.teamA && updatedMatch.teamB) {
+        const updatedMatchName = updatedMatch.teamA.teamName + " vs " + updatedMatch.teamB.teamName;
+        updateMatchField(connection, matches[i].id, "matchName", updatedMatchName);
       }
     }
     return true;
