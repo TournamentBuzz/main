@@ -44,7 +44,9 @@ router.post("", async (req, res, next) => {
         req.body.feederA,
         req.body.feederB,
         req.body.scoreA,
-        req.body.scoreB
+        req.body.scoreB,
+        req.body.feederAIsLoser,
+        req.body.feederBIsLoser
       );
       res.status(200);
       res.json({
