@@ -2,7 +2,7 @@ import * as errors from "./errors";
 import Authentication from "./Authentication";
 
 export default class TeamAPI {
-  createTeam(tournamentId, teamName) {
+  static async createTeam(tournamentId, teamName) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/tournaments/id/${tournamentId}/teams/create`, {
       method: "POST",
@@ -17,24 +17,9 @@ export default class TeamAPI {
     return json.teamId;
   }
 
-  static async editTeam(tournamentId, teamId, teamName) {
+  static async withdrawTeam(tournamentId, teamId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/teams/edit`, {
-      method: "POST",
-      headers: Authentication.withJWT(),
-      body: JSON.stringify({ teamId, teamName })
-    });
-
-    if (!res.ok) {
-      throw new errors.UnexpectedError();
-    }
-    const json = await res.json();
-    return json.teamId;
-  }
-
-  static async deleteTeam(tournamentId, teamId) {
-    if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/teams/delete`, {
+    const res = await fetch(`/tournaments/id/${tournamentId}/teams/withdraw`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ teamId })
@@ -44,19 +29,140 @@ export default class TeamAPI {
       throw new errors.UnexpectedError();
     }
     const json = await res.json();
-    return json.deleteStatus;
+    return json.withdrawStatus;
   }
 
-  static async getTeams(tournamentId) {
-    const res = await fetch(`/tournaments/id/${tournamentId}/teams`, {
-      method: "GET",
-      headers: Authentication.withoutJWT()
+  static async inviteToTeam(teamId, email) {
+    const res = await fetch(`/teams/invite`, {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId, email })
     });
 
     if (!res.ok) {
       throw new errors.UnexpectedError();
     }
     const json = await res.json();
+    return json.inviteStatus;
+  }
+
+  static async removeFromTeam(teamId, email) {
+    const res = await fetch(`/teams/remove`, {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId, email })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.kickStatus;
+  }
+
+  static async promote(teamId, email) {
+    const res = await fetch(`/teams/promote`, {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId, email })
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.promoteStatus;
+  }
+
+  static async getTeams(tournamentId) {
+    const res = await fetch(`/tournaments/id/${tournamentId}/teams`, {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
     return json.teams;
+  }
+
+  static async getTeam(teamId) {
+    const res = await fetch(`/teams/id/${teamId}`, {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.team;
+  }
+
+  static async getTeamMembers(teamId) {
+    const res = await fetch(`/teams/id/${teamId}/members`, {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.members;
+  }
+
+  static async getPendingInvites() {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch("/invites", {
+      method: "GET",
+      headers: Authentication.withJWT()
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.team;
+  }
+
+  static async acceptInvite(teamId) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch("/invites/accept", {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId })
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.acceptStatus;
+  }
+
+  static async declineInvite(teamId) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch("/invites/decline", {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId })
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.declineStatus;
+  }
+
+  static async payForTeam(teamId, token) {
+    const res = await fetch("/teams/charge", {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({ teamId, token })
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    return json.paymentStatus;
   }
 }

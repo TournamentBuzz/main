@@ -56,27 +56,26 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         userName VARCHAR(60),
-        admin BOOL DEFAULT FALSE NOT NULL,
         PRIMARY KEY(email)
     );`;
   await sqlwrapper.executeSQL(specC, setupUsersTableQuery, []);
   const setupTournamentsTableQuery = `CREATE TABLE tournaments (
-        id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
-        creator VARCHAR(255) NOT NULL,
-        description VARCHAR(255) DEFAULT NULL,
-        teamEvent BOOL NOT NULL DEFAULT FALSE,
-        location VARCHAR(255) DEFAULT NULL,
-        scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
-        tournamentName VARCHAR(255) DEFAULT NULL,
-        tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
-        entryCost INT(5) NOT NULL DEFAULT 0,
-        maxParticipants INT(5) NOT NULL DEFAULT 16,
-        startDate DATE DEFAULT NULL,
-        endDate DATE DEFAULT NULL,
-        PRIMARY KEY(id),
-        FOREIGN KEY(creator)
-        REFERENCES users(email)
-    );`;
+    id INT(10) NOT NULL UNIQUE AUTO_INCREMENT,
+      creator VARCHAR(255) NOT NULL,
+      description VARCHAR(255) DEFAULT NULL,
+      maxTeamSize INT(5) NOT NULL DEFAULT 1,
+      location VARCHAR(255) DEFAULT NULL,
+      scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
+      tournamentName VARCHAR(255) DEFAULT NULL,
+      tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+      entryCost INT(5) NOT NULL DEFAULT 0,
+      maxTeams INT(5) NOT NULL DEFAULT 16,
+      startDate DATE DEFAULT NULL,
+      endDate DATE DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(creator)
+      REFERENCES users(email)
+  );`;
   await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
   const setupMatchesTableQuery = `CREATE TABLE matches (
         id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
@@ -91,6 +90,15 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
   specC.destroy();
+  app.set(
+    "databaseConnection",
+    connection.connect(
+      app.get("databaseConfig").host,
+      app.get("databaseConfig").username,
+      app.get("databaseConfig").password,
+      app.get("databaseConfig").schema
+    )
+  );
 }
 
 async function cleanupTemporarySchema(
@@ -108,6 +116,7 @@ async function cleanupTemporarySchema(
   const setupSchemaQuery = "DROP SCHEMA " + temporarySchema + ";";
   await sqlwrapper.executeSQL(c, setupSchemaQuery, []);
   c.destroy();
+  app.get("databaseConnection").destroy();
 }
 
 describe("delete", () => {
@@ -125,12 +134,7 @@ describe("delete", () => {
     ).catch(function(err) {
       throw new Error("Unable to create temporary schema: " + err.message);
     });
-    const c = connection.connect(
-      databaseConfig.host,
-      databaseConfig.username,
-      databaseConfig.password,
-      databaseConfig.schema
-    );
+    const c = app.get("databaseConnection");
     await sqlwrapper
       .createUser(c, testUserName, testUserEmail, testUserPassword, 0)
       .catch(function(err) {
@@ -138,7 +142,6 @@ describe("delete", () => {
       });
     await sqlwrapper.createTournament(c, testUserEmail, testTournamentName1);
     await sqlwrapper.createTournament(c, testUserEmail, testTournamentName2);
-    c.destroy();
     done();
   });
 

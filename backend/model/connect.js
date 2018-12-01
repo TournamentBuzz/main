@@ -7,7 +7,8 @@ function connect(host, username, password, database) {
     host: host,
     user: username,
     password: password,
-    database: database
+    database: database,
+    timezone: "utc"
   });
   connection.connect();
   return connection;

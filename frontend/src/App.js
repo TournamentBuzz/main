@@ -18,6 +18,10 @@ import TournamentEdit from "views/TournamentEdit";
 import NotFound from "views/NotFound";
 import MatchCreate from "views/MatchCreate";
 import MatchEdit from "views/MatchEdit";
+import TeamCreate from "views/TeamCreate";
+import TeamDetails from "views/TeamDetails";
+import TeamInvite from "views/TeamInvite";
+import Notifications from "views/Notifications";
 import ViewBracket from "views/ViewBracket";
 
 class App extends Component {
@@ -36,6 +40,7 @@ class App extends Component {
                 path="/register"
                 render={props => <HomePage {...props} register={true} />}
               />
+              <Route path="/notifications" exact component={Notifications} />
               <Route path="/tournament" exact component={HomePage} />
               <Route
                 path="/tournament/create"
@@ -72,6 +77,13 @@ class App extends Component {
                 exact
                 component={ViewBracket}
               />
+              <Route
+                path="/tournament/:tournamentID/team/create"
+                exact
+                component={TeamCreate}
+              />
+              <Route path="/team/:teamID" exact component={TeamDetails} />
+              <Route path="/team/:teamID/invite" exact component={TeamInvite} />
               <Route component={NotFound} />
             </Switch>
           </Router>

@@ -40,6 +40,8 @@ class MatchDetails extends React.Component {
       matchName: null,
       teamA: null,
       teamB: null,
+      teamAName: null,
+      teamBName: null,
       published: null
     };
     this.handleClickEdit = this.handleClickEdit.bind(this);
@@ -157,7 +159,7 @@ class MatchDetails extends React.Component {
           <Grid container>
             <Grid item xs={4}>
               <Typography variant="headline" className={classes.detailsText}>
-                <b>{this.state.teamA}</b>
+                <b>{this.state.teamAName}</b>
               </Typography>
             </Grid>
             <Grid item xs={4}>
@@ -173,7 +175,7 @@ class MatchDetails extends React.Component {
             </Grid>
             <Grid item xs={4}>
               <Typography variant="headline" className={classes.detailsText}>
-                <b>{this.state.teamB}</b>
+                <b>{this.state.teamBName}</b>
               </Typography>
             </Grid>
           </Grid>
