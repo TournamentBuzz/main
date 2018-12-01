@@ -32,7 +32,14 @@ router.post("", async (req, res, next) => {
       return;
     }
     const referees = await sqlwrapper.getReferees(c, tournamentObject[0].id);
-    if (referees.includes(req.headers.id)) {
+    let isRef = false;
+    let i;
+    for (i = 0; i < referees.length; i++) {
+      if (referees[i].userEmail === req.headers.id) {
+        isRef = true;
+      }
+    }
+    if (isRef) {
       await sqlwrapper.updateMatchField(
         c,
         req.headers.matchid,
