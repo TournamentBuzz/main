@@ -15,6 +15,7 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import Authentication from "components/API/Authentication.js";
 import TournamentAPI from "components/API/TournamentAPI.js";
 import MatchList from "components/Match/MatchList.jsx";
+import TeamList from "components/Team/TeamList.jsx";
 
 import tournamentDetailsStyle from "assets/jss/views/tournamentDetailsStyle.jsx";
 
@@ -39,6 +40,7 @@ class TournamentDetails extends React.Component {
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickDelete = this.handleClickDelete.bind(this);
     this.handleClickAddMatch = this.handleClickAddMatch.bind(this);
+    this.handleClickAddTeam = this.handleClickAddTeam.bind(this);
   }
 
   handleClickEdit() {
@@ -63,6 +65,12 @@ class TournamentDetails extends React.Component {
   handleClickAddMatch() {
     this.props.history.push(
       `/tournament/${this.state.tournamentID}/match/create`
+    );
+  }
+
+  handleClickAddTeam() {
+    this.props.history.push(
+      `/tournament/${this.state.tournamentID}/team/create`
     );
   }
 
@@ -185,6 +193,24 @@ class TournamentDetails extends React.Component {
             <b>Matches</b>
           </Typography>
           <MatchList tournamentID={this.props.match.params.tournamentID} />
+        </div>
+        <hr />
+        <div>
+          {this.state.currentUser != null ? (
+            <div className={classes.detailsIcons}>
+              <IconButton
+                className={classes.button}
+                aria-label="Add Team"
+                onClick={this.handleClickAddTeam}
+              >
+                <AddIcon />
+              </IconButton>
+            </div>
+          ) : null}
+          <Typography variant="headline" className={classes.detailsText}>
+            <b>Teams</b>
+          </Typography>
+          <TeamList tournamentID={this.props.match.params.tournamentID} />
         </div>
       </div>
     );
