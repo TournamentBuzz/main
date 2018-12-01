@@ -58,7 +58,7 @@ async function generateSingleElimBracket(c, teams, tournamentId) {
   }
   let currentMatchups = await generateMatchLayerFromTeams(
     c,
-    teams,
+    teamsCopy,
     tournamentId
   );
   while (currentMatchups.length !== 1) {
