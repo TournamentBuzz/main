@@ -22,6 +22,9 @@ import TeamCreate from "views/TeamCreate";
 import TeamDetails from "views/TeamDetails";
 import TeamInvite from "views/TeamInvite";
 import Notifications from "views/Notifications";
+import TournamentReferees from "views/TournamentReferees";
+import TournamentRefereeAdd from "views/TournamentRefereeAdd";
+import ViewBracket from "views/ViewBracket";
 
 class App extends Component {
   render() {
@@ -72,9 +75,24 @@ class App extends Component {
                 component={MatchEdit}
               />
               <Route
+                path="/tournament/:tournamentID/bracket"
+                exact
+                component={ViewBracket}
+              />
+              <Route
                 path="/tournament/:tournamentID/team/create"
                 exact
                 component={TeamCreate}
+              />
+              <Route
+                path="/tournament/:tournamentID/referees"
+                exact
+                component={TournamentReferees}
+              />
+              <Route
+                path="/tournament/:tournamentID/referees/add"
+                exact
+                component={TournamentRefereeAdd}
               />
               <Route path="/team/:teamID" exact component={TeamDetails} />
               <Route path="/team/:teamID/invite" exact component={TeamInvite} />

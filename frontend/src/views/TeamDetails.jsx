@@ -16,6 +16,7 @@ import Header from "components/Header/Header.jsx";
 import NoAuthHeaderLinks from "components/Header/NoAuthHeaderLinks.jsx";
 import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import Authentication from "components/API/Authentication.js";
+import PaymentSnackbar from "components/Team/PaymentSnackbar.jsx";
 import TeamAPI from "components/API/TeamAPI.js";
 
 const teamDetailsStyle = {
@@ -41,6 +42,9 @@ class TeamDetails extends React.Component {
       teamName: null,
       leader: null,
       tournamentID: null,
+      paid: null,
+      seed: null,
+      entryCost: null,
       seed: null,
       membersList: null,
       currentUser: Authentication.getUID()
@@ -171,6 +175,16 @@ class TeamDetails extends React.Component {
                   <DeleteIcon />
                 </IconButton>
               </div>
+            ) : null}
+            {this.state.paid != null &&
+            this.state.paid === 0 &&
+            (this.state.currentUser != null &&
+              this.state.currentUser === this.state.leader) &&
+            this.state.entryCost != null ? (
+              <PaymentSnackbar
+                paymentAmount={this.state.entryCost}
+                teamId={this.state.teamID}
+              />
             ) : null}
             <h1>{this.state.teamName}</h1>
             <br />
