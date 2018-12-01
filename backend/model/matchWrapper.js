@@ -58,8 +58,8 @@ function getMatch(connection, id) {
         reject(err);
       } else {
         const matches = [];
-        const teamA = await teamWrapper.getTeam(connection, rows[0].teamA)[0];
-        const teamB = await teamWrapper.getTeam(connection, rows[0].teamB)[0];
+        const teamA = (await teamWrapper.getTeam(connection, rows[0].teamA))[0];
+        const teamB = (await teamWrapper.getTeam(connection, rows[0].teamB))[0];
         const teamAObject = {
           teamId: teamA.id,
           teamName: teamA.teamName
@@ -192,8 +192,14 @@ function getMatches(connection, tournamentId) {
       } else {
         const matches = [];
         for (let i = 0; i < rows.length; i++) {
-          const teamA = await teamWrapper.getTeam(connection, rows[i].teamA)[0];
-          const teamB = await teamWrapper.getTeam(connection, rows[i].teamB)[0];
+          const teamA = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamA
+          ))[0];
+          const teamB = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamB
+          ))[0];
           const teamAObject = {
             teamId: teamA.id,
             teamName: teamA.teamName
@@ -236,8 +242,14 @@ function getPublishedMatches(connection, tournamentId) {
       } else {
         const matches = [];
         for (let i = 0; i < rows.length; i++) {
-          const teamA = await teamWrapper.getTeam(connection, rows[i].teamA)[0];
-          const teamB = await teamWrapper.getTeam(connection, rows[i].teamB)[0];
+          const teamA = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamA
+          ))[0];
+          const teamB = (await teamWrapper.getTeam(
+            connection,
+            rows[i].teamB
+          ))[0];
           const teamAObject = {
             teamId: teamA.id,
             teamName: teamA.teamName
