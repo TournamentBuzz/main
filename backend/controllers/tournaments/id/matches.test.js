@@ -68,17 +68,41 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       PRIMARY KEY(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupTournamentsTableQuery, []);
+  const setupTeamsTableQuery = `CREATE TABLE teams (
+    id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
+      teamName VARCHAR(255),
+      leader VARCHAR(255) NOT NULL,
+      tournament INT(10) NOT NULL,
+      paid BOOL DEFAULT FALSE NOT NULL,
+      seed INT(4) DEFAULT NULL,
+      PRIMARY KEY(id),
+      FOREIGN KEY(tournament)
+      REFERENCES tournaments(id)
+  );`;
+  await sqlwrapper.executeSQL(specC, setupTeamsTableQuery, []);
   const setupMatchesTableQuery = `CREATE TABLE matches (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
     location VARCHAR(255) DEFAULT NULL,
-    score VARCHAR(255) DEFAULT NULL,
+    winner INT(1) DEFAULT 0,
     matchTime DATETIME DEFAULT NULL,
     matchName VARCHAR(255) DEFAULT NULL,
     tournament INT(10) NOT NULL,
     teamA INT(12) DEFAULT NULL,
     teamB INT(12) DEFAULT NULL,
+    feederA INT(12),
+    feederB INT(12),
+    scoreA INT(12),
+    scoreB INT(12),
+    feederAIsLoser BOOL DEFAULT FALSE,
+    feederBIsLoser BOOL DEFAULT FALSE,
     publish BOOL DEFAULT FALSE NOT NULL,
-    PRIMARY KEY(id)
+    PRIMARY KEY(id),
+    FOREIGN KEY(tournament)
+    REFERENCES tournaments(id),
+    FOREIGN KEY(teamA)
+    REFERENCES teams(id),
+    FOREIGN KEY(teamB)
+    REFERENCES teams(id)
   );`;
   await sqlwrapper.executeSQL(specC, setupMatchesTableQuery, []);
   const setupExampleTournamentQuery =
@@ -95,6 +119,13 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     "9999-01-01",
     "9999-01-02"
   ]);
+  await sqlwrapper.createTeam(specC, "oof", "example@example.com", 2);
+  await sqlwrapper.createTeam(
+    specC,
+    "dennis why did you remove foreign keys",
+    "example@example.com",
+    2
+  );
   specC.destroy();
   app.set(
     "databaseConnection",
@@ -132,9 +163,6 @@ describe("matches", () => {
   const loc1 = "location test";
   const loc2 = "CULC";
   const loc3 = "Russia";
-  const score1 = null;
-  const score2 = null;
-  const score3 = "0-100";
   const teamA = 1;
   const teamB = 2;
   const testMatchName1 = "Test Match";
@@ -162,12 +190,18 @@ describe("matches", () => {
       .createMatch(
         c,
         loc1,
-        score1,
+        null,
         testT1DateTime,
         testMatchName1,
         tournament1,
         null,
-        null
+        null,
+        null,
+        null,
+        null,
+        null,
+        false,
+        false
       )
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);
@@ -176,12 +210,18 @@ describe("matches", () => {
       .createMatch(
         c,
         loc2,
-        score2,
+        null,
         testT2DateTime,
         testMatchName2,
         tournament2,
         null,
-        null
+        null,
+        null,
+        null,
+        null,
+        null,
+        false,
+        false
       )
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);
@@ -190,12 +230,18 @@ describe("matches", () => {
       .createMatch(
         c,
         loc3,
-        score3,
+        null,
         testT3DateTime,
         testMatchName3,
         tournament2,
         teamA,
-        teamB
+        teamB,
+        null,
+        null,
+        null,
+        null,
+        false,
+        false
       )
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);
@@ -226,7 +272,6 @@ describe("matches", () => {
         try {
           if (
             res.body.matches[0].location !== loc3 ||
-            res.body.matches[0].score !== score3 ||
             res.body.matches[0].matchTime !== tt3Date ||
             res.body.matches[0].matchName !== testMatchName3 ||
             res.body.matches[0].tournament !== tournament2 ||
@@ -237,7 +282,6 @@ describe("matches", () => {
           }
           if (
             res.body.matches[1].location !== loc2 ||
-            res.body.matches[1].score !== score2 ||
             res.body.matches[1].matchTime !== tt2Date ||
             res.body.matches[1].matchName !== testMatchName2 ||
             res.body.matches[1].tournament !== tournament2 ||

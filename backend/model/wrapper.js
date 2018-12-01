@@ -120,25 +120,49 @@ function searchTournament(connection, searchQuery) {
   return tournamentWrapper.searchTournament(connection, searchQuery);
 }
 
+function createReferee(connection, tournamentId, userEmail) {
+  return tournamentWrapper.createReferee(connection, tournamentId, userEmail);
+}
+
+function deleteReferee(connection, tournamentId, userEmail) {
+  return tournamentWrapper.deleteReferee(connection, tournamentId, userEmail);
+}
+
+function getReferees(connection, tournamentId) {
+  return tournamentWrapper.getReferees(connection, tournamentId);
+}
+
 function createMatch(
   connection,
   location = null,
-  score = null,
+  winner = null,
   matchTime = null,
   matchName = null,
   tournament,
   teamA = null,
-  teamB = null
+  teamB = null,
+  feederA = null,
+  feederB = null,
+  scoreA = null,
+  scoreB = null,
+  feederAIsLoser = false,
+  feederBIsLoser = false
 ) {
   return matchWrapper.createMatch(
     connection,
     location,
-    score,
+    winner,
     matchTime,
     matchName,
     tournament,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB,
+    scoreA,
+    scoreB,
+    feederAIsLoser,
+    feederBIsLoser
   );
 }
 
@@ -162,21 +186,33 @@ function updateMatch(
   connection,
   id,
   location,
-  score,
+  winner,
   matchTime,
   matchName,
   teamA,
-  teamB
+  teamB,
+  feederA,
+  feederB,
+  scoreA,
+  scoreB,
+  feederAIsLoser = false,
+  feederBIsLoser = false
 ) {
   return matchWrapper.updateMatch(
     connection,
     id,
     location,
-    score,
+    winner,
     matchTime,
     matchName,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB,
+    scoreA,
+    scoreB,
+    feederAIsLoser,
+    feederBIsLoser
   );
 }
 
@@ -188,8 +224,30 @@ function deleteMatch(connection, id) {
   return matchWrapper.deleteMatch(connection, id);
 }
 
-function createTeam(connection, teamName, leader, tournament, seed) {
-  return teamWrapper.createTeam(connection, teamName, leader, tournament, seed);
+async function reloadMatches(connection, matchId) {
+  return await matchWrapper.reloadMatches(connection, matchId);
+}
+
+async function createTeam(
+  connection,
+  teamName,
+  leader,
+  tournament,
+  paid,
+  seed
+) {
+  const tourn = await getTournament(connection, tournament);
+  if (tourn[0].entryCost === 0) {
+    paid = true;
+  }
+  return teamWrapper.createTeam(
+    connection,
+    teamName,
+    leader,
+    tournament,
+    paid,
+    seed
+  );
 }
 
 function getTeam(connection, id) {
@@ -200,13 +258,14 @@ function getTeams(connection, tournamentId) {
   return teamWrapper.getTeams(connection, tournamentId);
 }
 
-function updateTeam(connection, id, teamName, leader, tournament, seed) {
+function updateTeam(connection, id, teamName, leader, tournament, paid, seed) {
   return teamWrapper.updateTeam(
     connection,
     id,
     teamName,
     leader,
     tournament,
+    paid,
     seed
   );
 }
@@ -317,5 +376,9 @@ module.exports = {
   getTeamMembers: getTeamMembers,
   getApprovedTeamMembers: getApprovedTeamMembers,
   getTeamsWithTeamMembers: getTeamsWithTeamMembers,
-  getInvites: getInvites
+  getInvites: getInvites,
+  createReferee: createReferee,
+  deleteReferee: deleteReferee,
+  getReferees: getReferees,
+  reloadMatches: reloadMatches
 };

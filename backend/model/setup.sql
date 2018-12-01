@@ -31,6 +31,7 @@ CREATE TABLE teams (
     teamName VARCHAR(255) DEFAULT NULL,
     leader VARCHAR(255) NOT NULL,
     tournament INT(10) NOT NULL,
+    paid BOOL DEFAULT FALSE NOT NULL,
     seed INT(4) DEFAULT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(leader)
@@ -42,20 +43,30 @@ CREATE TABLE teams (
 CREATE TABLE matches (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
     location VARCHAR(255) DEFAULT NULL,
-    score VARCHAR(255) DEFAULT NULL,
+    winner INT(1) DEFAULT 0,
     matchTime DATETIME DEFAULT NULL,
     matchName VARCHAR(255) DEFAULT NULL,
     tournament INT(10) NOT NULL,
     teamA INT(12) DEFAULT NULL,
     teamB INT(12) DEFAULT NULL,
     publish BOOL DEFAULT FALSE NOT NULL,
+    feederA INT(12) DEFAULT NULL,
+    feederB INT(12) DEFAULT NULL,
+    scoreA INT(10) DEFAULT NULL,
+    scoreB INT(10) DEFAULT NULL,
+    feederAIsLoser BOOL DEFAULT FALSE,
+    feederBIsLoser BOOL DEFAULT FALSE,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
     REFERENCES tournaments(id),
     FOREIGN KEY(teamA)
     REFERENCES teams(id),
     FOREIGN KEY(teamB)
-    REFERENCES teams(id)
+    REFERENCES teams(id),
+    FOREIGN KEY(feederA)
+    REFERENCES matches(id),
+    FOREIGN KEY(feederB)
+    REFERENCES matches(id)
 );
 
 CREATE TABLE teamMembers (

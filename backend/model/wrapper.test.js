@@ -64,6 +64,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       teamName VARCHAR(255),
       leader VARCHAR(255) NOT NULL,
       tournament INT(10) NOT NULL,
+      paid BOOL DEFAULT FALSE NOT NULL,
       seed INT(4) DEFAULT NULL,
       PRIMARY KEY(id),
       FOREIGN KEY(leader)
@@ -75,12 +76,18 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   const setupMatchesTableQuery = `CREATE TABLE matches (
     id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
       location VARCHAR(255) DEFAULT NULL,
-      score VARCHAR(255) DEFAULT NULL,
+      winner INT(1) DEFAULT 0,
       matchTime DATETIME DEFAULT NULL,
       matchName VARCHAR(255) DEFAULT NULL,
       tournament INT(10) NOT NULL,
       teamA INT(12) NOT NULL,
       teamB INT(12) NOT NULL,
+      feederA INT(12),
+      feederB INT(12),
+      scoreA INT(12),
+      scoreB INT(12),
+      feederAIsLoser BOOL DEFAULT FALSE,
+      feederBIsLoser BOOL DEFAULT FALSE,
       PRIMARY KEY(id),
       FOREIGN KEY(tournament)
       REFERENCES tournaments(id),
@@ -379,7 +386,14 @@ describe("sql wrapper", () => {
     }
     const testId = result[0].id;
     const teamName = "test team";
-    await sqlwrapper.createTeam(c, teamName, testUserEmail, testId, null);
+    await sqlwrapper.createTeam(
+      c,
+      teamName,
+      testUserEmail,
+      testId,
+      false,
+      null
+    );
     const getTestTeam = "SELECT * FROM teams WHERE teamName = ?;";
     const result1 = await sqlwrapper.executeSQL(c, getTestTeam, [teamName]);
     if (result1.length < 1) {
@@ -437,7 +451,13 @@ describe("sql wrapper", () => {
       null,
       testId,
       teamId,
-      teamId
+      teamId,
+      null,
+      null,
+      null,
+      null,
+      false,
+      false
     );
     const getTestMatch = "SELECT * FROM matches WHERE tournament = ?;";
     const result2 = await sqlwrapper.executeSQL(c, getTestMatch, [testId]);

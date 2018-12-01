@@ -4,9 +4,8 @@ const express = require("express");
 const router = express.Router();
 const sqlwrapper = require("../../../model/wrapper");
 
-const create = require("./teams/create");
-const withdraw = require("./teams/withdraw");
-
+const add = require("./referees/add");
+const remove = require("./referees/remove");
 const requireAuth = require("../../../middleware/auth/verify");
 
 router.get("/", async function(req, res, next) {
@@ -22,15 +21,15 @@ router.get("/", async function(req, res, next) {
       next(err);
       return;
     }
-    const results = await sqlwrapper.getTeams(c, req.headers.tournamentid);
+    const results = await sqlwrapper.getReferees(c, req.headers.tournamentid);
     res.status(200);
-    res.json({ teams: results });
+    res.json({ referees: results });
   } catch (err) {
     next(err);
   }
 });
 
-router.use("/create", requireAuth, create);
-router.use("/withdraw", requireAuth, withdraw);
+router.use("/add", requireAuth, add);
+router.use("/remove", requireAuth, remove);
 
 module.exports = router;
