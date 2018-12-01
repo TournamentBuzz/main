@@ -195,8 +195,12 @@ async function generateMatchLayerFromTeams(connection, teams, tournamentId) {
       feederAIsLoser: false,
       feederBIsLoser: false
     };
-    match.teamA = teams[x].id;
-    match.teamB = teams[teams.length - (x + 1)].id;
+    if (teams[x]) {
+      match.teamA = teams[x].id;
+    }
+    if (teams[teams.length - (x + 1)]) {
+      match.teamB = teams[teams.length - (x + 1)].id;
+    }
     if (match.teamB === null) {
       // Set the winner to the first team
       match.winner = 1;
