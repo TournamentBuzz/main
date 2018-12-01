@@ -40,6 +40,6 @@ router.use("/:id/teams", teams);
 
 router.use("/:id/referees", requireAuth, referees);
 
-router.use(":id/generate", requireAuth, generate);
+router.use("/:id/generate", requireAuth, generate);
 
 module.exports = router;
