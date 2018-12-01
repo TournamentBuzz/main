@@ -34,7 +34,7 @@ router.use("/:id", function(req, res, next) {
   next();
 });
 
-router.use("/:id/matches", requireAuth, matches);
+router.use("/:id/matches", matches);
 
 router.use("/:id/teams", teams);
 

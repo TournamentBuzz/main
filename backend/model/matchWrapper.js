@@ -58,16 +58,29 @@ function getMatch(connection, id) {
         reject(err);
       } else {
         const matches = [];
-        const teamA = (await teamWrapper.getTeam(connection, rows[0].teamA))[0];
-        const teamB = (await teamWrapper.getTeam(connection, rows[0].teamB))[0];
-        const teamAObject = {
-          teamId: teamA.id,
-          teamName: teamA.teamName
-        };
-        const teamBObject = {
-          teamId: teamB.id,
-          teamName: teamB.teamName
-        };
+        let teamAObject = null;
+        let teamBObject = null;
+        try {
+          const teamA = (await teamWrapper.getTeam(
+            connection,
+            rows[0].teamA
+          ))[0];
+          const teamB = (await teamWrapper.getTeam(
+            connection,
+            rows[0].teamB
+          ))[0];
+          teamAObject = {
+            teamId: teamA.id,
+            teamName: teamA.teamName
+          };
+          teamBObject = {
+            teamId: teamB.id,
+            teamName: teamB.teamName
+          };
+        } catch (e) {
+          teamAObject = null;
+          teamBObject = null;
+        }
         const match = {
           id: rows[0].id,
           location: rows[0].location,
@@ -192,22 +205,29 @@ function getMatches(connection, tournamentId) {
       } else {
         const matches = [];
         for (let i = 0; i < rows.length; i++) {
-          const teamA = (await teamWrapper.getTeam(
-            connection,
-            rows[i].teamA
-          ))[0];
-          const teamB = (await teamWrapper.getTeam(
-            connection,
-            rows[i].teamB
-          ))[0];
-          const teamAObject = {
-            teamId: teamA.id,
-            teamName: teamA.teamName
-          };
-          const teamBObject = {
-            teamId: teamB.id,
-            teamName: teamB.teamName
-          };
+          let teamAObject = null;
+          let teamBObject = null;
+          try {
+            const teamA = (await teamWrapper.getTeam(
+              connection,
+              rows[i].teamA
+            ))[0];
+            const teamB = (await teamWrapper.getTeam(
+              connection,
+              rows[i].teamB
+            ))[0];
+            teamAObject = {
+              teamId: teamA.id,
+              teamName: teamA.teamName
+            };
+            teamBObject = {
+              teamId: teamB.id,
+              teamName: teamB.teamName
+            };
+          } catch (e) {
+            teamAObject = null;
+            teamBObject = null;
+          }
           const match = {
             id: rows[i].id,
             location: rows[i].location,
@@ -242,22 +262,29 @@ function getPublishedMatches(connection, tournamentId) {
       } else {
         const matches = [];
         for (let i = 0; i < rows.length; i++) {
-          const teamA = (await teamWrapper.getTeam(
-            connection,
-            rows[i].teamA
-          ))[0];
-          const teamB = (await teamWrapper.getTeam(
-            connection,
-            rows[i].teamB
-          ))[0];
-          const teamAObject = {
-            teamId: teamA.id,
-            teamName: teamA.teamName
-          };
-          const teamBObject = {
-            teamId: teamB.id,
-            teamName: teamB.teamName
-          };
+          let teamAObject = null;
+          let teamBObject = null;
+          try {
+            const teamA = (await teamWrapper.getTeam(
+              connection,
+              rows[i].teamA
+            ))[0];
+            const teamB = (await teamWrapper.getTeam(
+              connection,
+              rows[i].teamB
+            ))[0];
+            teamAObject = {
+              teamId: teamA.id,
+              teamName: teamA.teamName
+            };
+            teamBObject = {
+              teamId: teamB.id,
+              teamName: teamB.teamName
+            };
+          } catch (e) {
+            teamAObject = null;
+            teamBObject = null;
+          }
           const match = {
             id: rows[i].id,
             location: rows[i].location,
