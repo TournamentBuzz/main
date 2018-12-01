@@ -5,11 +5,15 @@ export default class MatchAPI {
   static async createMatch(
     tournament,
     location,
-    details,
     matchName,
     matchTime,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB,
+    scoreA,
+    scoreB,
+    winner
   ) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/matches/create`, {
@@ -18,11 +22,15 @@ export default class MatchAPI {
       body: JSON.stringify({
         tournament,
         location,
-        details,
         matchName,
         matchTime,
         teamA,
-        teamB
+        teamB,
+        feederA,
+        feederB,
+        scoreA,
+        scoreB,
+        winner
       })
     });
 
@@ -37,11 +45,15 @@ export default class MatchAPI {
   static async editMatch(
     matchId,
     location,
-    details,
     matchName,
     matchTime,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB,
+    scoreA,
+    scoreB,
+    winner
   ) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/matches/edit`, {
@@ -50,11 +62,15 @@ export default class MatchAPI {
       body: JSON.stringify({
         matchId,
         location,
-        details,
         matchName,
         matchTime,
         teamA,
-        teamB
+        teamB,
+        feederA,
+        feederB,
+        scoreA,
+        scoreB,
+        winner
       })
     });
 
