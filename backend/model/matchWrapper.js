@@ -184,7 +184,7 @@ function getPublishedMatches(connection, tournamentId) {
 function getDependentMatches(connection, matchId) {
   const query = "SELECT * FROM matches WHERE feederA = ? OR feederB = ?;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [matchId], function(err, rows, fields) {
+    connection.query(query, [matchId, matchId], function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
