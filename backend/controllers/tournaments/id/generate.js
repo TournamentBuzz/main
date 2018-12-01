@@ -71,8 +71,8 @@ async function generateSingleElimBracket(c, teams, tournamentId) {
 }
 
 async function generateRoundRobinMatches(c, teams, tournamentId) {
-  for (let i = 0; i < teams.length; i++) {
-    for (let j = i; j < teams.length; j++) {
+  for (let i = 0; i < teams.length - 1; i++) {
+    for (let j = i + 1; j < teams.length; j++) {
       const match = {
         id: null,
         location: null,
