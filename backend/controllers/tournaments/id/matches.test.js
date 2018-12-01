@@ -83,7 +83,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   const setupMatchesTableQuery = `CREATE TABLE matches (
 	id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
     location VARCHAR(255) DEFAULT NULL,
-    winner BOOL DEFAULT NULL,
+    winner INT(1) DEFAULT 0,
     matchTime DATETIME DEFAULT NULL,
     matchName VARCHAR(255) DEFAULT NULL,
     tournament INT(10) NOT NULL,
@@ -93,6 +93,8 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
     feederB INT(12),
     scoreA INT(12),
     scoreB INT(12),
+    feederAIsLoser BOOL DEFAULT FALSE,
+    feederBIsLoser BOOL DEFAULT FALSE,
     publish BOOL DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
@@ -197,7 +199,9 @@ describe("matches", () => {
         null,
         null,
         null,
-        null
+        null,
+        false,
+        false
       )
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);
@@ -215,7 +219,9 @@ describe("matches", () => {
         null,
         null,
         null,
-        null
+        null,
+        false,
+        false
       )
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);
@@ -233,7 +239,9 @@ describe("matches", () => {
         null,
         null,
         null,
-        null
+        null,
+        false,
+        false
       )
       .catch(function(err) {
         throw new Error("Unable to create match: " + err.message);

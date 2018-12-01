@@ -3,7 +3,6 @@
 function createMatch(
   connection,
   location = null,
-  score = null,
   winner = null,
   matchTime = null,
   matchName = null,

@@ -76,7 +76,7 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
   const setupMatchesTableQuery = `CREATE TABLE matches (
     id INT(12) NOT NULL UNIQUE AUTO_INCREMENT,
       location VARCHAR(255) DEFAULT NULL,
-      winner BOOL DEFAULT NULL,
+      winner INT(1) DEFAULT 0,
       matchTime DATETIME DEFAULT NULL,
       matchName VARCHAR(255) DEFAULT NULL,
       tournament INT(10) NOT NULL,
@@ -86,6 +86,8 @@ async function setupTemporarySchema(host, username, password, temporarySchema) {
       feederB INT(12),
       scoreA INT(12),
       scoreB INT(12),
+      feederAIsLoser BOOL DEFAULT FALSE,
+      feederBIsLoser BOOL DEFAULT FALSE,
       PRIMARY KEY(id),
       FOREIGN KEY(tournament)
       REFERENCES tournaments(id),
@@ -453,7 +455,9 @@ describe("sql wrapper", () => {
       null,
       null,
       null,
-      null
+      null,
+      false,
+      false
     );
     const getTestMatch = "SELECT * FROM matches WHERE tournament = ?;";
     const result2 = await sqlwrapper.executeSQL(c, getTestMatch, [testId]);
