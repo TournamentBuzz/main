@@ -81,12 +81,12 @@ class App extends Component {
               <Route
                 path="/tournament/:tournamentID/referees"
                 exact
-                Component={TournamentReferees}
+                component={TournamentReferees}
               />
               <Route
                 path="/tournament/:tournamentID/referees/add"
                 exact
-                Component={TournamentRefereeAdd}
+                component={TournamentRefereeAdd}
               />
               <Route path="/team/:teamID" exact component={TeamDetails} />
               <Route path="/team/:teamID/invite" exact component={TeamInvite} />

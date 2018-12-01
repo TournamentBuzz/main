@@ -6,6 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import PencilIcon from "@material-ui/icons/Create";
+import Button from "@material-ui/core/Button";
 
 // core components
 import Header from "components/Header/Header.jsx";
@@ -14,6 +15,7 @@ import AuthHeaderLinks from "components/Header/AuthHeaderLinks.jsx";
 import Authentication from "components/API/Authentication.js";
 import MatchAPI from "components/API/MatchAPI.js";
 import TournamentAPI from "components/API/TournamentAPI.js";
+import RefereeAPI from "components/API/RefereeAPI.js";
 import Grid from "@material-ui/core/Grid";
 
 const matchDetailsStyle = {
@@ -42,10 +44,13 @@ class MatchDetails extends React.Component {
       teamB: null,
       teamAName: null,
       teamBName: null,
-      published: null
+      published: null,
+      isReferee: false,
+      scoreButtonText: "Enter Scores"
     };
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickDelete = this.handleClickDelete.bind(this);
+    this.handleClickScores = this.handleClickScores.bind(this);
   }
 
   handleClickEdit() {
@@ -64,6 +69,14 @@ class MatchDetails extends React.Component {
         return;
       }
       this.props.history.push("/");
+    }
+  }
+
+  async handleClickScores() {
+    if (this.state.scoreButtonText === "Enter Scores") {
+      this.setState({ scoreButtonText: "Save Scores" });
+    } else {
+      this.setState({ scoreButtonText: "Enter Scores" });
     }
   }
 
@@ -113,6 +126,13 @@ class MatchDetails extends React.Component {
   async componentDidMount() {
     await this.getMatchDetails(this.state.matchID);
     await this.getTournamentDetails(this.state.tournamentID);
+    if (this.state.currentUser !== null) {
+      const isReferee = await RefereeAPI.isReferee(
+        this.state.tournamentID,
+        this.state.currentUser
+      );
+      this.setState({ isReferee: isReferee });
+    }
   }
 
   render() {
@@ -172,6 +192,16 @@ class MatchDetails extends React.Component {
               <Typography variant="body1" className={classes.detailsText}>
                 {this.state.location}
               </Typography>
+              {this.state.isReferee ? (
+                <Button
+                  style={{ color: "white" }}
+                  variant="contained"
+                  color="primary"
+                  onClick={this.handleClickScores}
+                >
+                  {this.state.scoreButtonText}
+                </Button>
+              ) : null}
             </Grid>
             <Grid item xs={4}>
               <Typography variant="headline" className={classes.detailsText}>

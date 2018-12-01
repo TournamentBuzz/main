@@ -44,7 +44,7 @@ class TournamentReferees extends React.Component {
       creator: null,
       refereesList: null
     };
-    this.handleClickAddReferee.bind(this);
+    this.handleClickAddReferee = this.handleClickAddReferee.bind(this);
   }
 
   handleClickAddReferee() {
@@ -105,11 +105,14 @@ class TournamentReferees extends React.Component {
       list.push(<Divider />);
       let listItem = (
         <ListItem>
-          <ListItemText primary={referee} />
+          <ListItemText primary={referee.userEmail} />
           <ListItemSecondaryAction>
             <IconButton
               aria-label="Delete"
-              onClick={this.handleClickDeleteReferee.bind(this, referee)}
+              onClick={this.handleClickDeleteReferee.bind(
+                this,
+                referee.userEmail
+              )}
             >
               <DeleteIcon />
             </IconButton>
@@ -118,7 +121,7 @@ class TournamentReferees extends React.Component {
       );
       list.push(listItem);
     }
-    this.setState({ refereeList: list });
+    this.setState({ refereesList: list });
   }
 
   async componentDidMount() {
@@ -153,7 +156,7 @@ class TournamentReferees extends React.Component {
             <br />
             <h2 style={{ margin: "0px", display: "inline-flex" }}>Referees</h2>
             {this.state.currentUser != null &&
-            this.state.currentUser === this.state.creatro ? (
+            this.state.currentUser === this.state.creator ? (
               <div style={{ display: "inline-flex" }}>
                 <IconButton
                   className={classes.button}

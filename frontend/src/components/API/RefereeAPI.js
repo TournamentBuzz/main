@@ -41,4 +41,16 @@ export default class RefereeAPI {
     const json = await res.json();
     return json.removeSuccess;
   }
+
+  static async isReferee(tournamentId, email) {
+    if (!Authentication.loggedIn()) return false;
+    let refereeList = await this.getReferees(tournamentId);
+    return (
+      refereeList
+        .map(function(d) {
+          return d["userEmail"];
+        })
+        .indexOf(email) > -1
+    );
+  }
 }
