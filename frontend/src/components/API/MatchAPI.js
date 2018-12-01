@@ -10,10 +10,7 @@ export default class MatchAPI {
     teamA,
     teamB,
     feederA,
-    feederB,
-    scoreA,
-    scoreB,
-    winner
+    feederB
   ) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/matches/create`, {
@@ -27,10 +24,7 @@ export default class MatchAPI {
         teamA,
         teamB,
         feederA,
-        feederB,
-        scoreA,
-        scoreB,
-        winner
+        feederB
       })
     });
 
@@ -50,10 +44,7 @@ export default class MatchAPI {
     teamA,
     teamB,
     feederA,
-    feederB,
-    scoreA,
-    scoreB,
-    winner
+    feederB
   ) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/matches/edit`, {
@@ -67,10 +58,7 @@ export default class MatchAPI {
         teamA,
         teamB,
         feederA,
-        feederB,
-        scoreA,
-        scoreB,
-        winner
+        feederB
       })
     });
 
