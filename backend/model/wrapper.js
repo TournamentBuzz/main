@@ -224,6 +224,10 @@ function deleteMatch(connection, id) {
   return matchWrapper.deleteMatch(connection, id);
 }
 
+async function reloadMatches(connection, matchId) {
+  return await matchWrapper.reloadMatches(connection, matchId);
+}
+
 async function createTeam(
   connection,
   teamName,
@@ -375,5 +379,6 @@ module.exports = {
   getInvites: getInvites,
   createReferee: createReferee,
   deleteReferee: deleteReferee,
-  getReferees: getReferees
+  getReferees: getReferees,
+  reloadMatches: reloadMatches
 };

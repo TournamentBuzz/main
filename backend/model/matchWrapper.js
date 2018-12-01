@@ -181,6 +181,50 @@ function getPublishedMatches(connection, tournamentId) {
   });
 }
 
+function getDependentMatches(connection, matchId) {
+  const query = "SELECT * FROM matches WHERE feederA = ? OR feederB = ?;";
+  return new Promise((resolve, reject) => {
+    connection.query(query, [matchId], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+async function reloadMatches(connection, matchId) {
+  const matches = await getDependentMatches(connection, matchId);
+  const updatedMatch = await getMatch(connection, matchId);
+  let winner = updatedMatch[0].teamA;
+  let loser = updateMatch[0].teamB;
+  if (updatedMatch[0].winner === 1) {
+    winner = updateMatch[0].teamB;
+    loser = updateMatch[0].teamA;
+  }
+  try {
+    for (let i = 0; i < matches.length; i++) {
+      if (matches[i].feederA === matchId) {
+        if (matches[i].feederAIsLoser === 1) {
+          updateMatchField(connection, matches[i].id, "teamA", loser);
+        } else {
+          updateMatchField(connection, matches[i].id, "teamA", winner);
+        }
+      } else {
+        if (matches[i].feederBIsLoser === 1) {
+          updateMatchField(connection, matches[i].id, "teamB", loser);
+        } else {
+          updateMatchField(connection, matches[i].id, "teamB", winner);
+        }
+      }
+    }
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 module.exports = {
   createMatch: createMatch,
   getMatch: getMatch,
@@ -189,5 +233,7 @@ module.exports = {
   updateMatchField: updateMatchField,
   deleteMatch: deleteMatch,
   getMatches: getMatches,
-  getPublishedMatches: getPublishedMatches
+  getPublishedMatches: getPublishedMatches,
+  getDependentMatches: getDependentMatches,
+  reloadMatches: reloadMatches
 };
