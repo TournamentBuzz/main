@@ -156,4 +156,23 @@ export default class MatchAPI {
     const json = await res.json();
     return json.match;
   }
+
+  static async submitMatchScore(matchID, scoreA, scoreB, winner) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch(`/matches/id/${matchID}/submit`, {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({
+        scoreA,
+        scoreB,
+        winner
+      })
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.scoreSubmitSuccess;
+    } else {
+      throw new errors.UnexpectedError();
+    }
+  }
 }

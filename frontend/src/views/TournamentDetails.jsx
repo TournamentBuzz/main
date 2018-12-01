@@ -7,6 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import PencilIcon from "@material-ui/icons/Create";
 import AddIcon from "@material-ui/icons/Add";
+import PersonAdd from "@material-ui/icons/PersonAdd";
 
 // core components
 import Header from "components/Header/Header.jsx";
@@ -39,8 +40,13 @@ class TournamentDetails extends React.Component {
     };
     this.handleClickEdit = this.handleClickEdit.bind(this);
     this.handleClickDelete = this.handleClickDelete.bind(this);
+    this.handleClickAddReferee = this.handleClickAddReferee.bind(this);
     this.handleClickAddMatch = this.handleClickAddMatch.bind(this);
     this.handleClickAddTeam = this.handleClickAddTeam.bind(this);
+  }
+
+  handleClickAddReferee() {
+    this.props.history.push(`/tournament/${this.state.tournamentID}/referees`);
   }
 
   handleClickEdit() {
@@ -122,6 +128,13 @@ class TournamentDetails extends React.Component {
           {this.state.currentUser != null &&
           this.state.currentUser === this.state.creator ? (
             <div className={classes.detailsIcons}>
+              <IconButton
+                className={classes.button}
+                aria-label="Add Referee"
+                onClick={this.handleClickAddReferee}
+              >
+                <PersonAdd />
+              </IconButton>
               <IconButton
                 className={classes.button}
                 aria-label="Edit"
