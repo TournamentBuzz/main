@@ -36,20 +36,11 @@ class MatchList extends React.Component {
     }
     let list = [];
     for (let match of matches) {
-      let timeString = new Date(
-        match.matchTime.slice(0, 19).replace("T", " ") + " UTC"
-      ).toLocaleString();
-      let card = (
+      list.push(
         <Grid item xs={4} key={match.id}>
-          <MatchCard
-            key={match.id}
-            id={match.id}
-            matchName={match.matchName}
-            time={timeString}
-          />
+          <MatchCard tournamentMatch={match} key={match.id} />
         </Grid>
       );
-      list.push(card);
     }
     this.setState({ matchList: list });
   }

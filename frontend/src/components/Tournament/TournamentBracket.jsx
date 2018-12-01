@@ -6,7 +6,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import Bracket from "react-tournament-bracket";
+import { Bracket } from "react-tournament-bracket";
 
 function makeMatchesObject(matchesList) {
   const rootMatch = getRootMatch(matchesList);
@@ -71,15 +71,38 @@ function mapIdToMatch(matchesList) {
   return mapping;
 }
 
+function isRoundRobin(matchesList) {
+  for (const match of matchesList) {
+    if (match.feederA || match.feederB) {
+      return false;
+    }
+  }
+  return true;
+}
+
 class TournamentBracket extends React.Component {
   render() {
     const { matchesList } = this.props;
-    if (matchesList.length > 0) {
+    if (matchesList.length > 0 && !isRoundRobin(matchesList)) {
       const matchesObject = makeMatchesObject(matchesList);
       return <Bracket game={matchesObject} />;
     }
-    if (true) {
-      const teams = ["Team A", "Team B", "Team C", "Team D", "Team E"];
+    if (matchesList.length > 0 && isRoundRobin(matchesList)) {
+      const teamResults = {};
+      for (const match of matchesList) {
+        const teamA = match.teamA.teamName;
+        const teamB = match.teamB.teamName;
+        teamResults[teamA] = teamResults[teamA] || {};
+        teamResults[teamB] = teamResults[teamB] || {};
+        if (match.winner === 1) {
+          teamResults[teamA][teamB] = true;
+          teamResults[teamB][teamA] = false;
+        } else if (match.winner === 2) {
+          teamResults[teamA][teamB] = false;
+          teamResults[teamB][teamA] = true;
+        }
+      }
+      const teams = Object.keys(teamResults);
       return (
         <Paper>
           <Table>
@@ -97,7 +120,18 @@ class TournamentBracket extends React.Component {
                     teamB =>
                       teamA !== teamB ? (
                         <TableCell key={teamB}>
-                          <strong>(Win/Lose)</strong> vs {teamB}
+                          <strong>
+                            {(() => {
+                              if (teamResults[teamA][teamB] === true) {
+                                return "Win";
+                              }
+                              if (teamResults[teamA][teamB] === false) {
+                                return "Lose";
+                              }
+                              return "Pending";
+                            })()}
+                          </strong>{" "}
+                          vs {teamB}
                         </TableCell>
                       ) : (
                         <TableCell />

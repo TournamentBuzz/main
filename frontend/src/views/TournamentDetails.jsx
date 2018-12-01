@@ -4,6 +4,7 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import PencilIcon from "@material-ui/icons/Create";
 import AddIcon from "@material-ui/icons/Add";
@@ -43,6 +44,7 @@ class TournamentDetails extends React.Component {
     this.handleClickAddReferee = this.handleClickAddReferee.bind(this);
     this.handleClickAddMatch = this.handleClickAddMatch.bind(this);
     this.handleClickAddTeam = this.handleClickAddTeam.bind(this);
+    this.generateBracket = this.generateBracket.bind(this);
   }
 
   handleClickAddReferee() {
@@ -104,6 +106,11 @@ class TournamentDetails extends React.Component {
 
   async componentDidMount() {
     await this.getTournamentDetails(this.props.match.params.tournamentID);
+  }
+
+  async generateBracket() {
+    await TournamentAPI.generateBracket(this.state.tournamentID);
+    this.props.history.push(`/tournament/${this.state.tournamentID}`);
   }
 
   render() {
@@ -187,6 +194,16 @@ class TournamentDetails extends React.Component {
           <Typography variant="body1" className={classes.detailsText}>
             <b>End Date:</b> {this.state.endDate}
           </Typography>
+          {this.state.currentUser != null &&
+          this.state.currentUser === this.state.creator ? (
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={this.generateBracket}
+            >
+              Generate Bracket
+            </Button>
+          ) : null}
         </div>
         <hr />
         <div>
@@ -203,7 +220,9 @@ class TournamentDetails extends React.Component {
             </div>
           ) : null}
           <Typography variant="headline" className={classes.detailsText}>
-            <b>Matches</b>
+            <a href={`/tournament/${this.state.tournamentID}/bracket`}>
+              <b>Matches</b>
+            </a>
           </Typography>
           <MatchList tournamentID={this.props.match.params.tournamentID} />
         </div>

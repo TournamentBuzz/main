@@ -16,15 +16,26 @@ class MatchCard extends React.Component {
   }
 
   render() {
-    const { classes, id, matchName, time } = this.props;
+    const { classes, tournamentMatch } = this.props;
+    const timeString = tournamentMatch.matchTime
+      ? new Date(
+          tournamentMatch.matchTime.slice(0, 19).replace("T", " ") + " UTC"
+        ).toLocaleString()
+      : "";
+    console.log(tournamentMatch);
+    const matchName =
+      `Match ${tournamentMatch.id}: ` +
+      (tournamentMatch.matchName ||
+        `${tournamentMatch.teamA.teamName || "~Bye~"} vs. ${tournamentMatch
+          .teamB.teamName || "~Bye~"}`);
     return (
       <Card className={classes.card}>
-        <CardActionArea onClick={() => this.handleClick(id)}>
+        <CardActionArea onClick={() => this.handleClick(tournamentMatch.id)}>
           <CardContent>
             <Typography className={classes.title} component="h1">
               {matchName}
             </Typography>
-            <Typography color="textSecondary">{time}</Typography>
+            <Typography color="textSecondary">{timeString}</Typography>
           </CardContent>
         </CardActionArea>
       </Card>
