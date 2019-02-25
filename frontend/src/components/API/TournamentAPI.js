@@ -147,4 +147,18 @@ export default class TournamentAPI {
     const json = await res.json();
     return json.tournamentId;
   }
+
+  static async generateBracket(tournamentId) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch(`/tournaments/id/${tournamentId}/generate`, {
+      method: "POST",
+      headers: Authentication.withJWT()
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.generationSuccess;
+    } else {
+      throw new errors.UnexpectedError();
+    }
+  }
 }

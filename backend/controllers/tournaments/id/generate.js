@@ -135,17 +135,15 @@ async function generateMatchLayer(connection, matches, tournamentId) {
     };
     match.feederA = matches[x].id;
     match.feederB = matches[matches.length - (x + 1)].id;
-    match.matchName =
-      "Winner of Match " +
-      match.feederA +
-      " vs Winner of Match " +
-      match.feederB;
+    let teamAName = "Winner of Match " + match.feederA;
+    let teamBName = "Winner of Match " + match.feederB;
     if (matches[x].winner !== 0) {
       if (matches[x].winner === 1) {
         match.teamA = matches[x].teamA;
       } else {
         match.teamA = matches[x].teamB;
       }
+      teamAName = match.teamA.teamName;
     }
     if (matches[matches.length - (x + 1)].winner !== 0) {
       if (matches[matches.length - (x + 1)].winner === 1) {
@@ -153,6 +151,16 @@ async function generateMatchLayer(connection, matches, tournamentId) {
       } else {
         match.teamB = matches[matches.length - (x + 1)].teamB;
       }
+      teamBName = match.teamB.teamName;
+    }
+    match.matchName = teamAName + " vs " + teamBName;
+    let teamAId = null;
+    let teamBId = null;
+    if (match.teamA) {
+      teamAId = match.teamA.teamId;
+    }
+    if (match.teamB) {
+      teamBId = match.teamB.teamId;
     }
     const created = await sqlwrapper.createMatch(
       connection,
@@ -161,8 +169,8 @@ async function generateMatchLayer(connection, matches, tournamentId) {
       match.matchTime,
       match.matchName,
       match.tournament,
-      match.teamA,
-      match.teamB,
+      teamAId,
+      teamBId,
       match.feederA,
       match.feederB,
       match.scoreA,
@@ -201,14 +209,28 @@ async function generateMatchLayerFromTeams(connection, teams, tournamentId) {
     if (teams[teams.length - (x + 1)]) {
       match.teamB = teams[teams.length - (x + 1)].id;
     }
+    let teamAObject = null;
+    let teamBObject = null;
     if (match.teamB === null) {
       // Set the winner to the first team
       match.winner = 1;
       const teamA = (await sqlwrapper.getTeam(connection, match.teamA))[0];
+      teamAObject = {
+        teamId: teamA.id,
+        teamName: teamA.teamName
+      };
       match.matchName = "BYE for " + teamA.teamName;
     } else {
       const teamA = (await sqlwrapper.getTeam(connection, match.teamA))[0];
       const teamB = (await sqlwrapper.getTeam(connection, match.teamB))[0];
+      teamAObject = {
+        teamId: teamA.id,
+        teamName: teamA.teamName
+      };
+      teamBObject = {
+        teamId: teamB.id,
+        teamName: teamB.teamName
+      };
       match.matchName = teamA.teamName + " vs " + teamB.teamName;
     }
     const created = await sqlwrapper.createMatch(
@@ -228,6 +250,8 @@ async function generateMatchLayerFromTeams(connection, teams, tournamentId) {
       match.feederBIsLoser
     );
     match.id = created.insertId;
+    match.teamA = teamAObject;
+    match.teamB = teamBObject;
     matches.push(match);
   }
   return matches;

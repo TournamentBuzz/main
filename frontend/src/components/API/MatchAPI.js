@@ -5,11 +5,12 @@ export default class MatchAPI {
   static async createMatch(
     tournament,
     location,
-    details,
     matchName,
     matchTime,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB
   ) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/matches/create`, {
@@ -18,11 +19,12 @@ export default class MatchAPI {
       body: JSON.stringify({
         tournament,
         location,
-        details,
         matchName,
         matchTime,
         teamA,
-        teamB
+        teamB,
+        feederA,
+        feederB
       })
     });
 
@@ -37,11 +39,12 @@ export default class MatchAPI {
   static async editMatch(
     matchId,
     location,
-    details,
     matchName,
     matchTime,
     teamA,
-    teamB
+    teamB,
+    feederA,
+    feederB
   ) {
     if (!Authentication.loggedIn()) return;
     const res = await fetch(`/matches/edit`, {
@@ -50,11 +53,12 @@ export default class MatchAPI {
       body: JSON.stringify({
         matchId,
         location,
-        details,
         matchName,
         matchTime,
         teamA,
-        teamB
+        teamB,
+        feederA,
+        feederB
       })
     });
 
@@ -139,5 +143,24 @@ export default class MatchAPI {
     }
     const json = await res.json();
     return json.match;
+  }
+
+  static async submitMatchScore(matchID, scoreA, scoreB, winner) {
+    if (!Authentication.loggedIn()) return;
+    const res = await fetch(`/matches/id/${matchID}/submit`, {
+      method: "POST",
+      headers: Authentication.withJWT(),
+      body: JSON.stringify({
+        scoreA,
+        scoreB,
+        winner
+      })
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return json.scoreSubmitSuccess;
+    } else {
+      throw new errors.UnexpectedError();
+    }
   }
 }
