@@ -23,7 +23,8 @@ CREATE TABLE tournaments (
     endDate DATE DEFAULT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(creator)
-    REFERENCES users(email)
+		REFERENCES users(email)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE teams (
@@ -35,9 +36,11 @@ CREATE TABLE teams (
     seed INT(4) DEFAULT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(leader)
-    REFERENCES users(email),
+		REFERENCES users(email)
+        ON DELETE CASCADE,
     FOREIGN KEY(tournament)
-    REFERENCES tournaments(id)
+		REFERENCES tournaments(id)
+		ON DELETE CASCADE
 );
 
 CREATE TABLE matches (
@@ -58,15 +61,14 @@ CREATE TABLE matches (
     feederBIsLoser BOOL DEFAULT FALSE,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
-    REFERENCES tournaments(id),
+		REFERENCES tournaments(id)
+		ON DELETE CASCADE,
     FOREIGN KEY(teamA)
-    REFERENCES teams(id),
+		REFERENCES teams(id)
+        ON DELETE CASCADE,
     FOREIGN KEY(teamB)
-    REFERENCES teams(id),
-    FOREIGN KEY(feederA)
-    REFERENCES matches(id),
-    FOREIGN KEY(feederB)
-    REFERENCES matches(id)
+		REFERENCES teams(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE teamMembers (
@@ -77,17 +79,22 @@ CREATE TABLE teamMembers (
     approved BOOL DEFAULT FALSE NOT NULL,
 	PRIMARY KEY(userEmail, teamId),
     FOREIGN KEY(userEmail)
-    REFERENCES users(email),
+		REFERENCES users(email)
+		ON DELETE CASCADE,
     FOREIGN KEY(teamId)
-    REFERENCES teams(id)
+		REFERENCES teams(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE referees (
 	userEmail VARCHAR(255) NOT NULL,
     tournamentId INT(12) NOT NULL,
     FOREIGN KEY(userEmail)
-    REFERENCES users(email),
+		REFERENCES users(email)
+		ON DELETE CASCADE,
     FOREIGN KEY(tournamentId)
-    REFERENCES tournaments(id),
+		REFERENCES tournaments(id)
+		ON DELETE CASCADE,
     PRIMARY KEY(userEmail, tournamentId)
 );
+

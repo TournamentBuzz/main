@@ -363,7 +363,7 @@ async function reloadMatches(connection, matchId) {
   }
   try {
     for (let i = 0; i < matches.length; i++) {
-      if (matches[i].feederA === matchId) {
+      if (parseInt(matches[i].feederA, 10) === parseInt(matchId, 10)) {
         if (matches[i].feederAIsLoser === 1) {
           updateMatchField(connection, matches[i].id, "teamA", loser);
         } else {
