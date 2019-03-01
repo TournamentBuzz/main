@@ -65,10 +65,10 @@ CREATE TABLE matches (
 		ON DELETE CASCADE,
     FOREIGN KEY(teamA)
 		REFERENCES teams(id)
-        ON DELETE CASCADE,
+        ON DELETE SET NULL,
     FOREIGN KEY(teamB)
 		REFERENCES teams(id)
-        ON DELETE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE teamMembers (
