@@ -1,5 +1,6 @@
 import * as errors from "./errors";
 import Authentication from "./Authentication";
+import Config from "./APIConfig";
 
 export const ScoringTypes = {
   POINTS: "points",
@@ -28,7 +29,7 @@ export default class TournamentAPI {
     endDate
   ) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/tournaments/create", {
+    const res = await fetch(`${Config.base_url}/tournaments/create`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -67,7 +68,7 @@ export default class TournamentAPI {
     endDate
   ) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/tournaments/edit", {
+    const res = await fetch(`${Config.base_url}/tournaments/edit`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -94,7 +95,7 @@ export default class TournamentAPI {
 
   static async deleteTournament(tournamentId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/tournaments/delete", {
+    const res = await fetch(`${Config.base_url}/tournaments/delete`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ tournamentId })
@@ -108,7 +109,7 @@ export default class TournamentAPI {
   }
 
   static async getTournaments() {
-    const res = await fetch("/tournaments", {
+    const res = await fetch(`${Config.base_url}/tournaments`, {
       method: "GET",
       headers: Authentication.withoutJWT()
     });
@@ -121,7 +122,7 @@ export default class TournamentAPI {
   }
 
   static async getTournament(id) {
-    const res = await fetch(`/tournaments/id/${id}`, {
+    const res = await fetch(`${Config.base_url}/tournaments/id/${id}`, {
       method: "GET",
       headers: Authentication.withoutJWT()
     });
@@ -135,7 +136,7 @@ export default class TournamentAPI {
 
   static async searchTournaments(search, filter = {}) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/tournaments/search", {
+    const res = await fetch(`${Config.base_url}/tournaments/search`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ search, filter })
@@ -150,10 +151,13 @@ export default class TournamentAPI {
 
   static async generateBracket(tournamentId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/generate`, {
-      method: "POST",
-      headers: Authentication.withJWT()
-    });
+    const res = await fetch(
+      `${Config.base_url}/tournaments/id/${tournamentId}/generate`,
+      {
+        method: "POST",
+        headers: Authentication.withJWT()
+      }
+    );
     if (res.ok) {
       const json = await res.json();
       return json.generationSuccess;

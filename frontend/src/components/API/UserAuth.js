@@ -1,9 +1,10 @@
 import * as errors from "./errors";
 import Authentication from "./Authentication";
+import Config from "./APIConfig";
 
 export default class UserAuth {
   static async login(email, password) {
-    const res = await fetch("/user/login", {
+    const res = await fetch(`${Config.base_url}/user/login`, {
       method: "POST",
       headers: Authentication.withoutJWT(),
       body: JSON.stringify({ email, password })
@@ -21,7 +22,7 @@ export default class UserAuth {
   }
 
   static async register(name, email, password) {
-    const res = await fetch("/user/register", {
+    const res = await fetch(`${Config.base_url}/user/register`, {
       method: "POST",
       headers: Authentication.withoutJWT(),
       body: JSON.stringify({ email, password, name })
@@ -41,7 +42,7 @@ export default class UserAuth {
 
   static async renew() {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/user/renew", {
+    const res = await fetch(`${Config.base_url}/user/renew`, {
       method: "GET",
       headers: Authentication.withJWT()
     });

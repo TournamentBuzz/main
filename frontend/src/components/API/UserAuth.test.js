@@ -1,4 +1,5 @@
 import UserAuth from "./UserAuth";
+import Config from "./APIConfig";
 
 const name = "George P. Burdell";
 const email = "gburdell3@gatech.edu";
@@ -22,7 +23,7 @@ describe("login", () => {
       // pass
     } finally {
       const [uri, request] = fetch.mock.calls[0];
-      expect(uri).toEqual("/user/login");
+      expect(uri).toEqual(`${Config.base_url}/user/login`);
       expect(request.method).toEqual("POST");
       expect(JSON.parse(request.body)).toEqual({ email, password });
     }
@@ -54,7 +55,7 @@ describe("register", () => {
       // pass
     } finally {
       const [uri, request] = fetch.mock.calls[0];
-      expect(uri).toEqual("/user/register");
+      expect(uri).toEqual(`${Config.base_url}/user/register`);
       expect(request.method).toEqual("POST");
       expect(JSON.parse(request.body)).toEqual({ email, password, name });
     }
@@ -89,7 +90,7 @@ describe("renew", () => {
       // pass
     } finally {
       const [uri, request] = fetch.mock.calls[0];
-      expect(uri).toEqual("/user/renew");
+      expect(uri).toEqual(`${Config.base_url}/user/renew`);
       expect(request.method).toEqual("GET");
       expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
     }
@@ -165,7 +166,7 @@ describe("tournaments", () => {
         // pass
       } finally {
         const [uri, request] = fetch.mock.calls[0];
-        expect(uri).toEqual("/tournaments/create");
+        expect(uri).toEqual(`${Config.base_url}/tournaments/create`);
         expect(request.method).toEqual("POST");
         expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
         expect(JSON.parse(request.body)).toEqual(tournament);
@@ -208,7 +209,7 @@ describe("tournaments", () => {
         // pass
       } finally {
         const [uri, request] = fetch.mock.calls[0];
-        expect(uri).toEqual("/tournaments/edit");
+        expect(uri).toEqual(`${Config.base_url}/tournaments/edit`);
         expect(request.method).toEqual("POST");
         expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
         expect(JSON.parse(request.body)).toEqual({
@@ -245,7 +246,7 @@ describe("tournaments", () => {
         // pass
       } finally {
         const [uri, request] = fetch.mock.calls[0];
-        expect(uri).toEqual("/tournaments/delete");
+        expect(uri).toEqual(`${Config.base_url}/tournaments/delete`);
         expect(request.method).toEqual("POST");
         expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
         expect(JSON.parse(request.body)).toEqual({ tournamentId });
@@ -270,7 +271,7 @@ describe("tournaments", () => {
         // pass
       } finally {
         const [uri, request] = fetch.mock.calls[0];
-        expect(uri).toEqual("/tournaments");
+        expect(uri).toEqual(`${Config.base_url}/tournaments`);
         expect(request.method).toEqual("GET");
         expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
       }
@@ -297,7 +298,7 @@ describe("tournaments", () => {
         // pass
       } finally {
         const [uri, request] = fetch.mock.calls[0];
-        expect(uri).toEqual("/tournaments/search");
+        expect(uri).toEqual(`${Config.base_url}/tournaments/search`);
         expect(request.method).toEqual("POST");
         expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
         expect(JSON.parse(request.body)).toEqual({ search, filter });
@@ -340,7 +341,9 @@ describe("tournaments", () => {
           // pass
         } finally {
           const [uri, request] = fetch.mock.calls[0];
-          expect(uri).toEqual(`/tournaments/${tournamentId}/matches/create`);
+          expect(uri).toEqual(
+            `${Config.base_url}/tournaments/${tournamentId}/matches/create`
+          );
           expect(request.method).toEqual("POST");
           expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
           expect(JSON.parse(request.body)).toEqual(match);
@@ -377,7 +380,9 @@ describe("tournaments", () => {
           // pass
         } finally {
           const [uri, request] = fetch.mock.calls[0];
-          expect(uri).toEqual(`/tournaments/${tournamentId}/matches/edit`);
+          expect(uri).toEqual(
+            `${Config.base_url}/tournaments/${tournamentId}/matches/edit`
+          );
           expect(request.method).toEqual("POST");
           expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
           expect(JSON.parse(request.body)).toEqual({ matchId, ...match });
@@ -407,7 +412,9 @@ describe("tournaments", () => {
           // pass
         } finally {
           const [uri, request] = fetch.mock.calls[0];
-          expect(uri).toEqual(`/tournaments/${tournamentId}/matches/delete`);
+          expect(uri).toEqual(
+            `${Config.base_url}/tournaments/${tournamentId}/matches/delete`
+          );
           expect(request.method).toEqual("POST");
           expect(request.headers["Authorization"]).toEqual(`Bearer ${jwt}`);
           expect(JSON.parse(request.body)).toEqual({ tournamentId, matchId });

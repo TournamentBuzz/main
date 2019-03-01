@@ -1,5 +1,6 @@
 import * as errors from "./errors";
 import Authentication from "./Authentication";
+import Config from "./APIConfig";
 
 export default class MatchAPI {
   static async createMatch(
@@ -13,7 +14,7 @@ export default class MatchAPI {
     feederB
   ) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/matches/create`, {
+    const res = await fetch(`${Config.base_url}/matches/create`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -47,7 +48,7 @@ export default class MatchAPI {
     feederB
   ) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/matches/edit`, {
+    const res = await fetch(`${Config.base_url}/matches/edit`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -72,7 +73,7 @@ export default class MatchAPI {
 
   static async deleteMatch(matchId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/matches/delete`, {
+    const res = await fetch(`${Config.base_url}/matches/delete`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -90,7 +91,7 @@ export default class MatchAPI {
 
   static async publishMatch(matchId, publish) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/matches/publish`, {
+    const res = await fetch(`${Config.base_url}/matches/publish`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
@@ -114,10 +115,13 @@ export default class MatchAPI {
     } else {
       authHeader = Authentication.withoutJWT();
     }
-    const res = await fetch(`/tournaments/id/${tournamentID}/matches/`, {
-      method: "GET",
-      headers: authHeader
-    });
+    const res = await fetch(
+      `${Config.base_url}/tournaments/id/${tournamentID}/matches/`,
+      {
+        method: "GET",
+        headers: authHeader
+      }
+    );
 
     if (!res.ok) {
       throw new errors.UnexpectedError();
@@ -133,7 +137,7 @@ export default class MatchAPI {
     } else {
       authHeader = Authentication.withoutJWT();
     }
-    const res = await fetch(`/matches/id/${matchID}`, {
+    const res = await fetch(`${Config.base_url}/matches/id/${matchID}`, {
       method: "GET",
       headers: authHeader
     });
@@ -147,7 +151,7 @@ export default class MatchAPI {
 
   static async submitMatchScore(matchID, scoreA, scoreB, winner) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/matches/id/${matchID}/submit`, {
+    const res = await fetch(`${Config.base_url}/matches/id/${matchID}/submit`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({
