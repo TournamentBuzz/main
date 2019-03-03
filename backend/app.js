@@ -1,7 +1,6 @@
 "use strict";
 
 const express = require("express");
-//const favicon = require('serve-favicon');
 
 const config = require("./config");
 const connection = require("./model/connect");
@@ -14,10 +13,11 @@ const invites = require("./controllers/invites");
 const requireAuth = require("./middleware/auth/verify");
 
 // logging
-const logger = require("morgan");
 const log4js = require("log4js").getLogger();
 if (config.serverConfig.env === "development") {
   log4js.level = "debug";
+} else {
+  log4js.level = "error";
 }
 
 const app = express();
@@ -33,13 +33,11 @@ const c = connection.connect(
   app.get("databaseConfig").host,
   app.get("databaseConfig").username,
   app.get("databaseConfig").password,
-  app.get("databaseConfig").schema
+  app.get("databaseConfig").schema,
+  log4js
 );
 app.set("databaseConnection", c);
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 

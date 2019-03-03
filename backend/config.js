@@ -2,7 +2,7 @@
 
 module.exports = {
   serverConfig: {
-    env: "development",
+    env: process.env.ENV || "development",
     port: process.env.PORT || "8080"
   },
   authConfig: {
