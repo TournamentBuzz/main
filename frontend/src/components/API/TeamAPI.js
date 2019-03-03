@@ -1,14 +1,18 @@
 import * as errors from "./errors";
 import Authentication from "./Authentication";
+import Config from "./APIConfig";
 
 export default class TeamAPI {
   static async createTeam(tournamentId, teamName) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/teams/create`, {
-      method: "POST",
-      headers: Authentication.withJWT(),
-      body: JSON.stringify({ teamName })
-    });
+    const res = await fetch(
+      `${Config.base_url}/tournaments/id/${tournamentId}/teams/create`,
+      {
+        method: "POST",
+        headers: Authentication.withJWT(),
+        body: JSON.stringify({ teamName })
+      }
+    );
 
     if (!res.ok) {
       throw new errors.UnexpectedError();
@@ -19,11 +23,14 @@ export default class TeamAPI {
 
   static async withdrawTeam(tournamentId, teamId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch(`/tournaments/id/${tournamentId}/teams/withdraw`, {
-      method: "POST",
-      headers: Authentication.withJWT(),
-      body: JSON.stringify({ teamId })
-    });
+    const res = await fetch(
+      `${Config.base_url}/tournaments/id/${tournamentId}/teams/withdraw`,
+      {
+        method: "POST",
+        headers: Authentication.withJWT(),
+        body: JSON.stringify({ teamId })
+      }
+    );
 
     if (!res.ok) {
       throw new errors.UnexpectedError();
@@ -33,7 +40,7 @@ export default class TeamAPI {
   }
 
   static async inviteToTeam(teamId, email) {
-    const res = await fetch(`/teams/invite`, {
+    const res = await fetch(`${Config.base_url}/teams/invite`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ teamId, email })
@@ -47,7 +54,7 @@ export default class TeamAPI {
   }
 
   static async removeFromTeam(teamId, email) {
-    const res = await fetch(`/teams/remove`, {
+    const res = await fetch(`${Config.base_url}/teams/remove`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ teamId, email })
@@ -61,7 +68,7 @@ export default class TeamAPI {
   }
 
   static async promote(teamId, email) {
-    const res = await fetch(`/teams/promote`, {
+    const res = await fetch(`${Config.base_url}/teams/promote`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ teamId, email })
@@ -75,10 +82,13 @@ export default class TeamAPI {
   }
 
   static async getTeams(tournamentId) {
-    const res = await fetch(`/tournaments/id/${tournamentId}/teams`, {
-      method: "GET",
-      headers: Authentication.withJWT()
-    });
+    const res = await fetch(
+      `${Config.base_url}/tournaments/id/${tournamentId}/teams`,
+      {
+        method: "GET",
+        headers: Authentication.withJWT()
+      }
+    );
     if (!res.ok) {
       throw new errors.UnexpectedError();
     }
@@ -87,7 +97,7 @@ export default class TeamAPI {
   }
 
   static async getTeam(teamId) {
-    const res = await fetch(`/teams/id/${teamId}`, {
+    const res = await fetch(`${Config.base_url}/teams/id/${teamId}`, {
       method: "GET",
       headers: Authentication.withJWT()
     });
@@ -100,7 +110,7 @@ export default class TeamAPI {
   }
 
   static async getTeamMembers(teamId) {
-    const res = await fetch(`/teams/id/${teamId}/members`, {
+    const res = await fetch(`${Config.base_url}/teams/id/${teamId}/members`, {
       method: "GET",
       headers: Authentication.withJWT()
     });
@@ -114,7 +124,7 @@ export default class TeamAPI {
 
   static async getPendingInvites() {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/invites", {
+    const res = await fetch(`${Config.base_url}/invites`, {
       method: "GET",
       headers: Authentication.withJWT()
     });
@@ -127,7 +137,7 @@ export default class TeamAPI {
 
   static async acceptInvite(teamId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/invites/accept", {
+    const res = await fetch(`${Config.base_url}/invites/accept`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ teamId })
@@ -141,7 +151,7 @@ export default class TeamAPI {
 
   static async declineInvite(teamId) {
     if (!Authentication.loggedIn()) return;
-    const res = await fetch("/invites/decline", {
+    const res = await fetch(`${Config.base_url}/invites/decline`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ teamId })
@@ -154,7 +164,7 @@ export default class TeamAPI {
   }
 
   static async payForTeam(teamId, token) {
-    const res = await fetch("/teams/charge", {
+    const res = await fetch(`${Config.base_url}/teams/charge`, {
       method: "POST",
       headers: Authentication.withJWT(),
       body: JSON.stringify({ teamId, token })
