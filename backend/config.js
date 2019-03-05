@@ -7,7 +7,7 @@ module.exports = {
   },
   authConfig: {
     authKey: process.env.AUTH_EC_KEY || "testsecret",
-    expiresIn: "15m"
+    expiresIn: process.env.AUTH_EXP || "15m"
   },
   databaseConfig: {
     host: process.env.DB_HOST || "localhost",
