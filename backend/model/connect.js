@@ -1,8 +1,9 @@
 "use strict";
 
 const mysql = require("mysql");
+const logger = require("log4js").getLogger();
 
-function connect(host, username, password, database, logger) {
+function connect(host, username, password, database, app) {
   const connection = mysql.createConnection({
     host: host,
     user: username,
@@ -34,7 +35,7 @@ function connect(host, username, password, database, logger) {
       throw err;
     }
   });
-  return connection;
+  app.set("databaseConnection", connection);
 }
 
 function connectionCallbackWrapper(host, username, password, database, logger) {
