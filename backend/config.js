@@ -7,7 +7,8 @@ module.exports = {
   },
   authConfig: {
     authKey: process.env.AUTH_EC_KEY || "testsecret",
-    expiresIn: "15m"
+    expiresIn: "15m",
+    googleAuthClientId: process.env.AUTH_GOOGLE_CLIENT_ID
   },
   databaseConfig: {
     host: process.env.DB_HOST || "localhost",
