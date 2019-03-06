@@ -11,7 +11,6 @@ router.get("/:id", async function(req, res, next) {
   try {
     const c = req.app.get("databaseConnection");
     const teamObject = await sqlwrapper.getTeam(c, req.params.id);
-    console.log(teamObject);
     if (!teamObject[0]) {
       const err = new Error("Team does not exist!");
       err.status = 404;

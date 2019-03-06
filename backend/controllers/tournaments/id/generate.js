@@ -23,23 +23,36 @@ router.post("/", async function(req, res, next) {
         tournamentObject[0].id,
         tournamentObject[0].maxTeamSize
       );
-
-      if (tournamentObject[0].tournamentType === "Single Elim") {
-        await generateSingleElimBracket(c, validTeams, tournamentObject[0].id);
-        res.status(200);
-        res.json({ generationSuccess: true });
-      } else if (tournamentObject[0].tournamentType === "Double Elim") {
-        const err = new Error("Bracket type does not exist!");
+      if (validTeams.length < 2) {
+        const err = new Error("Not enough teams to generate a valid bracket!");
         err.status = 400;
         next(err);
-      } else if (tournamentObject[0].tournamentType === "Round-robin") {
-        await generateRoundRobinMatches(c, validTeams, tournamentObject[0].id);
-        res.status(200);
-        res.json({ generationSuccess: true });
       } else {
-        const err = new Error("Bracket type does not exist!");
-        err.status = 400;
-        next(err);
+        if (tournamentObject[0].tournamentType === "Single Elim") {
+          await generateSingleElimBracket(
+            c,
+            validTeams,
+            tournamentObject[0].id
+          );
+          res.status(200);
+          res.json({ generationSuccess: true });
+        } else if (tournamentObject[0].tournamentType === "Double Elim") {
+          const err = new Error("Bracket type does not exist!");
+          err.status = 400;
+          next(err);
+        } else if (tournamentObject[0].tournamentType === "Round-robin") {
+          await generateRoundRobinMatches(
+            c,
+            validTeams,
+            tournamentObject[0].id
+          );
+          res.status(200);
+          res.json({ generationSuccess: true });
+        } else {
+          const err = new Error("Bracket type does not exist!");
+          err.status = 400;
+          next(err);
+        }
       }
     } else {
       const err = new Error("You cannot generate matches for this tournament!");

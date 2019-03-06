@@ -29,14 +29,13 @@ app.set("authConfig", config.authConfig);
 // set database config
 app.set("databaseConfig", config.databaseConfig);
 // Initiate database connection
-const c = connection.connect(
+connection.connect(
   app.get("databaseConfig").host,
   app.get("databaseConfig").username,
   app.get("databaseConfig").password,
   app.get("databaseConfig").schema,
-  log4js
+  app
 );
-app.set("databaseConnection", c);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -79,7 +78,7 @@ app.use(function(err, req, res, next) {
   if (req.app.get("serverConfig").env !== "development" && err.status === 500) {
     err.message = "Internal Server Error";
   } else if (err.status < 500) {
-    log4js.warn(err.message);
+    log4js.warn(`${req.ip} - ${req.baseUrl} - ${err.message}`);
   } else {
     log4js.error(err);
   }
