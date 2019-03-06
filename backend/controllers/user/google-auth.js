@@ -7,17 +7,16 @@ const router = express.Router();
 const { OAuth2Client } = require("google-auth-library");
 const gapi = require("googleapis");
 
-router.post("", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   if (req.body.gToken) {
-    const client = new OAuth2Client(
-      req.app.get("authConfig").googleAuthClientId
-    );
+    const clientIds = JSON.parse(req.app.get("authConfig").googleAuthClientId);
+    const client = new OAuth2Client(clientIds);
     try {
       const verifyToken = await new Promise(function(resolve, reject) {
         client.verifyIdToken(
           {
             idToken: req.body.gToken,
-            audience: JSON.parse(req.app.get("authConfig").googleAuthClientId)
+            audience: clientIds
           },
           function(e, login) {
             if (login) {
@@ -44,7 +43,7 @@ router.post("", async (req, res, next) => {
           throw err;
         });
       if (verifyToken) {
-        if (verifyToken[1] === req.app.get("authConfig").googleAuthClientId) {
+        if (clientIds.includes(verifyToken[1])) {
           const token = jwt.sign(
             {
               id: verifyToken[0]
@@ -61,6 +60,7 @@ router.post("", async (req, res, next) => {
         }
       }
     } catch (err) {
+      err.status = 401;
       next(err);
     }
   } else {

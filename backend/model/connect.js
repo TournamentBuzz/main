@@ -16,7 +16,7 @@ function connect(host, username, password, database, app) {
       logger.error(err);
       logger.warn("Retrying connection to MySQL database...");
       setTimeout(
-        connectionCallbackWrapper(host, username, password, database, logger),
+        connectionCallbackWrapper(host, username, password, database, app),
         2000
       );
     }
@@ -38,14 +38,14 @@ function connect(host, username, password, database, app) {
   app.set("databaseConnection", connection);
 }
 
-function connectionCallbackWrapper(host, username, password, database, logger) {
+function connectionCallbackWrapper(host, username, password, database, app) {
   return () => {
     connect(
       host,
       username,
       password,
       database,
-      logger
+      app
     );
   };
 }
