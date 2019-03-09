@@ -79,7 +79,7 @@ app.use(function(err, req, res, next) {
     err.message = "Internal Server Error";
   } else if (err.status < 500) {
     log4js.warn(
-      `${req.header("HTTP_X_REAL_IP")} - ${req.url} - ${err.message}`
+      `${req.header("x-forwarded-for")} - ${req.url} - ${err.message}`
     );
   } else {
     log4js.error(err);
