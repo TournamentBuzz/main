@@ -24,12 +24,11 @@ function connect(host, username, password, database, app) {
   connection.on("error", err => {
     logger.error(err);
     if (err.code === "PROTOCOL_CONNECTION_LOST") {
+      logger.error(err);
       logger.warn("Retrying connection to MySQL database...");
-      connect(
-        host,
-        username,
-        password,
-        database
+      setTimeout(
+        connectionCallbackWrapper(host, username, password, database, app),
+        2000
       );
     } else {
       throw err;
