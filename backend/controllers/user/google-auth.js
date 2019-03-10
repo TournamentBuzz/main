@@ -5,48 +5,21 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const { OAuth2Client } = require("google-auth-library");
-const gapi = require("googleapis");
 
 router.post("/", async (req, res, next) => {
   if (req.body.gToken) {
     const clientIds = JSON.parse(req.app.get("authConfig").googleAuthClientId);
     const client = new OAuth2Client(clientIds);
     try {
-      const verifyToken = await new Promise(function(resolve, reject) {
-        client.verifyIdToken(
-          {
-            idToken: req.body.gToken,
-            audience: clientIds
-          },
-          function(e, login) {
-            if (login) {
-              const auth2 = gapi.auth2.init({
-                client_id: client, // eslint-disable-line camelcase
-                scope: "profile"
-              });
-              const profile = auth2.currentUser.get().getBasicProfile();
-              const email = profile.getEmail();
-              const payload = login.getPayload();
-              const cid = payload["aud"];
-              resolve((email, cid));
-            } else {
-              console.log(e);
-              reject(e);
-            }
-          }
-        );
-      })
-        .then(function(email, cid) {
-          return [email, cid];
-        })
-        .catch(function(err) {
-          throw err;
-        });
+      const verifyToken = await client.verifyIdToken({
+        idToken: req.body.gToken,
+        audience: clientIds
+      });
       if (verifyToken) {
-        if (clientIds.includes(verifyToken[1])) {
+        if (clientIds.includes(verifyToken["aud"])) {
           const token = jwt.sign(
             {
-              id: verifyToken[0]
+              id: verifyToken["email"]
             },
             req.app.get("authConfig").authKey,
             { expiresIn: req.app.get("authConfig").expiresIn }
