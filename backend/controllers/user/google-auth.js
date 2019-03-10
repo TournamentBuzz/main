@@ -16,10 +16,10 @@ router.post("/", async (req, res, next) => {
         audience: clientIds
       });
       if (verifyToken) {
-        if (clientIds.includes(verifyToken["aud"])) {
+        if (clientIds.includes(verifyToken.payload["aud"])) {
           const token = jwt.sign(
             {
-              id: verifyToken["email"]
+              id: verifyToken.payload["email"]
             },
             req.app.get("authConfig").authKey,
             { expiresIn: req.app.get("authConfig").expiresIn }
