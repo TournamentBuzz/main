@@ -2,6 +2,7 @@
 
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const sqlwrapper = require("../../model/wrapper");
 const router = express.Router();
 
 const { OAuth2Client } = require("google-auth-library");
@@ -17,6 +18,19 @@ router.post("/", async (req, res, next) => {
       });
       if (verifyToken) {
         if (clientIds.includes(verifyToken.payload["aud"])) {
+          const c = req.app.get("databaseConnection");
+          const userExists = await sqlwrapper.userExists(
+            c,
+            verifyToken.payload["email"]
+          );
+          if (!userExists) {
+            await sqlwrapper.createUser(
+              c,
+              verifyToken.payload["name"],
+              verifyToken.payload["email"],
+              null
+            );
+          }
           const token = jwt.sign(
             {
               id: verifyToken.payload["email"]
