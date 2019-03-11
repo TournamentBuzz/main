@@ -24,11 +24,10 @@ router.post("/", async (req, res, next) => {
             verifyToken.payload["email"]
           );
           if (!userExists) {
-            await sqlwrapper.createUser(
+            await sqlwrapper.createGoogleAuthUser(
               c,
               verifyToken.payload["name"],
-              verifyToken.payload["email"],
-              null
+              verifyToken.payload["email"]
             );
           }
           const token = jwt.sign(

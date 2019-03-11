@@ -4,10 +4,33 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 function createUser(connection, uname, email, password) {
-  const query = "INSERT INTO users(email, password, userName) VALUES(?, ?, ?)";
+  const query =
+    "INSERT INTO users(email, password, userName, useGoogleAuth) VALUES(?, ?, ?, ?)";
   return new Promise(async (resolve, reject) => {
     const hash = await bcrypt.hash(password, saltRounds);
-    connection.query(query, [email, hash, uname], function(err, rows, fields) {
+    connection.query(query, [email, hash, uname, false], function(
+      err,
+      rows,
+      fields
+    ) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function createGoogleAuthUser(connection, uname, email) {
+  const query =
+    "INSERT INTO users(email, password, userName, useGoogleAuth) VALUES(?, ?, ?, ?)";
+  return new Promise(async (resolve, reject) => {
+    connection.query(query, [email, null, uname, true], function(
+      err,
+      rows,
+      fields
+    ) {
       if (err) {
         reject(err);
       } else {
@@ -48,9 +71,10 @@ function updateUser(connection, email, fieldName, fieldValue) {
 }
 
 function checkCredentials(connection, email, password) {
-  const query = "SELECT password FROM users WHERE email = ?;";
+  const query =
+    "SELECT password FROM users WHERE email = ? AND useGoogleAuth = ?;";
   return new Promise((resolve, reject) => {
-    connection.query(query, [email], function(err, rows, fields) {
+    connection.query(query, [email, false], function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
@@ -69,6 +93,7 @@ function checkCredentials(connection, email, password) {
 module.exports = {
   checkCredentials: checkCredentials,
   createUser: createUser,
+  createGoogleAuthUser: createGoogleAuthUser,
   userExists: userExists,
   updateUser: updateUser
 };

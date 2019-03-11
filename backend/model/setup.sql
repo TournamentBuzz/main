@@ -5,6 +5,7 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255),
   userName VARCHAR(60),
+  usesGoogleAuth BIT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY(email)
 );
 

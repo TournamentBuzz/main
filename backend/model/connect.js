@@ -35,6 +35,7 @@ function connect(host, username, password, database, app) {
     }
   });
   app.set("databaseConnection", connection);
+  logger.info("Connected to MySQL database!");
 }
 
 function connectionCallbackWrapper(host, username, password, database, app) {
