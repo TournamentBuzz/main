@@ -13,7 +13,17 @@ const invites = require("./controllers/invites");
 const requireAuth = require("./middleware/auth/verify");
 
 // logging
-const log4js = require("log4js").getLogger();
+let log4js = require("log4js");
+log4js.configure({
+  appenders: {
+    filelogger: { type: "file", filename: "output.log" },
+    stdoutlogger: { type: "stdout" }
+  },
+  categories: {
+    default: { appenders: ["filelogger", "stdoutlogger"], level: "error" }
+  }
+});
+log4js = log4js.getLogger();
 if (config.serverConfig.env === "development") {
   log4js.level = "debug";
 } else {

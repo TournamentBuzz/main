@@ -34,8 +34,10 @@ function connect(host, username, password, database, app) {
       throw err;
     }
   });
-  app.set("databaseConnection", connection);
-  logger.info("Connected to MySQL database!");
+  if (connection.state !== "disconnected") {
+    logger.info("Connected to MySQL database!");
+    app.set("databaseConnection", connection);
+  }
 }
 
 function connectionCallbackWrapper(host, username, password, database, app) {
