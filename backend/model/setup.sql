@@ -17,7 +17,7 @@ CREATE TABLE tournaments (
     location VARCHAR(255) DEFAULT NULL,
     scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
     tournamentName VARCHAR(255) DEFAULT NULL,
-    tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+    tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin', 'Custom') NOT NULL DEFAULT 'Single Elim',
     entryCost INT(5) NOT NULL DEFAULT 0,
     maxTeams INT(5) NOT NULL DEFAULT 16,
     startDate DATE DEFAULT NULL,
