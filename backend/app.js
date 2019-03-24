@@ -1,7 +1,6 @@
 "use strict";
 
 const express = require("express");
-//const favicon = require('serve-favicon');
 
 const config = require("./config");
 const connection = require("./model/connect");
@@ -14,10 +13,21 @@ const invites = require("./controllers/invites");
 const requireAuth = require("./middleware/auth/verify");
 
 // logging
-const logger = require("morgan");
-const log4js = require("log4js").getLogger();
+let log4js = require("log4js");
+log4js.configure({
+  appenders: {
+    filelogger: { type: "file", filename: "output.log" },
+    stdoutlogger: { type: "stdout" }
+  },
+  categories: {
+    default: { appenders: ["filelogger", "stdoutlogger"], level: "error" }
+  }
+});
+log4js = log4js.getLogger();
 if (config.serverConfig.env === "development") {
   log4js.level = "debug";
+} else {
+  log4js.level = "error";
 }
 
 const app = express();
@@ -29,17 +39,14 @@ app.set("authConfig", config.authConfig);
 // set database config
 app.set("databaseConfig", config.databaseConfig);
 // Initiate database connection
-const c = connection.connect(
+connection.connect(
   app.get("databaseConfig").host,
   app.get("databaseConfig").username,
   app.get("databaseConfig").password,
-  app.get("databaseConfig").schema
+  app.get("databaseConfig").schema,
+  app
 );
-app.set("databaseConnection", c);
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -81,7 +88,9 @@ app.use(function(err, req, res, next) {
   if (req.app.get("serverConfig").env !== "development" && err.status === 500) {
     err.message = "Internal Server Error";
   } else if (err.status < 500) {
-    log4js.warn(err.message);
+    log4js.warn(
+      `${req.header("x-forwarded-for")} - ${req.url} - ${err.message}`
+    );
   } else {
     log4js.error(err);
   }

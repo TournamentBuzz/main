@@ -25,6 +25,12 @@ router.post("", async (req, res, next) => {
         return;
       }
       if (req.headers.id === tournamentObject[0].creator) {
+        await sqlwrapper.updateTournamentField(
+          c,
+          tournamentObject[0].id,
+          "tournamentType",
+          "Custom"
+        );
         const rows = await sqlwrapper.createMatch(
           c,
           req.body.location,

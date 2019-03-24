@@ -14,7 +14,7 @@ router.get("/:id", async function(req, res, next) {
     const c = req.app.get("databaseConnection");
     let matchObject;
     if (verifyUtil.retrieveAndVerify(req)) {
-      matchObject = await sqlwrapper.getMatch(c, req.param("id"));
+      matchObject = await sqlwrapper.getMatch(c, req.params.id);
       if (!matchObject[0]) {
         const err = new Error("Match does not exist!");
         err.status = 404;
@@ -33,10 +33,10 @@ router.get("/:id", async function(req, res, next) {
         return;
       }
       if (req.headers.id !== tournamentObject[0].creator) {
-        matchObject = await sqlwrapper.getPublishedMatch(c, req.param("id"));
+        matchObject = await sqlwrapper.getPublishedMatch(c, req.params.id);
       }
     } else {
-      matchObject = await sqlwrapper.getPublishedMatch(c, req.param("id"));
+      matchObject = await sqlwrapper.getPublishedMatch(c, req.params.id);
     }
     if (!matchObject[0]) {
       const err = new Error("Match does not exist!");

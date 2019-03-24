@@ -2,12 +2,13 @@
 
 module.exports = {
   serverConfig: {
-    env: "development",
+    env: process.env.ENV || "development",
     port: process.env.PORT || "8080"
   },
   authConfig: {
     authKey: process.env.AUTH_EC_KEY || "testsecret",
-    expiresIn: "15m"
+    expiresIn: process.env.AUTH_EXP || "15m",
+    googleAuthClientId: process.env.AUTH_GOOGLE_CLIENT_ID
   },
   databaseConfig: {
     host: process.env.DB_HOST || "localhost",

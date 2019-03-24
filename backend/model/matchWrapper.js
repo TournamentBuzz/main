@@ -60,14 +60,8 @@ function getMatch(connection, id) {
         const matches = [];
         let teamAObject = null;
         let teamBObject = null;
-        const teamA = (await teamWrapper.getTeam(
-          connection,
-          rows[0].teamA
-        ))[0];
-        const teamB = (await teamWrapper.getTeam(
-          connection,
-          rows[0].teamB
-        ))[0];
+        const teamA = (await teamWrapper.getTeam(connection, rows[0].teamA))[0];
+        const teamB = (await teamWrapper.getTeam(connection, rows[0].teamB))[0];
         if (teamA) {
           teamAObject = {
             teamId: teamA.id,
@@ -75,7 +69,7 @@ function getMatch(connection, id) {
           };
         }
         if (teamB) {
-        teamBObject = {
+          teamBObject = {
             teamId: teamB.id,
             teamName: teamB.teamName
           };
@@ -114,14 +108,8 @@ function getPublishedMatch(connection, id) {
         const matches = [];
         let teamAObject = null;
         let teamBObject = null;
-        const teamA = (await teamWrapper.getTeam(
-          connection,
-          rows[0].teamA
-        ))[0];
-        const teamB = (await teamWrapper.getTeam(
-          connection,
-          rows[0].teamB
-        ))[0];
+        const teamA = (await teamWrapper.getTeam(connection, rows[0].teamA))[0];
+        const teamB = (await teamWrapper.getTeam(connection, rows[0].teamB))[0];
         if (teamA) {
           teamAObject = {
             teamId: teamA.id,
@@ -129,7 +117,7 @@ function getPublishedMatch(connection, id) {
           };
         }
         if (teamB) {
-        teamBObject = {
+          teamBObject = {
             teamId: teamB.id,
             teamName: teamB.teamName
           };
@@ -261,7 +249,7 @@ function getMatches(connection, tournamentId) {
             };
           }
           if (teamB) {
-          teamBObject = {
+            teamBObject = {
               teamId: teamB.id,
               teamName: teamB.teamName
             };
@@ -317,7 +305,7 @@ function getPublishedMatches(connection, tournamentId) {
             };
           }
           if (teamB) {
-          teamBObject = {
+            teamBObject = {
               teamId: teamB.id,
               teamName: teamB.teamName
             };
@@ -375,7 +363,7 @@ async function reloadMatches(connection, matchId) {
   }
   try {
     for (let i = 0; i < matches.length; i++) {
-      if (matches[i].feederA === matchId) {
+      if (parseInt(matches[i].feederA, 10) === parseInt(matchId, 10)) {
         if (matches[i].feederAIsLoser === 1) {
           updateMatchField(connection, matches[i].id, "teamA", loser);
         } else {
@@ -391,8 +379,14 @@ async function reloadMatches(connection, matchId) {
       }
       const updatedMatch = (await getMatch(connection, matches[i].id))[0];
       if (updatedMatch.teamA && updatedMatch.teamB) {
-        const updatedMatchName = updatedMatch.teamA.teamName + " vs " + updatedMatch.teamB.teamName;
-        updateMatchField(connection, matches[i].id, "matchName", updatedMatchName);
+        const updatedMatchName =
+          updatedMatch.teamA.teamName + " vs " + updatedMatch.teamB.teamName;
+        updateMatchField(
+          connection,
+          matches[i].id,
+          "matchName",
+          updatedMatchName
+        );
       }
     }
     return true;

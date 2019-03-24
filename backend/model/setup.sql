@@ -3,8 +3,9 @@ USE tournamentbuzz;
 
 CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
+  password VARCHAR(255),
   userName VARCHAR(60),
+  usesGoogleAuth BIT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY(email)
 );
 
@@ -16,14 +17,15 @@ CREATE TABLE tournaments (
     location VARCHAR(255) DEFAULT NULL,
     scoringType ENUM('Points') NOT NULL DEFAULT 'Points',
     tournamentName VARCHAR(255) DEFAULT NULL,
-    tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin') NOT NULL DEFAULT 'Single Elim',
+    tournamentType ENUM('Single Elim', 'Double Elim', 'Round-robin', 'Custom') NOT NULL DEFAULT 'Single Elim',
     entryCost INT(5) NOT NULL DEFAULT 0,
     maxTeams INT(5) NOT NULL DEFAULT 16,
     startDate DATE DEFAULT NULL,
     endDate DATE DEFAULT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(creator)
-    REFERENCES users(email)
+		REFERENCES users(email)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE teams (
@@ -35,9 +37,11 @@ CREATE TABLE teams (
     seed INT(4) DEFAULT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(leader)
-    REFERENCES users(email),
+		REFERENCES users(email)
+        ON DELETE CASCADE,
     FOREIGN KEY(tournament)
-    REFERENCES tournaments(id)
+		REFERENCES tournaments(id)
+		ON DELETE CASCADE
 );
 
 CREATE TABLE matches (
@@ -58,11 +62,14 @@ CREATE TABLE matches (
     feederBIsLoser BOOL DEFAULT FALSE,
     PRIMARY KEY(id),
     FOREIGN KEY(tournament)
-    REFERENCES tournaments(id),
+		REFERENCES tournaments(id)
+		ON DELETE CASCADE,
     FOREIGN KEY(teamA)
-    REFERENCES teams(id),
+		REFERENCES teams(id)
+        ON DELETE SET NULL,
     FOREIGN KEY(teamB)
-    REFERENCES teams(id)
+		REFERENCES teams(id)
+        ON DELETE SET NULL
 );
 
 CREATE TABLE teamMembers (
@@ -73,17 +80,22 @@ CREATE TABLE teamMembers (
     approved BOOL DEFAULT FALSE NOT NULL,
 	PRIMARY KEY(userEmail, teamId),
     FOREIGN KEY(userEmail)
-    REFERENCES users(email),
+		REFERENCES users(email)
+		ON DELETE CASCADE,
     FOREIGN KEY(teamId)
-    REFERENCES teams(id)
+		REFERENCES teams(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE referees (
 	userEmail VARCHAR(255) NOT NULL,
     tournamentId INT(12) NOT NULL,
     FOREIGN KEY(userEmail)
-    REFERENCES users(email),
+		REFERENCES users(email)
+		ON DELETE CASCADE,
     FOREIGN KEY(tournamentId)
-    REFERENCES tournaments(id),
+		REFERENCES tournaments(id)
+		ON DELETE CASCADE,
     PRIMARY KEY(userEmail, tournamentId)
 );
+

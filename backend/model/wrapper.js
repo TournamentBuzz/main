@@ -5,8 +5,16 @@ const userWrapper = require("./userWrapper");
 const tournamentWrapper = require("./tournamentWrapper");
 const teamWrapper = require("./teamWrapper");
 
+function getUsers(connection) {
+  return userWrapper.getUsers(connection);
+}
+
 function createUser(connection, uname, email, password) {
   return userWrapper.createUser(connection, uname, email, password);
+}
+
+function createGoogleAuthUser(connection, uname, email) {
+  return userWrapper.createGoogleAuthUser(connection, uname, email);
 }
 
 function userExists(connection, email) {
@@ -344,7 +352,9 @@ function getInvites(connection, userEmail) {
 
 module.exports = {
   checkCredentials: checkCredentials,
+  getUsers: getUsers,
   createUser: createUser,
+  createGoogleAuthUser: createGoogleAuthUser,
   userExists: userExists,
   updateUser: updateUser,
   executeSQL: executeSQL,
