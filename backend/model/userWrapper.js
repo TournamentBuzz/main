@@ -3,6 +3,19 @@
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+function getUsers(connection) {
+  const query = "SELECT email userName FROM users";
+  return new Promise(async (resolve, reject) => {
+    connection.query(query, [], function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 function createUser(connection, uname, email, password) {
   const query =
     "INSERT INTO users(email, password, userName, useGoogleAuth) VALUES(?, ?, ?, ?)";
@@ -94,6 +107,7 @@ module.exports = {
   checkCredentials: checkCredentials,
   createUser: createUser,
   createGoogleAuthUser: createGoogleAuthUser,
+  getUsers: getUsers,
   userExists: userExists,
   updateUser: updateUser
 };
