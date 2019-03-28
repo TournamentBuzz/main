@@ -79,6 +79,10 @@ function getTournaments(connection) {
   return tournamentWrapper.getTournaments(connection);
 }
 
+function getUserTournaments(connection, email) {
+  return tournamentWrapper.getUserTournaments(connection, email);
+}
+
 function updateTournament(
   connection,
   id,
@@ -361,6 +365,7 @@ module.exports = {
   createTournament: createTournament,
   getTournament: getTournament,
   getTournaments: getTournaments,
+  getUserTournaments: getUserTournaments,
   updateTournament: updateTournament,
   updateTournamentField: updateTournamentField,
   deleteTournament: deleteTournament,
