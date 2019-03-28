@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
-const sqlwrapper = require("../model/wrapper");
+const sqlwrapper = require("../../model/wrapper");
 
 router.get("/", async function(req, res, next) {
   try {
