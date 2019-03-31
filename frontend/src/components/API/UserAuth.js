@@ -21,6 +21,19 @@ export default class UserAuth {
     Authentication.setToken(json.jwt);
   }
 
+  static async googleLogin(gToken) {
+    const res = await fetch(`${Config.base_url}/user/google-auth`, {
+      method: "POST",
+      headers: await Authentication.withoutJWT(),
+      body: JSON.stringify({ gToken })
+    });
+    if (!res.ok) {
+      throw new errors.UnexpectedError();
+    }
+    const json = await res.json();
+    Authentication.setToken(json.jwt);
+  }
+
   static async register(name, email, password) {
     const res = await fetch(`${Config.base_url}/user/register`, {
       method: "POST",

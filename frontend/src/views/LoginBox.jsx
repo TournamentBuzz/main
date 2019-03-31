@@ -1,4 +1,5 @@
 import React from "react";
+import { GoogleLogin } from "react-google-login";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -29,6 +30,7 @@ class LoginBox extends React.Component {
       APIBusy: false
     };
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    this.googleLogin = this.googleLogin.bind(this);
   }
 
   handleChange(e) {
@@ -50,6 +52,24 @@ class LoginBox extends React.Component {
     this.setState({ APIBusy: false });
   }
 
+  async googleLogin(response) {
+    this.setState({ APIBusy: true });
+    if (
+      response.tokenObj !== undefined &&
+      response.tokenObj.id_token !== undefined
+    ) {
+      try {
+        await UserAuth.googleLogin(response.tokenObj.id_token);
+        window.location.reload();
+      } catch (error) {
+        this.setState({ formError: "Error logging in with Google" });
+      }
+      this.setState({ APIBusy: false });
+    } else {
+      this.setState({ formError: "Error logging in with Google" });
+    }
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -63,6 +83,14 @@ class LoginBox extends React.Component {
                     <h2>Login</h2>
                   </CardHeader>
                   <CardBody>
+                    <center>
+                      <GoogleLogin
+                        clientId="802305630809-pdjvhcuo362ii6qfo0617u4ag8fgttad.apps.googleusercontent.com"
+                        buttonText="Login with Google"
+                        onSuccess={this.googleLogin}
+                        onFailure={this.googleLogin}
+                      />
+                    </center>
                     <FormHelperText error>
                       {this.state.formError}
                     </FormHelperText>
