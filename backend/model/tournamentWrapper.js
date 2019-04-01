@@ -136,7 +136,7 @@ function updateTournament(
 }
 
 function updateTournamentField(connection, id, fieldName, fieldValue) {
-  const query = "UPDATE tournaments SET ? = ? WHERE id = ?;";
+  const query = "UPDATE tournaments SET ?? = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [fieldName, fieldValue, id], function(
       err,
