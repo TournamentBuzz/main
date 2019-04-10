@@ -58,9 +58,29 @@ function getTournament(connection, id) {
 
 function getTournaments(connection) {
   const query =
-    "SELECT * FROM tournaments WHERE startDate >= NOW() ORDER BY startDate DESC;";
+    "SELECT * FROM tournaments WHERE endDate >= NOW() ORDER BY endDate DESC;";
   return new Promise((resolve, reject) => {
     connection.query(query, function(err, rows, fields) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function getUserTournaments(connection, email) {
+  const query = `(SELECT 'participant' as role, tournaments.* FROM tournaments INNER JOIN
+      (SELECT teams.tournament FROM teams INNER JOIN teamMembers ON teams.id = teamMembers.teamId WHERE teamMembers.userEmail = ?) AS members
+      ON tournaments.id = members.tournament WHERE startDate >= NOW())
+      UNION
+      (SELECT 'organizer' as role, tournaments.* FROM tournaments WHERE tournaments.creator = ? AND startDate >= NOW())
+      UNION
+      (SELECT 'referee' as role, tournaments.* FROM tournaments INNER JOIN referees ON tournaments.id = referees.tournamentId WHERE referees.userEmail = ? AND tournaments.startDate >= NOW())
+      ORDER BY startDate DESC;`;
+  return new Promise((resolve, reject) => {
+    connection.query(query, [email, email, email], function(err, rows, fields) {
       if (err) {
         reject(err);
       } else {
@@ -116,7 +136,7 @@ function updateTournament(
 }
 
 function updateTournamentField(connection, id, fieldName, fieldValue) {
-  const query = "UPDATE tournaments SET ? = ? WHERE id = ?;";
+  const query = "UPDATE tournaments SET ?? = ? WHERE id = ?;";
   return new Promise((resolve, reject) => {
     connection.query(query, [fieldName, fieldValue, id], function(
       err,
@@ -212,6 +232,7 @@ module.exports = {
   createTournament: createTournament,
   getTournament: getTournament,
   getTournaments: getTournaments,
+  getUserTournaments: getUserTournaments,
   updateTournament: updateTournament,
   updateTournamentField: updateTournamentField,
   deleteTournament: deleteTournament,
