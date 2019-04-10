@@ -58,7 +58,7 @@ function getTournament(connection, id) {
 
 function getTournaments(connection) {
   const query =
-    "SELECT * FROM tournaments WHERE endDate >= NOW() ORDER BY endDate DESC;";
+    "SELECT * FROM tournaments WHERE endDate >= NOW() ORDER BY startDate DESC;";
   return new Promise((resolve, reject) => {
     connection.query(query, function(err, rows, fields) {
       if (err) {
@@ -168,7 +168,7 @@ function deleteTournament(connection, id) {
 function searchTournament(connection, searchQuery) {
   const searchTerm = "%" + searchQuery + "%";
   const query =
-    "SELECT * FROM tournaments WHERE tournamentName like ? AND startDate >= NOW() ORDER BY startDate DESC;";
+    "SELECT * FROM tournaments WHERE tournamentName like ? AND endDate >= NOW() ORDER BY startDate DESC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [searchTerm], function(err, rows, fields) {
       if (err) {
