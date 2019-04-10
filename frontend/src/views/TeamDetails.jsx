@@ -56,7 +56,7 @@ class TeamDetails extends React.Component {
     let confirm = window.confirm("Are you sure you want to delete this team?");
     if (confirm) {
       try {
-        await TeamAPI.withdrawTeam(this.state.teamID, this.state.tournamentID);
+        await TeamAPI.withdrawTeam(this.state.tournamentID, this.state.teamID);
       } catch (error) {
         // show message
         return;
