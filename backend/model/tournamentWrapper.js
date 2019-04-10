@@ -58,7 +58,7 @@ function getTournament(connection, id) {
 
 function getTournaments(connection) {
   const query =
-    "SELECT * FROM tournaments WHERE startDate >= NOW() ORDER BY startDate DESC;";
+    "SELECT * FROM tournaments WHERE endDate >= NOW() ORDER BY endDate DESC;";
   return new Promise((resolve, reject) => {
     connection.query(query, function(err, rows, fields) {
       if (err) {
