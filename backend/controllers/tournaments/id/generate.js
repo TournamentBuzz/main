@@ -54,9 +54,7 @@ router.post("/", async function(req, res, next) {
         let locations = tournamentObject[0].location.split(",")
         let matches = await sqlwrapper.getMatches(c, req.headers.tournamentid);
         const timePerMatch = (tournamentObject[0].endDate - tournamentObject[0].startDate) / (matches.length / locations);
-        let currentTime = tournamentObject[0].startDate;
-        let currentLocationInd = 0;
-        matches.forEach(async match => {
+        matches.forEach(async (match, i) => {
           let teamA = match.teamA;
           let teamB = match.teamB;
           if (teamA) {
@@ -65,11 +63,8 @@ router.post("/", async function(req, res, next) {
           if (teamB) {
             teamB = teamB.teamId;
           }
-          await sqlwrapper.updateMatch(c, match.id, locations[currentLocationInd], match.winner, currentTime, match.matchName, teamA, teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser);
-          currentLocationInd = (currentLocationInd + 1) % locations.length;
-          if (currentLocationInd == 0) {
-            currentTime += timePerMatch;
-          }
+          const matchTime = match.startDate + ((i / locations.length) * timePerMatch);
+          await sqlwrapper.updateMatch(c, match.id, locations[i % locations.length], match.winner, matchTime, match.matchName, teamA, teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser);
         });
         res.status(200);
         res.json({ generationSuccess: true });
