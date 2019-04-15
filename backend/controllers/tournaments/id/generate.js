@@ -46,13 +46,27 @@ router.post("/", async function(req, res, next) {
             validTeams,
             tournamentObject[0].id
           );
-          res.status(200);
-          res.json({ generationSuccess: true });
         } else {
           const err = new Error("Bracket type does not exist!");
           err.status = 400;
           next(err);
+          return;
         }
+        // Generate match location and times
+        let locations = tournamentObject[0].location.split(",")
+        let matches = await sqlwrapper.getMatches(c, req.headers.tournamentid);
+        const timePerMatch = (tournamentObject[0].endDate - tournamentObject[0].startDate) / (matches.length / locations);
+        let currentTime = tournamentObject[0].startDate;
+        let currentLocationInd = 0;
+        matches.forEach(match => {
+          await sqlwrapper.updateMatch(c, match.id, locations[currentLocationInd], match.winner, currentTime, match.matchName, match.teamA, match.teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser)
+          currentLocationInd = (currentLocationInd + 1) % locations.length;
+          if (currentLocationInd == 0) {
+            currentTime += timePerMatch;
+          }
+        });
+        res.status(200);
+        res.json({ generationSuccess: true });
       }
     } else {
       const err = new Error("You cannot generate matches for this tournament!");
