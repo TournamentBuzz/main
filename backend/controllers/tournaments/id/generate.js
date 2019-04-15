@@ -34,8 +34,6 @@ router.post("/", async function(req, res, next) {
             validTeams,
             tournamentObject[0].id
           );
-          res.status(200);
-          res.json({ generationSuccess: true });
         } else if (tournamentObject[0].tournamentType === "Double Elim") {
           const err = new Error("Bracket type does not exist!");
           err.status = 400;
