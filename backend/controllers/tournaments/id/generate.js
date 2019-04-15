@@ -53,7 +53,8 @@ router.post("/", async function(req, res, next) {
         // Generate match location and times
         let locations = tournamentObject[0].location.split(",")
         let matches = await sqlwrapper.getMatches(c, req.headers.tournamentid);
-        const timePerMatch = (tournamentObject[0].endDate - tournamentObject[0].startDate) / (matches.length / locations);
+        // TODO Hardcode each match to 2 hours, this should be adjustable in the future
+        const timePerMatch = 2 * 60 * 60 * 1000;
         matches.forEach(async (match, i) => {
           let teamA = match.teamA;
           let teamB = match.teamB;
@@ -63,7 +64,22 @@ router.post("/", async function(req, res, next) {
           if (teamB) {
             teamB = teamB.teamId;
           }
-          const matchTime = match.startDate + ((i / locations.length) * timePerMatch);
+          const matchTime = tournamentObject[0].startDate + ((i / locations.length) * timePerMatch);
+          if (match.feederA || match.feederB) {
+            if (matches.find((m) => {
+              return m.id === match.feederA;
+            }).matchTime > matches.find((m) => {
+              return m.id === match.feederB;
+            }).matchTime) {
+              matchTime = matches.find((m) => {
+                return m.id === match.feederA;
+              }).matchTime + timePerMatch;
+            } else {
+              matchTime = matches.find((m) => {
+                return m.id === match.feederB;
+              }).matchTime + timePerMatch;
+            }
+          }
           await sqlwrapper.updateMatch(c, match.id, locations[i % locations.length], match.winner, matchTime, match.matchName, teamA, teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser);
         });
         res.status(200);
