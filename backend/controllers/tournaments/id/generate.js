@@ -66,18 +66,26 @@ router.post("/", async function(req, res, next) {
           }
           const matchTime = new Date(tournamentObject[0].startDate.valueOf() + ((i / locations.length) * timePerMatch));
           if (match.feederA || match.feederB) {
-            if (matches.find((m) => {
-              return m.id === match.feederA;
-            }).matchTime > matches.find((m) => {
-              return m.id === match.feederB;
-            }).matchTime) {
-              matchTime = new Date(matches.find((m) => {
+            let matchA = null;
+            let matchB = null;
+            if (match.feederA) {
+              matchA = matches.find((m) => {
                 return m.id === match.feederA;
-              }).matchTime.valueOf() + timePerMatch);
-            } else {
-              matchTime = new Date(matches.find((m) => {
+              });
+            }
+            if (match.feederB) {
+              matchB = matches.find((m) => {
                 return m.id === match.feederB;
-              }).matchTime.valueOf() + timePerMatch);
+              });
+            }
+            if (matchA && !matchB) {
+              matchTime = new Date(matchA.matchTime.valueOf() + timePerMatch);
+            } else if (matchB && !matchA) {
+              matchTime = new Date(matchB.matchTime.valueOf() + timePerMatch);
+            } else if (matchA.matchTime > matchB.matchTime) {
+              matchTime = new Date(matchA.matchTime.valueOf() + timePerMatch);
+            } else {
+              matchTime = new Date(matchB.matchTime.valueOf() + timePerMatch);
             }
           }
           await sqlwrapper.updateMatch(c, match.id, locations[i % locations.length], match.winner, matchTime, match.matchName, teamA, teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser);
