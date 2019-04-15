@@ -64,20 +64,20 @@ router.post("/", async function(req, res, next) {
           if (teamB) {
             teamB = teamB.teamId;
           }
-          const matchTime = tournamentObject[0].startDate + ((i / locations.length) * timePerMatch);
+          const matchTime = new Date(tournamentObject[0].startDate.valueOf() + ((i / locations.length) * timePerMatch));
           if (match.feederA || match.feederB) {
             if (matches.find((m) => {
               return m.id === match.feederA;
             }).matchTime > matches.find((m) => {
               return m.id === match.feederB;
             }).matchTime) {
-              matchTime = matches.find((m) => {
+              matchTime = new Date(matches.find((m) => {
                 return m.id === match.feederA;
-              }).matchTime + timePerMatch;
+              }).matchTime.valueOf() + timePerMatch);
             } else {
-              matchTime = matches.find((m) => {
+              matchTime = new Date(matches.find((m) => {
                 return m.id === match.feederB;
-              }).matchTime + timePerMatch;
+              }).matchTime.valueOf() + timePerMatch);
             }
           }
           await sqlwrapper.updateMatch(c, match.id, locations[i % locations.length], match.winner, matchTime, match.matchName, teamA, teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser);
