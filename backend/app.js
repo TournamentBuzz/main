@@ -32,6 +32,8 @@ if (config.serverConfig.env === "development") {
 
 const app = express();
 
+// set logger
+app.set("logger", log4js);
 // set server config
 app.set("serverConfig", config.serverConfig);
 // set authentication config
