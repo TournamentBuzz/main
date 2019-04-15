@@ -58,7 +58,7 @@ router.post("/", async function(req, res, next) {
         const timePerMatch = (tournamentObject[0].endDate - tournamentObject[0].startDate) / (matches.length / locations);
         let currentTime = tournamentObject[0].startDate;
         let currentLocationInd = 0;
-        matches.forEach(match => {
+        matches.forEach(async match => {
           await sqlwrapper.updateMatch(c, match.id, locations[currentLocationInd], match.winner, currentTime, match.matchName, match.teamA, match.teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser)
           currentLocationInd = (currentLocationInd + 1) % locations.length;
           if (currentLocationInd == 0) {
