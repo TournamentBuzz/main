@@ -224,7 +224,7 @@ function deleteMatch(connection, id) {
 
 function getMatches(connection, tournamentId) {
   const query =
-    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? ORDER BY matchTime ASC;";
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? ORDER BY matchTime ASC, id ASC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], async function(err, rows, fields) {
       if (err) {
@@ -280,7 +280,7 @@ function getMatches(connection, tournamentId) {
 
 function getPublishedMatches(connection, tournamentId) {
   const query =
-    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? AND publish = 1 ORDER BY matchTime ASC;";
+    "SELECT m.*, t.teamName AS 'teamAName', t1.teamName AS 'teamBName' FROM matches m LEFT JOIN teams t1 ON m.teamB = t1.id LEFT JOIN teams t ON m.teamA = t.id WHERE m.tournament = ? AND publish = 1 ORDER BY matchTime ASC, id ASC;";
   return new Promise((resolve, reject) => {
     connection.query(query, [tournamentId], async function(err, rows, fields) {
       if (err) {

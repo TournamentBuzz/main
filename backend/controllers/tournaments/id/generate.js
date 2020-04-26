@@ -34,8 +34,6 @@ router.post("/", async function(req, res, next) {
             validTeams,
             tournamentObject[0].id
           );
-          res.status(200);
-          res.json({ generationSuccess: true });
         } else if (tournamentObject[0].tournamentType === "Double Elim") {
           const err = new Error("Bracket type does not exist!");
           err.status = 400;
@@ -46,13 +44,56 @@ router.post("/", async function(req, res, next) {
             validTeams,
             tournamentObject[0].id
           );
-          res.status(200);
-          res.json({ generationSuccess: true });
         } else {
           const err = new Error("Bracket type does not exist!");
           err.status = 400;
           next(err);
+          return;
         }
+        // Generate match location and times
+        let locations = tournamentObject[0].location.split(",")
+        let matches = await sqlwrapper.getMatches(c, req.headers.tournamentid);
+        // TODO Hardcode each match to 2 hours, this should be adjustable in the future
+        // TODO lots of assumptions made about match time generation, should fix algorithm to be recursive
+        const timePerMatch = 2 * 60 * 60 * 1000;
+        matches.forEach(async (match, i, arr) => {
+          let teamA = match.teamA;
+          let teamB = match.teamB;
+          if (teamA) {
+            teamA = teamA.teamId;
+          }
+          if (teamB) {
+            teamB = teamB.teamId;
+          }
+          let matchTime = new Date(tournamentObject[0].startDate.valueOf() + (Math.floor(i / locations.length) * timePerMatch));
+          if (match.feederA || match.feederB) {
+            let matchA = null;
+            let matchB = null;
+            if (match.feederA) {
+              matchA = arr.find((m) => {
+                return m.id === match.feederA;
+              });
+            }
+            if (match.feederB) {
+              matchB = arr.find((m) => {
+                return m.id === match.feederB;
+              });
+            }
+            if (matchA && !matchB) {
+              matchTime = new Date(matchA.matchTime.valueOf() + timePerMatch);
+            } else if (matchB && !matchA) {
+              matchTime = new Date(matchB.matchTime.valueOf() + timePerMatch);
+            } else if (matchA.matchTime > matchB.matchTime) {
+              matchTime = new Date(matchA.matchTime.valueOf() + timePerMatch);
+            } else {
+              matchTime = new Date(matchB.matchTime.valueOf() + timePerMatch);
+            }
+          }
+          arr[i].matchTime = matchTime;
+          await sqlwrapper.updateMatch(c, match.id, locations[i % locations.length], match.winner, matchTime, match.matchName, teamA, teamB, match.feederA, match.feederB, match.scoreA, match.scoreB, match.feederAIsLoser, match.feederBIsLoser);
+        });
+        res.status(200);
+        res.json({ generationSuccess: true });
       }
     } else {
       const err = new Error("You cannot generate matches for this tournament!");
