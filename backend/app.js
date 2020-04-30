@@ -63,11 +63,11 @@ if (app.get("serverConfig").env === "development") {
   });
 }
 
-app.use("api/user", user);
-app.use("api/tournaments", tournaments);
-app.use("api/matches", matches);
-app.use("api/teams", teams);
-app.use("api/invites", requireAuth, invites);
+app.use("/api/user", user);
+app.use("/api/tournaments", tournaments);
+app.use("/api/matches", matches);
+app.use("/api/teams", teams);
+app.use("/api/invites", requireAuth, invites);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
